@@ -91,14 +91,16 @@ export default function RequestPage() {
   const primaryButton = {
     background: "linear-gradient(135deg, #0B3D91, #2563EB)",
     color: "white",
-    padding: "14px",
+    padding: "14px 20px",
     border: "none",
     borderRadius: 10,
     cursor: "pointer",
     fontWeight: "bold",
-    fontSize: 16,
-    width: "48%",
+    fontSize: "clamp(16px, 2vw, 20px)",
+    width: "100%",
+    maxWidth: 320,
     marginTop: 10,
+    whiteSpace: "nowrap",
   };
 
   const secondaryButton = {
