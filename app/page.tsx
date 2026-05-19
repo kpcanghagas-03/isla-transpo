@@ -267,17 +267,41 @@ export default function RequestPage() {
         />
 
         {/* BUTTONS */}
-        <div style={{ display: "flex", justifyContent: "space-between",gap: 10, flexWrap:"wrap", }}>
+        <div style={{ display: "flex",
+          gap:10,
+          marginTop: 10,
+         }}>
           <button
             onClick={() => setStep(1)}
-            style={secondaryButton}
+            style={{
+              flex: 1,
+              color: "#0B3D91",
+              border: "2px solid #0B3D91",
+              padding: "12px",
+              borderRadius: 10,
+              cursor: "pointer",
+              fontWeight: "bold",
+              fontSize:14,
+              whiteSpace: "nowrap",
+            }}
           >
             Back
           </button>
 
           <button
             onClick={handleSubmit}
-            style={primaryButton}
+            style={{
+              flex: 2,
+              background: "linear-gradient(135deg, #0B3D91, #2563EB)",
+              color: "white",
+              padding: "12px",
+              border: "none",
+              borderRadius: 10,
+              cursor: "pointer",
+              fontWeight: "bold",
+              fontSize: "14",
+              whiteSpace: "nowrap",
+            }}
           >
             Submit Request
           </button>
