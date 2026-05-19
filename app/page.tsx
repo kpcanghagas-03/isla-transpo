@@ -59,7 +59,7 @@ export default function RequestPage() {
 
   // ================= STYLES =================
   const pageStyle = {
-    padding: 40,
+    padding: "20px",
     fontFamily: "Segoe UI, sans-serif",
     minHeight: "100vh",
     backgroundImage: "url('/camiguin.jpg')",
@@ -82,6 +82,7 @@ export default function RequestPage() {
     padding: 30,
     borderRadius: 16,
     maxWidth: 600,
+    width: "100%",
     margin: "0 auto",
     boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
     backdropFilter: "blur(8px)",
@@ -96,7 +97,7 @@ export default function RequestPage() {
     cursor: "pointer",
     fontWeight: "bold",
     fontSize: 16,
-    width: "70%",
+    width: "48%",
     marginTop: 10,
   };
 
@@ -108,7 +109,7 @@ export default function RequestPage() {
     borderRadius: 10,
     cursor: "pointer",
     fontWeight: "bold",
-    width: "20%",
+    width: "48%",
   };
 
   // ================= LANDING PAGE =================
@@ -126,7 +127,7 @@ export default function RequestPage() {
           style={{
             textAlign: "center",
             background: "rgba(255,255,255,0.92)",
-            padding: "60px 40px",
+            padding: "40px 20px",
             borderRadius: 20,
             maxWidth: 650,
             width: "100%",
@@ -135,11 +136,13 @@ export default function RequestPage() {
         >
           <h1
             style={{
-              fontSize: 70,
+              fontSize: "clamp(38px, 8vw, 70px)",
               fontWeight: "bold",
               color: "#0B3D91",
-              letterSpacing: 3,
+              letterSpacing: 2,
               marginBottom: 10,
+              textAlign: "center",
+              lineHeight: 1.1,
             }}
           >
             ISLA-TRANSPO
@@ -261,7 +264,7 @@ export default function RequestPage() {
         />
 
         {/* BUTTONS */}
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <div style={{ display: "flex", justifyContent: "space-between",gap: 10, flexWrap:"wrap", }}>
           <button
             onClick={() => setStep(1)}
             style={secondaryButton}
