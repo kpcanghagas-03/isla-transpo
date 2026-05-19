@@ -1,27 +1,282 @@
-export default function Home() {
+"use client";
+
+import { useState } from "react";
+import { supabase } from "@/lib/supabase";
+
+export default function RequestPage() {
+  const [step, setStep] = useState(1);
+
+  const [formData, setFormData] = useState({
+    full_name: "",
+    organization: "",
+    contact_number: "",
+    passengers: "",
+    airport: "Laguindingan Airport",
+    pickup_location: "",
+    destination: "",
+    travel_datetime: "",
+    vehicle_type: "Van",
+    special_requests: "",
+  });
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async () => {
+    const { error } = await supabase
+      .from("transport_requests")
+      .insert([formData]);
+
+    if (error) {
+      alert("Error submitting request.");
+      console.log(error);
+      return;
+    }
+
+    alert("Transport request submitted successfully!");
+
+    setFormData({
+      full_name: "",
+      organization: "",
+      contact_number: "",
+      passengers: "",
+      airport: "Laguindingan Airport",
+      pickup_location: "",
+      destination: "",
+      travel_datetime: "",
+      vehicle_type: "Van",
+      special_requests: "",
+    });
+
+    setStep(1);
+  };
+
+  // ================= STYLES =================
+  const pageStyle = {
+    padding: 40,
+    fontFamily: "Segoe UI, sans-serif",
+    minHeight: "100vh",
+    backgroundImage: "url('/camiguin.jpg')",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+  };
+
+  const inputStyle = {
+    padding: 10,
+    borderRadius: 8,
+    border: "1px solid black",
+    width: "100%",
+    marginBottom: 12,
+    outline: "none",
+    fontSize: 14,
+  };
+
+  const formBox = {
+    background: "rgba(255,255,255,0.95)",
+    padding: 30,
+    borderRadius: 16,
+    maxWidth: 600,
+    margin: "0 auto",
+    boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
+    backdropFilter: "blur(8px)",
+  };
+
+  const primaryButton = {
+    background: "linear-gradient(135deg, #0B3D91, #2563EB)",
+    color: "white",
+    padding: "14px",
+    border: "none",
+    borderRadius: 10,
+    cursor: "pointer",
+    fontWeight: "bold",
+    fontSize: 16,
+    width: "70%",
+    marginTop: 10,
+  };
+
+  const secondaryButton = {
+    background: "white",
+    color: "#0B3D91",
+    border: "2px solid #0B3D91",
+    padding: "10px",
+    borderRadius: 10,
+    cursor: "pointer",
+    fontWeight: "bold",
+    width: "20%",
+  };
+
+  // ================= LANDING PAGE =================
+  if (step === 1) {
+    return (
+      <main
+        style={{
+          ...pageStyle,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <div
+          style={{
+            textAlign: "center",
+            background: "rgba(255,255,255,0.92)",
+            padding: "60px 40px",
+            borderRadius: 20,
+            maxWidth: 650,
+            width: "100%",
+            boxShadow: "0 15px 40px rgba(0,0,0,0.25)",
+          }}
+        >
+          <h1
+            style={{
+              fontSize: 70,
+              fontWeight: "bold",
+              color: "#0B3D91",
+              letterSpacing: 3,
+              marginBottom: 10,
+            }}
+          >
+            ISLA-TRANSPO
+          </h1>
+
+          <p
+            style={{
+              fontSize: 18,
+              color: "#475569",
+              marginBottom: 30,
+            }}
+          >
+            RSTW Transportation Management System
+          </p>
+
+          <button onClick={() => setStep(2)} style={primaryButton}>
+            Click Here to Request Vehicle
+          </button>
+        </div>
+      </main>
+    );
+  }
+
+  // ================= FORM PAGE =================
   return (
-    <main style={{ padding: 40, fontFamily: "sans serif", background: "#00AEEF", minHeight: "100vh" }}>
-      <header style={{ marginBottom: 30 }}>
-        <h1 style={{ fontSize: 40, fontWeight: "bold" }}>ISLA-Transpo</h1>
-        <p>RSTW Transportation Management System</p>
-      </header>
+    <main style={pageStyle}>
+      <div style={formBox}>
+        <h1 style={{ color: "#0B3D91", marginBottom: 5 }}>
+          ISLA-Transpo
+        </h1>
 
-      <section style={{ background: "blue", padding: 20, borderRadius: 10, marginBottom: 20 }}>
-        <h2>Welcome to CAMIGUIN!</h2>
-        <p>
-          This system manages transportation requests for Regional Science and Technology Week (RSTW).
+        <p style={{ marginBottom: 15, color: "#475569" }}>
+          Fill out transportation request details
         </p>
-      </section>
 
-      <section style={{ background: "blue", padding: 20, borderRadius: 10 }}>
-        <h2>Quick Actions</h2>
-        <ul>
-          <li>Submit Transport Request</li>
-          <li>View Schedules</li>
-          <li>Barge Trips: Balingoan ↔ Benoni</li>
-          <li>Airport Transfers: Laguindingan / Camiguin</li>
-        </ul>
-      </section>
+        <input
+          name="full_name"
+          placeholder="Full Name"
+          value={formData.full_name}
+          onChange={handleChange}
+          style={{...inputStyle, fontWeight: "normal",color:"black", fontSize: 16}}
+        />
+
+        <input
+          name="organization"
+          placeholder="Organization"
+          value={formData.organization}
+          onChange={handleChange}
+          style={{...inputStyle, fontWeight: "normal",color:"black", fontSize: 16}}
+        />
+
+        <input
+          name="contact_number"
+          placeholder="Contact Number"
+          value={formData.contact_number}
+          onChange={handleChange}
+          style={{...inputStyle, fontWeight: "normal",color:"black", fontSize: 16}}
+        />
+
+        <input
+          name="passengers"
+          placeholder="Number of Passengers"
+          value={formData.passengers}
+          onChange={handleChange}
+          style={{...inputStyle, fontWeight: "normal",color:"black", fontSize: 16}}
+        />
+
+        <select
+          name="airport"
+          value={formData.airport}
+          onChange={handleChange}
+          style={{...inputStyle, fontWeight: "normal",color:"black", fontSize: 16}}
+        >
+          <option>Laguindingan Airport</option>
+          <option>Camiguin Airport</option>
+        </select>
+
+        <input
+          name="pickup_location"
+          placeholder="Pickup Location"
+          value={formData.pickup_location}
+          onChange={handleChange}
+          style={{...inputStyle, fontWeight: "normal",color:"black", fontSize: 16}} 
+        />
+
+        <input
+          name="destination"
+          placeholder="Destination"
+          value={formData.destination}
+          onChange={handleChange}
+          style={{...inputStyle, fontWeight: "normal",color:"black", fontSize: 16}}
+        />
+
+        <input
+          type="datetime-local"
+          name="travel_datetime"
+          value={formData.travel_datetime}
+          onChange={handleChange}
+          style={{...inputStyle, fontWeight: "normal",color:"black", fontSize: 16}}
+        />
+
+        <select
+          name="vehicle_type"
+          value={formData.vehicle_type}
+          onChange={handleChange}
+          style={{...inputStyle, fontWeight: "normal",color:"black", fontSize: 16}}     
+        >
+          <option>Van</option>
+          <option>Bus</option>
+          <option>Car</option>
+        </select>
+
+        <textarea
+          name="special_requests"
+          placeholder="Special Requests"
+          value={formData.special_requests}
+          onChange={handleChange}
+          style={{...inputStyle, fontWeight: "normal",color:"black", fontSize: 16, height: 100, resize: "none"}} 
+        />
+
+        {/* BUTTONS */}
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <button
+            onClick={() => setStep(1)}
+            style={secondaryButton}
+          >
+            Back
+          </button>
+
+          <button
+            onClick={handleSubmit}
+            style={primaryButton}
+          >
+            Submit Request
+          </button>
+        </div>
+      </div>
     </main>
   );
 }
