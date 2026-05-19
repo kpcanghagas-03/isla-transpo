@@ -136,13 +136,14 @@ export default function RequestPage() {
         >
           <h1
             style={{
-              fontSize: "clamp(38px, 8vw, 70px)",
+              fontSize: "clamp(24px, 6vw, 60px)",
               fontWeight: "bold",
               color: "#0B3D91",
               letterSpacing: 2,
               marginBottom: 10,
               textAlign: "center",
               lineHeight: 1.1,
+              whiteSpace:"nowrap",
             }}
           >
             ISLA-TRANSPO
