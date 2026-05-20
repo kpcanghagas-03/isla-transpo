@@ -1,83 +1,117 @@
 "use client";
 
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Popup,
-} from "react-leaflet";
+import dynamic from "next/dynamic";
 
-import type { LatLngExpression } from "leaflet";
+const MapContainer = dynamic(
+  () =>
+    import("react-leaflet").then(
+      (mod) => mod.MapContainer
+    ),
+  {
+    ssr: false,
+  }
+);
 
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
+const TileLayer = dynamic(
+  () =>
+    import("react-leaflet").then(
+      (mod) => mod.TileLayer
+    ),
+  {
+    ssr: false,
+  }
+);
 
-// ================= FIX LEAFLET ICONS =================
-delete (L.Icon.Default.prototype as any)._getIconUrl;
+const Marker = dynamic(
+  () =>
+    import("react-leaflet").then(
+      (mod) => mod.Marker
+    ),
+  {
+    ssr: false,
+  }
+);
 
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl:
-    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+const Popup = dynamic(
+  () =>
+    import("react-leaflet").then(
+      (mod) => mod.Popup
+    ),
+  {
+    ssr: false,
+  }
+);
 
-  iconUrl:
-    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+type Request = {
+  id: number;
+  full_name: string;
+  priority: string;
+  status: string;
+  assigned_vehicle?: string;
+  driver_lat?: number;
+  driver_lng?: number;
+};
 
-  shadowUrl:
-    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-});
-
-// ================= MAP CENTER =================
-const center: LatLngExpression = [
-  14.5995,
-  120.9842,
-];
-
-// ================= COMPONENT =================
 export default function LiveMap({
   requests,
-}: any) {
+}: {
+  requests: Request[];
+}) {
   return (
-    <MapContainer
-      center={center}
-      zoom={12}
+    <div
       style={{
         height: "100%",
         width: "100%",
       }}
     >
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution="© OpenStreetMap contributors"
-      />
+      <MapContainer
+        center={[14.5995, 120.9842]}
+        zoom={12}
+        style={{
+          height: "100%",
+          width: "100%",
+        }}
+      >
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution="© OpenStreetMap contributors"
+        />
 
-      {requests
-        ?.filter(
-          (r: any) =>
-            r.driver_lat && r.driver_lng
-        )
-        .map((r: any) => (
-          <Marker
-            key={r.id}
-            position={[
-              Number(r.driver_lat),
-              Number(r.driver_lng),
-            ]}
-          >
-            <Popup>
-              <b>{r.full_name}</b>
+        {requests?.map((r) => {
+          if (
+            !r.driver_lat ||
+            !r.driver_lng
+          ) {
+            return null;
+          }
 
-              <br />
+          return (
+            <Marker
+              key={r.id}
+              position={[
+                Number(r.driver_lat),
+                Number(r.driver_lng),
+              ]}
+            >
+              <Popup>
+                <div>
+                  <b>{r.full_name}</b>
 
-              {r.priority} - {r.status}
+                  <br />
 
-              <br />
+                  {r.priority} - {r.status}
 
-              🚐{" "}
-              {r.assigned_vehicle ||
-                "No vehicle"}
-            </Popup>
-          </Marker>
-        ))}
-    </MapContainer>
+                  <br />
+
+                  🚐{" "}
+                  {r.assigned_vehicle ||
+                    "No vehicle"}
+                </div>
+              </Popup>
+            </Marker>
+          );
+        })}
+      </MapContainer>
+    </div>
   );
 }

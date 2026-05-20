@@ -130,14 +130,19 @@ export default function AdminPage() {
   // ================= SEPARATE COMPLETED =================
   const activeRequests = sortedRequests.filter(
     (r) =>
-      r.status !== "Completed" &&
-      r.status !== "Disapproved"
+      [
+        "Pending",
+        "Approved",
+        "On the way",
+        "Emergency",
+      ].includes(r.status)
   );
 
   const completedRequests = sortedRequests.filter(
     (r) =>
-      r.status === "Completed" ||
-      r.status === "Disapproved"
+      [
+        "Completed","Disapproved",
+      ].includes(r.status)
   );
 
   return (
