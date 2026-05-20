@@ -192,12 +192,13 @@ export default function RequestPage() {
           }}
         />
 
-        <div>
-          style={{
-            display: "flex",
-            gap: 20,
-             marginBottom: 12,
-          }}        
+        <div
+        style={{
+          display: "flex",
+          gap: 20,
+          marginBottom: 12,
+        }}
+      >     
           <div style={{ flex: 1 }}>
               <label
                 style={{  color: "#334155", fontSize: 14, fontWeight: "bold" }}
