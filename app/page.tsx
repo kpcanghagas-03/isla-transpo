@@ -77,6 +77,7 @@ export default function HomePage() {
                 color: "#0B3D91",
                 fontSize: 32,
                 marginBottom: 10,
+                fontWeight: "bold",
                 textAlign: "center",
               }}
             >
@@ -93,7 +94,7 @@ export default function HomePage() {
             >
               Welcome to the ISLA-TRANSPO Transportation Management
               System of the Regional Science, Technology, and Innovation
-              Week (RSTW).
+              Week (RSTW). 
             </p>
 
             <div
@@ -177,7 +178,7 @@ export default function HomePage() {
                 transition: "0.2s",
               }}
             >
-              Continue to System
+              Continue
             </button>
           </div>
         </div>
