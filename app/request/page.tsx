@@ -6,7 +6,6 @@ import { supabase } from "@/lib/supabase";
 
 export default function RequestPage() {
   const router = useRouter();
-  const [step, setStep] = useState(1);
 
   const [formData, setFormData] = useState({
     full_name: "",
@@ -67,8 +66,6 @@ export default function RequestPage() {
       vehicle_type: "Van",
       special_requests: "",
     });
-
-    setStep(1);
   };
 
   // ================= STYLES =================
@@ -103,87 +100,20 @@ export default function RequestPage() {
     backdropFilter: "blur(8px)",
   };
 
-  const primaryButton = {
-    background: "linear-gradient(135deg, #0B3D91, #2563EB)",
-    color: "white",
-    padding: "14px 20px",
-    border: "none",
-    borderRadius: 10,
-    cursor: "pointer",
-    fontWeight: "bold" as const,
-    fontSize: "clamp(16px, 2vw, 20px)",
-    width: "100%",
-    maxWidth: 320,
-    marginTop: 10,
-    whiteSpace: "nowrap" as const,
-  };
-
-  // ================= LANDING PAGE =================
-
-  if (step === 1) {
-    return (
-      <main
-        style={{
-          ...pageStyle,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <div
-          style={{
-            textAlign: "center",
-            background: "rgba(255,255,255,0.92)",
-            padding: "40px 20px",
-            borderRadius: 20,
-            maxWidth: 650,
-            width: "100%",
-            boxShadow: "0 15px 40px rgba(0,0,0,0.25)",
-          }}
-        >
-          <h1
-            style={{
-              fontSize: "clamp(24px, 6vw, 60px)",
-              fontWeight: "bold",
-              color: "#0B3D91",
-              letterSpacing: 2,
-              marginBottom: 10,
-              textAlign: "center",
-              lineHeight: 1.1,
-              whiteSpace: "nowrap",
-            }}
-          >
-            ISLA-TRANSPO
-          </h1>
-
-          <p
-            style={{
-              fontSize: 18,
-              color: "#475569",
-              marginBottom: 30,
-            }}
-          >
-            RSTW Transportation Management System
-          </p>
-
-          <button onClick={() => setStep(2)} style={primaryButton}>
-            Click Here to Request Vehicle
-          </button>
-        </div>
-      </main>
-    );
-  }
-
-  // ================= FORM PAGE =================
-
   return (
     <main style={pageStyle}>
       <div style={formBox}>
-        <h1 style={{ color: "#0B3D91", marginBottom: 5 }}>
+        <h1
+          style={{
+            color: "#0B3D91",
+            marginBottom: 5,
+            fontSize: "clamp(28px, 5vw, 42px)",
+          }}
+        >
           ISLA-Transpo
         </h1>
 
-        <p style={{ marginBottom: 15, color: "#475569" }}>
+        <p style={{ marginBottom: 20, color: "#475569" }}>
           Fill out transportation request details
         </p>
 
