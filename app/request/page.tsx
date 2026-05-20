@@ -10,6 +10,7 @@ export default function RequestPage() {
   const [formData, setFormData] = useState({
     full_name: "",
     organization: "",
+    email: "",
     contact_number: "",
     passengers: "",
     pickup_location: "",
@@ -38,11 +39,12 @@ export default function RequestPage() {
         {
           full_name: formData.full_name,
           organization: formData.organization,
+          email: formData.email,
           contact_number: formData.contact_number,
           passengers: formData.passengers,
           pickup_location: formData.pickup_location,
           destination: formData.destination,
-          travel_datetime: formData.travel_date,
+          travel_date: formData.travel_date,
           travel_time: formData.travel_time,
           vehicle_type: formData.vehicle_type,
           special_requests: formData.special_requests,
@@ -60,6 +62,7 @@ export default function RequestPage() {
     setFormData({
       full_name: "",
       organization: "",
+      email: "",
       contact_number: "",
       passengers: "",
       pickup_location: "",
@@ -136,6 +139,18 @@ export default function RequestPage() {
           name="organization"
           placeholder="Organization"
           value={formData.organization}
+          onChange={handleChange}
+          style={{
+            ...inputStyle,
+            color: "black",
+            fontSize: 16,
+          }}
+        />
+
+        <input
+          name="email"
+          placeholder="Email"
+          value={formData.email}
           onChange={handleChange}
           style={{
             ...inputStyle,
