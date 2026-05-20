@@ -18,7 +18,7 @@ export default function RequestPage() {
     travel_date: "",
     travel_time: "",
     vehicle_type: "Van",
-    special_requests: "",
+    remarks: "",
   });
 
   const handleChange = (
@@ -47,7 +47,7 @@ export default function RequestPage() {
           travel_date: formData.travel_date,
           travel_time: formData.travel_time,
           vehicle_type: formData.vehicle_type,
-          special_requests: formData.special_requests,
+          remarks: formData.remarks,
         },
       ]);
 
@@ -70,7 +70,7 @@ export default function RequestPage() {
       travel_date: "",
       travel_time: "",
       vehicle_type: "Van",
-      special_requests: "",
+      remarks: "",
     });
   };
 
@@ -275,9 +275,9 @@ export default function RequestPage() {
         </select>
 
         <textarea
-          name="special_requests"
-          placeholder="Special Requests"
-          value={formData.special_requests}
+          name="remarks"
+          placeholder="remarks"
+          value={formData.remarks}
           onChange={handleChange}
           style={{
             ...inputStyle,
