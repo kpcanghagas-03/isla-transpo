@@ -14,7 +14,8 @@ export default function RequestPage() {
     passengers: "",
     pickup_location: "",
     destination: "",
-    travel_datetime: "",
+    travel_date: "",
+    travel_time: "",
     vehicle_type: "Van",
     special_requests: "",
   });
@@ -41,7 +42,8 @@ export default function RequestPage() {
           passengers: formData.passengers,
           pickup_location: formData.pickup_location,
           destination: formData.destination,
-          travel_datetime: formData.travel_datetime,
+          travel_datetime: formData.travel_date,
+          travel_time: formData.travel_time,
           vehicle_type: formData.vehicle_type,
           special_requests: formData.special_requests,
         },
@@ -62,7 +64,8 @@ export default function RequestPage() {
       passengers: "",
       pickup_location: "",
       destination: "",
-      travel_datetime: "",
+      travel_date: "",
+      travel_time: "",
       vehicle_type: "Van",
       special_requests: "",
     });
@@ -189,17 +192,56 @@ export default function RequestPage() {
           }}
         />
 
-        <input
-          type="datetime-local"
-          name="travel_datetime"
-          value={formData.travel_datetime}
-          onChange={handleChange}
+        <div>
           style={{
-            ...inputStyle,
-            color: "black",
-            fontSize: 16,
-          }}
-        />
+            display: "flex",
+            gap: 20,
+             marginBottom: 12,
+          }}        
+          <div style={{ flex: 1 }}>
+              <label
+                style={{  color: "#334155", fontSize: 14, fontWeight: "bold" }}
+              >
+                Travel Date
+              </label>
+
+              <input
+                type="date"
+                name="travel_date"
+                value={formData.travel_date}
+                onChange={handleChange}
+                style={{
+                  ...inputStyle,
+                  color: "black",
+                  fontSize: 16,
+                  marginTop: 5,
+                }}
+              />
+            </div>
+
+            <div style={{ flex: 1 }}>
+              <label
+                style={{color: "#334155", 
+                  fontSize: 14, fontWeight: "bold"
+                 }}
+              >
+                Travel Time
+              </label>
+
+              <input
+                type="time"
+                name="travel_time"
+                value={formData.travel_time}
+                onChange={handleChange}
+                style={{
+                  ...inputStyle,
+                  color: "black",
+                  fontSize: 16,
+                  marginTop: 5,
+                }}
+              />
+            </div>
+          </div>
 
         <select
           name="vehicle_type"
