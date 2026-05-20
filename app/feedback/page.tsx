@@ -201,20 +201,37 @@ export default function FeedbackPage() {
           onClick={submitFeedback}
           style={{
             width: "100%",
-            marginTop: 30,
             padding: 15,
-            border: "none",
+            marginTop: 30,
             borderRadius: 14,
-            background:
-              "linear-gradient(135deg, #0B3D91, #2563EB)",
+            border: "none",
+            background: "linear-gradient(135deg, #0B3D91, #2563EB)",
             color: "white",
             fontSize: 16,
             fontWeight: "bold",
             cursor: "pointer",
-            boxShadow: "0 5px 15px rgba(37,99,235,0.3)",
+            boxShadow: "0 5px 15px rgba(37,99,235,0.4)",
           }}
         >
           Submit Feedback
+        </button>
+
+        <button
+          onClick={() => window.location.href = "/"}
+          style={{
+            width: "100%",
+            padding: 15,
+            marginTop: 15,
+            borderRadius: 14,
+            border: "1px solid #CBD5E1",
+            background: "rgba(255,255,255,0.9)",
+            color: "#0B3D91",
+            fontSize: 16,
+            fontWeight: "bold",
+            cursor: "pointer",
+          }}
+        >
+          ← Back to Homepage
         </button>
       </div>
     </main>
