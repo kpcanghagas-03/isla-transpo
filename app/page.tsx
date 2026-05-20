@@ -10,7 +10,7 @@ export default function HomePage() {
   const [agreed, setAgreed] = useState(false);
 
   useEffect(() => {
-    const accepted = localStorage.getItem("privacyAccepted");
+    const accepted = sessionStorage.getItem("privacyAccepted");
 
     if (!accepted) {
       setShowModal(true);
@@ -170,7 +170,7 @@ export default function HomePage() {
             <button
               disabled={!agreed}
               onClick={() => {
-                localStorage.setItem("privacyAccepted", "true");
+                sessionStorage.setItem("privacyAccepted", "true");
                 setShowModal(false);
               }}  
               style={{
