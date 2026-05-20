@@ -192,6 +192,7 @@ export default function FeedbackPage() {
               resize: "none",
               fontSize: 15,
               outline: "none",
+              color: "#0F172A",
             }}
           />
         </div>
