@@ -187,7 +187,7 @@ export default function FeedbackPage() {
               height: 140,
               padding: 15,
               borderRadius: 14,
-              border: "1px solid #CBD5E1",
+              border: "1px solid #000000",
               marginTop: 10,
               resize: "none",
               fontSize: 15,
