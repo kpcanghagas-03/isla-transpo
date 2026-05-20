@@ -223,7 +223,7 @@ export default function RequestPage() {
 
               <input
                 type="date"
-                name="travel_date"
+                name="Pick-up Date"
                 value={formData.travel_date}
                 onChange={handleChange}
                 style={{
@@ -246,7 +246,7 @@ export default function RequestPage() {
 
               <input
                 type="time"
-                name="travel_time"
+                name="Pick-up Time"
                 value={formData.travel_time}
                 onChange={handleChange}
                 style={{
@@ -270,8 +270,8 @@ export default function RequestPage() {
           }}
         >
           <option>Van</option>
-          <option>Bus</option>
-          <option>Car</option>
+          <option>Pick-up</option>
+          <option>Motor Vehicle</option>
         </select>
 
         <textarea
