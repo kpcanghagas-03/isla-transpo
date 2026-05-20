@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
 export default function RequestPage() {
+  const router = useRouter();
   const [step, setStep] = useState(1);
 
   const [formData, setFormData] = useState({
@@ -11,7 +13,6 @@ export default function RequestPage() {
     organization: "",
     contact_number: "",
     passengers: "",
-    airport: "Laguindingan Airport",
     pickup_location: "",
     destination: "",
     travel_datetime: "",
@@ -20,7 +21,9 @@ export default function RequestPage() {
   });
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => {
     setFormData({
       ...formData,
@@ -31,7 +34,19 @@ export default function RequestPage() {
   const handleSubmit = async () => {
     const { error } = await supabase
       .from("transport_requests")
-      .insert([formData]);
+      .insert([
+        {
+          full_name: formData.full_name,
+          organization: formData.organization,
+          contact_number: formData.contact_number,
+          passengers: formData.passengers,
+          pickup_location: formData.pickup_location,
+          destination: formData.destination,
+          travel_datetime: formData.travel_datetime,
+          vehicle_type: formData.vehicle_type,
+          special_requests: formData.special_requests,
+        },
+      ]);
 
     if (error) {
       alert("Error submitting request.");
@@ -46,7 +61,6 @@ export default function RequestPage() {
       organization: "",
       contact_number: "",
       passengers: "",
-      airport: "Laguindingan Airport",
       pickup_location: "",
       destination: "",
       travel_datetime: "",
@@ -58,8 +72,9 @@ export default function RequestPage() {
   };
 
   // ================= STYLES =================
+
   const pageStyle = {
-    padding: 40,
+    padding: "20px",
     fontFamily: "Segoe UI, sans-serif",
     minHeight: "100vh",
     backgroundImage: "url('/camiguin.jpg')",
@@ -82,6 +97,7 @@ export default function RequestPage() {
     padding: 30,
     borderRadius: 16,
     maxWidth: 600,
+    width: "100%",
     margin: "0 auto",
     boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
     backdropFilter: "blur(8px)",
@@ -90,28 +106,20 @@ export default function RequestPage() {
   const primaryButton = {
     background: "linear-gradient(135deg, #0B3D91, #2563EB)",
     color: "white",
-    padding: "14px",
+    padding: "14px 20px",
     border: "none",
     borderRadius: 10,
     cursor: "pointer",
-    fontWeight: "bold",
-    fontSize: 16,
-    width: "70%",
+    fontWeight: "bold" as const,
+    fontSize: "clamp(16px, 2vw, 20px)",
+    width: "100%",
+    maxWidth: 320,
     marginTop: 10,
-  };
-
-  const secondaryButton = {
-    background: "white",
-    color: "#0B3D91",
-    border: "2px solid #0B3D91",
-    padding: "10px",
-    borderRadius: 10,
-    cursor: "pointer",
-    fontWeight: "bold",
-    width: "20%",
+    whiteSpace: "nowrap" as const,
   };
 
   // ================= LANDING PAGE =================
+
   if (step === 1) {
     return (
       <main
@@ -126,7 +134,7 @@ export default function RequestPage() {
           style={{
             textAlign: "center",
             background: "rgba(255,255,255,0.92)",
-            padding: "60px 40px",
+            padding: "40px 20px",
             borderRadius: 20,
             maxWidth: 650,
             width: "100%",
@@ -135,11 +143,14 @@ export default function RequestPage() {
         >
           <h1
             style={{
-              fontSize: 70,
+              fontSize: "clamp(24px, 6vw, 60px)",
               fontWeight: "bold",
               color: "#0B3D91",
-              letterSpacing: 3,
+              letterSpacing: 2,
               marginBottom: 10,
+              textAlign: "center",
+              lineHeight: 1.1,
+              whiteSpace: "nowrap",
             }}
           >
             ISLA-TRANSPO
@@ -164,6 +175,7 @@ export default function RequestPage() {
   }
 
   // ================= FORM PAGE =================
+
   return (
     <main style={pageStyle}>
       <div style={formBox}>
@@ -180,7 +192,11 @@ export default function RequestPage() {
           placeholder="Full Name"
           value={formData.full_name}
           onChange={handleChange}
-          style={{...inputStyle, fontWeight: "normal",color:"black", fontSize: 16}}
+          style={{
+            ...inputStyle,
+            color: "black",
+            fontSize: 16,
+          }}
         />
 
         <input
@@ -188,7 +204,11 @@ export default function RequestPage() {
           placeholder="Organization"
           value={formData.organization}
           onChange={handleChange}
-          style={{...inputStyle, fontWeight: "normal",color:"black", fontSize: 16}}
+          style={{
+            ...inputStyle,
+            color: "black",
+            fontSize: 16,
+          }}
         />
 
         <input
@@ -196,7 +216,11 @@ export default function RequestPage() {
           placeholder="Contact Number"
           value={formData.contact_number}
           onChange={handleChange}
-          style={{...inputStyle, fontWeight: "normal",color:"black", fontSize: 16}}
+          style={{
+            ...inputStyle,
+            color: "black",
+            fontSize: 16,
+          }}
         />
 
         <input
@@ -204,25 +228,23 @@ export default function RequestPage() {
           placeholder="Number of Passengers"
           value={formData.passengers}
           onChange={handleChange}
-          style={{...inputStyle, fontWeight: "normal",color:"black", fontSize: 16}}
+          style={{
+            ...inputStyle,
+            color: "black",
+            fontSize: 16,
+          }}
         />
-
-        <select
-          name="airport"
-          value={formData.airport}
-          onChange={handleChange}
-          style={{...inputStyle, fontWeight: "normal",color:"black", fontSize: 16}}
-        >
-          <option>Laguindingan Airport</option>
-          <option>Camiguin Airport</option>
-        </select>
 
         <input
           name="pickup_location"
           placeholder="Pickup Location"
           value={formData.pickup_location}
           onChange={handleChange}
-          style={{...inputStyle, fontWeight: "normal",color:"black", fontSize: 16}} 
+          style={{
+            ...inputStyle,
+            color: "black",
+            fontSize: 16,
+          }}
         />
 
         <input
@@ -230,7 +252,11 @@ export default function RequestPage() {
           placeholder="Destination"
           value={formData.destination}
           onChange={handleChange}
-          style={{...inputStyle, fontWeight: "normal",color:"black", fontSize: 16}}
+          style={{
+            ...inputStyle,
+            color: "black",
+            fontSize: 16,
+          }}
         />
 
         <input
@@ -238,14 +264,22 @@ export default function RequestPage() {
           name="travel_datetime"
           value={formData.travel_datetime}
           onChange={handleChange}
-          style={{...inputStyle, fontWeight: "normal",color:"black", fontSize: 16}}
+          style={{
+            ...inputStyle,
+            color: "black",
+            fontSize: 16,
+          }}
         />
 
         <select
           name="vehicle_type"
           value={formData.vehicle_type}
           onChange={handleChange}
-          style={{...inputStyle, fontWeight: "normal",color:"black", fontSize: 16}}     
+          style={{
+            ...inputStyle,
+            color: "black",
+            fontSize: 16,
+          }}
         >
           <option>Van</option>
           <option>Bus</option>
@@ -257,21 +291,57 @@ export default function RequestPage() {
           placeholder="Special Requests"
           value={formData.special_requests}
           onChange={handleChange}
-          style={{...inputStyle, fontWeight: "normal",color:"black", fontSize: 16, height: 100, resize: "none"}} 
+          style={{
+            ...inputStyle,
+            color: "black",
+            fontSize: 16,
+            height: 100,
+            resize: "none",
+          }}
         />
 
         {/* BUTTONS */}
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
+
+        <div
+          style={{
+            display: "flex",
+            gap: 10,
+            marginTop: 10,
+          }}
+        >
           <button
-            onClick={() => setStep(1)}
-            style={secondaryButton}
+            onClick={() => router.push("/")}
+            style={{
+              flex: 1,
+              color: "#0B3D91",
+              border: "2px solid #0B3D91",
+              padding: "12px",
+              borderRadius: 10,
+              cursor: "pointer",
+              fontWeight: "bold",
+              fontSize: 14,
+              whiteSpace: "nowrap",
+              background: "white",
+            }}
           >
             Back
           </button>
 
           <button
             onClick={handleSubmit}
-            style={primaryButton}
+            style={{
+              flex: 2,
+              background:
+                "linear-gradient(135deg, #0B3D91, #2563EB)",
+              color: "white",
+              padding: "12px",
+              border: "none",
+              borderRadius: 10,
+              cursor: "pointer",
+              fontWeight: "bold",
+              fontSize: 14,
+              whiteSpace: "nowrap",
+            }}
           >
             Submit Request
           </button>
