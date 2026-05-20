@@ -1,13 +1,21 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import {useEffect, useState } from "react";
 
 export default function HomePage() {
   const router = useRouter();
 
-  const [showModal, setShowModal] = useState(true);
+  const [showModal, setShowModal] = useState(false);
   const [agreed, setAgreed] = useState(false);
+
+  useEffect(() => {
+    const accepted = localStorage.getItem("privacyAccepted");
+
+    if (!accepted) {
+      setShowModal(true);
+    }
+  }, []);
 
   const pageStyle = {
     minHeight: "100vh",
@@ -161,7 +169,10 @@ export default function HomePage() {
 
             <button
               disabled={!agreed}
-              onClick={() => setShowModal(false)}
+              onClick={() => {
+                localStorage.setItem("privacyAccepted", "true");
+                setShowModal(false);
+              }}  
               style={{
                 width: "100%",
                 marginTop: 25,
