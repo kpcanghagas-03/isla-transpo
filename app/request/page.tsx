@@ -218,12 +218,12 @@ export default function RequestPage() {
               <label
                 style={{  color: "#334155", fontSize: 14, fontWeight: "bold" }}
               >
-                Travel Date
+                Pick Up Date
               </label>
 
               <input
                 type="date"
-                name="Pick-up Date"
+                name="pick_up_date"
                 value={formData.pick_up_date}
                 onChange={handleChange}
                 style={{
@@ -241,12 +241,12 @@ export default function RequestPage() {
                   fontSize: 14, fontWeight: "bold"
                  }}
               >
-                Travel Time
+                Pick Up Time
               </label>
 
               <input
                 type="time"
-                name="Pick-up Time"
+                name="pick_up_time"
                 value={formData.pick_up_time}
                 onChange={handleChange}
                 style={{
