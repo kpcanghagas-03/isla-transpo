@@ -49,7 +49,7 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
 
   const[searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setstatusFilter] = useState("All");
+  const [statusFilter, setStatusFilter] = useState("All");
 
 
   // ================= FETCH REQUESTS =================
@@ -196,6 +196,57 @@ export default function AdminPage() {
           }))}
         />
       </section>
+
+      {/* ================= SEARCH & FILTER ================= */}
+
+<div
+  style={{
+    display: "flex",
+    gap: 12,
+    marginBottom: 20,
+    flexWrap: "wrap",
+  }}
+>
+  <input
+    type="text"
+    placeholder="Search requester, pickup, destination..."
+    value={searchTerm}
+    onChange={(e) =>
+      setSearchTerm(e.target.value)
+    }
+    style={{
+      flex: 1,
+      minWidth: 250,
+      padding: 12,
+      borderRadius: 10,
+      border: "none",
+      fontSize: 14,
+      color: "black",
+    }}
+  />
+
+  <select
+    value={statusFilter}
+    onChange={(e) =>
+      setStatusFilter(e.target.value)
+    }
+    style={{
+      padding: 12,
+      borderRadius: 10,
+      border: "none",
+      color: "black",
+      minWidth: 180,
+    }}
+  >
+    <option>All</option>
+    <option>Pending</option>
+    <option>Approved</option>
+    <option>On the way</option>
+    <option>Completed</option>
+    <option>Disapproved</option>
+    <option>Emergency</option>
+  </select>
+</div>
 
       {/* ================= ACTIVE REQUESTS ================= */}
       <section className="section">
