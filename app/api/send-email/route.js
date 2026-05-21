@@ -2,27 +2,29 @@ import { Resend } from "resend";
 
 export async function POST(req) {
   try {
-    const { email, name, status } = await req.json();
+    const body = await req.json();
 
-    const apiKey = process.env.RESEND_API_KEY;
+    console.log("REQUEST BODY:", body);
+    console.log("API KEY EXISTS:", !!process.env.RESEND_API_KEY);
 
-    if (!apiKey) {
-      throw new Error("Missing RESEND_API_KEY in environment variables");
-    }
+    const resend = new Resend(process.env.RESEND_API_KEY);
 
-   const resend = new Resend(process.env.RESEND_API_KEY);
+    const result = await resend.emails.send({
+      from: "onboarding@resend.dev",
+      to: "kpcanghagas@gmail.com",
+      subject: "DEBUG EMAIL TEST",
+      html: `<h1>It works</h1><p>Status: ${body.status}</p>`,
+    });
 
-const result = await resend.emails.send({
-  from: "onboarding@resend.dev",
-  to: email,
-  subject: "TEST EMAIL",
-  html: `<h1>TEST</h1>`,
-});
+    console.log("RESEND RESULT:", result);
 
-console.log("RESEND RESULT:", result);  
-
-    return Response.json({ success: true, data });
+    return Response.json({ success: true, result });
   } catch (error) {
-    return Response.json({ success: false, error: error.message });
+    console.log("ERROR:", error);
+
+    return Response.json({
+      success: false,
+      error: error.message,
+    });
   }
 }
