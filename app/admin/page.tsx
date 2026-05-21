@@ -251,7 +251,13 @@ export default function AdminPage() {
                     🕒 Pickup Schedule:
                     <br />
                     {req.pick_up_date || "N/A"} —{" "}
-                    {req.pick_up_time || "N/A"}
+                    {req.pick_up_time
+                    ? new Date(`1970-01-01T${req.pick_up_time}:00`).toLocaleTimeString("en-PH", {
+                        hour: "numeric",
+                        minute: "2-digit",
+                        hour12: true,
+                      })
+                    : "N/A"}
                   </div>
 
                   <div className="info">
