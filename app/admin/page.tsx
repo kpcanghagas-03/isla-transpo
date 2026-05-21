@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import LiveMap from "@/components/LiveMap";
-import { request } from "http";
+
 
 type Request = {
   id: number;
@@ -31,7 +31,7 @@ type Request = {
   alternate_contact_person: string;
   alternate_contact_number: string;
 
-  vehicle_type: string;
+  
   notes_remarks: string;
 
   status: string;
@@ -351,12 +351,7 @@ export default function AdminPage() {
                         )}`
                       : ""}
                   </div>
-
-                  <div className="info">
-                    🚗 Requested Vehicle:
-                    <br />
-                    {req.vehicle_type || "N/A"}
-                  </div>
+                  
 
                   <div className="info">
                     📝 Notes / Remarks:
@@ -454,27 +449,48 @@ export default function AdminPage() {
                   >
                     <option value="">
                       Unassigned
-                    </option>
+                      </option>
 
-                    <option>Van</option>
-                    <option>Bus</option>
-                    <option>Car</option>
-                    <option>Pick-up</option>
-                    <option>
-                      Motor Vehicle
-                    </option>
+                      <option value="Van 1 - ZAM 1023 - Driver 1">
+                        🚐 Van 1 - ZAM 1023 - Driver 1
+                      </option>
+
+                      <option value="Van 2 - ZAM 1456 - Driver 2">
+                        🚐 Van 2 - ZAM 1456 - Driver 2
+                      </option>
+
+                      <option value="SUV 1 - SUV 8831 - Driver 3">
+                        🚗 SUV 1 - SUV 8831 - Driver 3
+                      </option>
+
+                      <option value="SUV 2 - SUV 1942 - Driver 4">
+                        🚗 SUV 2 - SUV 1942 - Driver 4
+                      </option>
+
+                      <option value="Mini Bus 1 - BUS 1001 - Driver 5">
+                        🚌 Mini Bus 1 - BUS 1001 - Driver 5
+                      </option>
+
+                      <option value="Service Car 1 - CAR 9921 - Driver 6">
+                        🚗 Service Car 1 - CAR 9921 - Driver 6
+                      </option>
+
+                      <option value="Van 3 - VAN 5555 - Driver 7">
+                        🚐 Van 3 - VAN 5555 - Driver 7
+                      </option>
+
+                      <option value="Backup Vehicle - BKP 7777 - Driver 8">
+                        🚨 Backup Vehicle - BKP 7777 - Driver 8
+                      </option>
                   </select>
 
                   {/* VEHICLE DISPLAY */}
+                  
                   <div className="vehicle">
                     {req.assigned_vehicle
-                      ? `${vehicleIcon(
-                          req.assigned_vehicle
-                        )} ${
-                          req.assigned_vehicle
-                        }`
-                      : "🚨 No Vehicle Assigned"}
-                  </div>
+                    ? `✅ ${req.assigned_vehicle}`
+                    : "🚨 No Vehicle Assigned"}
+                    </div>
                 </div>
               );
             })}

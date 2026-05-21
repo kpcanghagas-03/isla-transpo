@@ -31,7 +31,7 @@ export default function RequestPage() {
     alternate_contact_person: "",
     alternate_contact_number: "",
 
-    vehicle_type: "Van",
+
 
     notes_remarks: "",
   });
@@ -91,7 +91,7 @@ export default function RequestPage() {
       alternate_contact_person: formData.alternate_contact_person || null,
       alternate_contact_number: formData.alternate_contact_number || null,
 
-      vehicle_type: formData.vehicle_type,
+
 
       notes_remarks: formData.notes_remarks || null,  
 
@@ -135,7 +135,7 @@ export default function RequestPage() {
       alternate_contact_person: "",
       alternate_contact_number: "",
 
-      vehicle_type: "Van",
+
 
       notes_remarks: "",
     });
@@ -430,25 +430,7 @@ export default function RequestPage() {
           style={inputStyle}
         />
 
-        {/* ================= VEHICLE ================= */}
-
-        <div style={sectionTitleStyle}>
-          🚗 Requested Vehicle
-        </div>
-
-        <select
-          name="vehicle_type"
-          value={formData.vehicle_type}
-          onChange={handleChange}
-          style={inputStyle}
-        >
-          <option>Van</option>
-          <option>Bus</option>
-          <option>Car</option>
-          <option>Pick-up</option>
-          <option>Motor Vehicle</option>
-        </select>
-
+        
         {/* ================= REMARKS ================= */}
 
         <div style={sectionTitleStyle}>
