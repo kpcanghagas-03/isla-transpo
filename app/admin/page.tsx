@@ -951,6 +951,35 @@ const totalCount = requests.length;
     }
   }
 `}</style>
+
+<button
+  onClick={async () => {
+    const res = await fetch("/api/send-email", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: "your_email@gmail.com",
+        name: "Test User",
+        status: "Approved",
+      }),
+    });
+
+    const data = await res.json();
+    console.log(data);
+    alert("Email sent! Check inbox.");
+  }}
+  style={{
+    padding: "10px 14px",
+    background: "#2563eb",
+    color: "white",
+    borderRadius: "8px",
+    border: "none",
+  }}
+>
+  Test Email
+</button>
     </main>
   );
 }
