@@ -221,7 +221,7 @@ export default function AdminPage() {
       borderRadius: 10,
       border: "none",
       fontSize: 14,
-      color: "black",
+      color: "white",
     }}
   />
 
@@ -234,7 +234,7 @@ export default function AdminPage() {
       padding: 12,
       borderRadius: 10,
       border: "none",
-      color: "black",
+      color: "white",
       minWidth: 180,
     }}
   >
