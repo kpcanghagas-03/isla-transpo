@@ -215,14 +215,17 @@ export default function AdminPage() {
       setSearchTerm(e.target.value)
     }
     style={{
-      flex: 1,
-      minWidth: 250,
-      padding: 12,
-      borderRadius: 10,
-      border: "none",
-      fontSize: 14,
-      color: "white",
-    }}
+    flex: 1,
+    minWidth: 250,
+    padding: 14,
+    borderRadius: 12,
+    border: "2px solid #cbd5e1",
+    fontSize: 14,
+    color: "#111827",
+    background: "white",
+    outline: "none",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
+  }}
   />
 
   <select
@@ -231,12 +234,15 @@ export default function AdminPage() {
       setStatusFilter(e.target.value)
     }
     style={{
-      padding: 12,
-      borderRadius: 10,
-      border: "none",
-      color: "white",
-      minWidth: 180,
-    }}
+    padding: 14,
+    borderRadius: 12,
+    border: "2px solid #cbd5e1",
+    color: "#111827",
+    minWidth: 180,
+    background: "white",
+    outline: "none",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
+  }}
   >
     <option>All</option>
     <option>Pending</option>
