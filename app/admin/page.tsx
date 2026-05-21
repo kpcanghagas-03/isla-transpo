@@ -171,6 +171,24 @@ export default function AdminPage() {
   );
 
   // ================= COMPLETED REQUESTS =================
+ const pendingCount = requests.filter(
+  (r) => r.status === "Pending"
+).length;
+
+const approvedCount = requests.filter(
+  (r) => r.status === "Approved"
+).length;
+
+const onTheWayCount = requests.filter(
+  (r) => r.status === "On the way"
+).length;
+
+const emergencyCount = requests.filter(
+  (r) => r.status === "Emergency"
+).length;
+
+const totalCount = requests.length;
+ 
   const completedRequests = sortedRequests.filter((r: Request) =>
     ["Completed", "Disapproved"].includes(r.status)
   );
@@ -196,6 +214,60 @@ export default function AdminPage() {
           }))}
         />
       </section>
+
+{/* ================= SUMMARY CARDS ================= */}
+
+<div className="statsGrid">
+  <div className="statCard">
+    <div className="statNumber">
+      {totalCount}
+    </div>
+
+    <div className="statLabel">
+      Total Requests
+    </div>
+  </div>
+
+  <div className="statCard pending">
+    <div className="statNumber">
+      {pendingCount}
+    </div>
+
+    <div className="statLabel">
+      Pending
+    </div>
+  </div>
+
+  <div className="statCard approved">
+    <div className="statNumber">
+      {approvedCount}
+    </div>
+
+    <div className="statLabel">
+      Approved
+    </div>
+  </div>
+
+  <div className="statCard way">
+    <div className="statNumber">
+      {onTheWayCount}
+    </div>
+
+    <div className="statLabel">
+      On the Way
+    </div>
+  </div>
+
+  <div className="statCard emergencyCard">
+    <div className="statNumber">
+      {emergencyCount}
+    </div>
+
+    <div className="statLabel">
+      Emergency
+    </div>
+  </div>
+</div>
 
       {/* ================= SEARCH & FILTER ================= */}
 
@@ -641,7 +713,9 @@ export default function AdminPage() {
       </section>
 
       {/* ================= STYLES ================= */}
-      <style jsx>{`
+      <style jsx
+      
+      >{`
         .container {
           min-height: 100vh;
           padding: 16px;
@@ -826,6 +900,53 @@ export default function AdminPage() {
           }
         }
 
+        .statsGrid {
+        display: grid;
+        grid-template-columns: repeat(
+          auto-fit,
+          minmax(160px, 1fr)
+        );
+        gap: 14px;
+        margin-bottom: 20px;
+      }
+
+      .statCard {
+        background: white;
+        color: #111827;
+        border-radius: 16px;
+        padding: 18px;
+        box-shadow: 0 6px 18px
+          rgba(0, 0, 0, 0.15);
+        text-align: center;
+      }
+
+      .statNumber {
+        font-size: 32px;
+        font-weight: bold;
+      }
+
+      .statLabel {
+        margin-top: 6px;
+        font-size: 14px;
+        color: #4b5563;
+      }
+
+      .pending {
+        border-top: 6px solid #facc15;
+      }
+
+      .approved {
+        border-top: 6px solid #22c55e;
+      }
+
+      .way {
+        border-top: 6px solid #3b82f6;
+      }
+
+      .emergencyCard {
+        border-top: 6px solid #dc2626;
+      }
+
         @media (max-width: 768px) {
           .mapSection {
             height: 240px;
@@ -835,7 +956,10 @@ export default function AdminPage() {
             grid-template-columns: 1fr;
           }
         }
-      `}</style>
+      `}
+      
+      
+      </style>
     </main>
   );
 }
