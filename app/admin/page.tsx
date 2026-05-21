@@ -727,265 +727,240 @@ const totalCount = requests.length;
       </section>
 
       {/* ================= STYLES ================= */}
-      <style jsx
-      
-      >{`
-        .container {
-          min-height: 100vh;
-          padding: 16px;
-          font-family: Arial, sans-serif;
-          color: white;
-        }
+     <style jsx>{`
+  .container {
+    min-height: 100vh;
+    padding: 16px;
+    font-family: Arial, sans-serif;
+    color: white;
+  }
 
-        .bg {
-          position: fixed;
-          inset: 0;
-          background-image: url("/camiguin.jpg");
-          background-size: cover;
-          background-position: center;
-          z-index: -2;
-        }
+  .bg {
+    position: fixed;
+    inset: 0;
+    background-image: url("/camiguin.jpg");
+    background-size: cover;
+    background-position: center;
+    z-index: -2;
+  }
 
-        .overlay {
-          position: fixed;
-          inset: 0;
-          background: rgba(0, 0, 0, 0.55);
-          z-index: -1;
-        }
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: -1;
+  }
 
-        .header {
-          text-align: center;
-          margin-bottom: 18px;
-        }
+  .header {
+    text-align: center;
+    margin-bottom: 18px;
+  }
 
-        .header h1 {
-          font-size: clamp(22px, 4vw, 36px);
-          margin-bottom: 4px;
-        }
+  .header h1 {
+    font-size: clamp(22px, 4vw, 36px);
+    margin-bottom: 4px;
+  }
 
-        .header p {
-          opacity: 0.9;
-        }
+  .header p {
+    opacity: 0.9;
+  }
 
-        .mapSection {
-          height: 320px;
-          border-radius: 16px;
-          overflow: hidden;
-          margin-bottom: 20px;
-          box-shadow: 0 8px 24px
-            rgba(0, 0, 0, 0.25);
-        }
+  .mapSection {
+    height: 320px;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  }
 
-        .section {
-          margin-bottom: 28px;
-        }
+  .section {
+    margin-bottom: 28px;
+  }
 
-        .sectionTitle {
-          margin-bottom: 12px;
-          font-size: 24px;
-          font-weight: bold;
-        }
+  .sectionTitle {
+    margin-bottom: 12px;
+    font-size: 24px;
+    font-weight: bold;
+  }
 
-        .grid {
-          display: grid;
-          grid-template-columns: repeat(
-            auto-fit,
-            minmax(320px, 1fr)
-          );
-          gap: 14px;
-        }
+  /* ================= GRID ================= */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 14px;
+  }
 
-        .card {
-          background: white;
-          color: #111827;
-          border-radius: 16px;
-          padding: 14px;
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-          box-shadow: 0 6px 18px
-            rgba(0, 0, 0, 0.15);
-        }
+  /* ================= STAT GRID ================= */
+  .statsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+    margin-bottom: 20px;
+  }
 
-        .completedCard {
-          opacity: 0.85;
-        }
+  /* ================= CARDS ================= */
+  .card {
+    background: white;
+    color: #111827;
+    border-radius: 16px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+  }
 
-        .emergency {
-          animation:
-            pulse 1s infinite,
-            bounce 0.8s infinite;
-          border: 2px solid #dc2626;
-          box-shadow: 0 0 18px
-            rgba(255, 0, 0, 0.5);
-        }
+  .statCard {
+    background: #ffffff;
+    color: #111827;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
+    text-align: center;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+  }
 
-        .nameRow {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          flex-wrap: wrap;
-        }
+  .statCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.25);
+  }
 
-        .name {
-          font-size: 18px;
-          font-weight: bold;
-        }
+  .statNumber {
+    font-size: 34px;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.5px;
+  }
 
-        .vipBadge {
-          background: #dc2626;
-          color: white;
-          font-size: 11px;
-          padding: 4px 8px;
-          border-radius: 999px;
-          font-weight: bold;
-        }
+  .statLabel {
+    margin-top: 6px;
+    font-size: 14px;
+    color: #1f2937;
+    font-weight: 600;
+  }
 
-        .info {
-          font-size: 13px;
-          line-height: 1.5;
-        }
+  /* ================= STATUS COLORS ================= */
+  .pending {
+    border-top: 6px solid #facc15;
+  }
 
-        .label {
-          font-size: 12px;
-          font-weight: bold;
-          margin-top: 4px;
-        }
+  .approved {
+    border-top: 6px solid #22c55e;
+  }
 
-        .statusBadge {
-          color: white;
-          padding: 6px 10px;
-          border-radius: 999px;
-          font-size: 12px;
-          width: fit-content;
-          font-weight: bold;
-        }
+  .way {
+    border-top: 6px solid #3b82f6;
+  }
 
-        .vehicle {
-          font-weight: bold;
-          font-size: 14px;
-        }
+  .emergencyCard {
+    border-top: 6px solid #dc2626;
+  }
 
-        select {
-          padding: 8px;
-          border-radius: 8px;
-          border: 1px solid #d1d5db;
-          background: white;
-          color: black;
-        }
+  .disapprovedCard {
+    border-top: 6px solid #6b7280;
+  }
 
-        .loading {
-          text-align: center;
-        }
+  /* ================= SPECIAL STATES ================= */
+  .completedCard {
+    opacity: 0.85;
+  }
 
-        @keyframes pulse {
-          0% {
-            transform: scale(1);
-          }
+  .emergency {
+    animation: pulse 1s infinite, bounce 0.8s infinite;
+    border: 2px solid #dc2626;
+    box-shadow: 0 0 18px rgba(255, 0, 0, 0.5);
+  }
 
-          50% {
-            transform: scale(1.02);
-          }
+  /* ================= TEXT ================= */
+  .nameRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
 
-          100% {
-            transform: scale(1);
-          }
-        }
+  .name {
+    font-size: 18px;
+    font-weight: bold;
+  }
 
-        @keyframes bounce {
-          0% {
-            transform: translateY(0);
-          }
+  .vipBadge {
+    background: #dc2626;
+    color: white;
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-weight: bold;
+  }
 
-          30% {
-            transform: translateY(-4px);
-          }
+  .info {
+    font-size: 13px;
+    line-height: 1.5;
+  }
 
-          50% {
-            transform: translateY(0);
-          }
+  .label {
+    font-size: 12px;
+    font-weight: bold;
+    margin-top: 4px;
+  }
 
-          70% {
-            transform: translateY(-2px);
-          }
+  .statusBadge {
+    color: white;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    width: fit-content;
+    font-weight: bold;
+  }
 
-          100% {
-            transform: translateY(0);
-          }
-        }
+  .vehicle {
+    font-weight: bold;
+    font-size: 14px;
+  }
 
-        .statsGrid {
-        display: grid;
-        grid-template-columns: repeat(
-          auto-fit,
-          minmax(140px, 1fr)
-        );
-        gap: 14px;
-        margin-bottom: 20px;
-      }
-        gap: 14px;
-        margin-bottom: 20px;
+  select {
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    background: white;
+    color: black;
+  }
+
+  .loading {
+    text-align: center;
+  }
+
+  /* ================= ANIMATIONS ================= */
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes bounce {
+    0% { transform: translateY(0); }
+    30% { transform: translateY(-4px); }
+    50% { transform: translateY(0); }
+    70% { transform: translateY(-2px); }
+    100% { transform: translateY(0); }
+  }
+
+  /* ================= MOBILE ================= */
+  @media (max-width: 768px) {
+    .mapSection {
+      height: 240px;
     }
-        gap: 14px;
-        margin-bottom: 20px;
+
+    .grid {
+      grid-template-columns: 1fr;
     }
 
-          .statCard {
-      background: rgba(255, 255, 255, 0.98);
-      color: #111827;
-      border-radius: 16px;
-      padding: 14px;
-      box-shadow: 0 8px 24px
-        rgba(0, 0, 0, 0.25);
-      text-align: center;
-      backdrop-filter: blur(8px);
-}
-      .statNumber {
-        font-size: 28px;
-        font-weight: bold;
-        color: #111827;
-      }
-
-      .statLabel {
-        margin-top: 6px;
-        font-size: 14px;
-        color: #1f2937;
-        font-weight: 600;
-      }
-
-      .pending {
-        border-top: 6px solid #facc15;
-      }
-
-      .approved {
-        border-top: 6px solid #22c55e;
-      }
-
-      .way {
-        border-top: 6px solid #3b82f6;
-      }
-
-      .emergencyCard {
-        border-top: 6px solid #dc2626;
-      }
-      
-      .disapprovedCard {
-        border-top: 6px solid #6b7280;
-      }
-
-        @media (max-width: 768px) {
-          .mapSection {
-            height: 240px;
-          }
-
-          .grid {
-            grid-template-columns: 1fr;
-          }
-        }
-      `}
-      
-      
-      </style>
+    .statsGrid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+`}</style>
     </main>
   );
 }
