@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import LiveMap from "@/components/LiveMap";
+import { request } from "http";
 
 type Request = {
   id: number;
@@ -263,16 +264,16 @@ export default function AdminPage() {
                   <div className="info">
                     📅 Requested:
                     <br />
-                    {new Intl.DateTimeFormat(
-                      "en-PH", {
-                      timeZone: "Asia/Manila",
+                    {new Date(req.created_at).toLocaleString(
+                      "en-PH",
+                      {
                       year: "numeric",
                       month: "short",
                       day: "numeric",
-                      hour: "2-digit",
+                      hour: "numeric",
                       minute: "2-digit",
                       hour12: true,
-                    }).format(new Date(req.created_at))}  
+                    })}  
                   </div>
 
                   {/* STATUS BADGE */}
