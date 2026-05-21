@@ -219,8 +219,8 @@ const totalCount = requests.length;
           }))}
         />
       </section>
-      
-/* ================= SUMMARY CARDS ================= */
+
+{/* ================= SUMMARY CARDS ================= */}
 
 <div className="statsGrid">
   {/* TOTAL */}
