@@ -255,7 +255,8 @@ export default function AdminPage() {
                         year: "numeric",
                         month: "long",
                         day: "2-digit",})
-                        : "N/A"},{" "}{req.pick_up_time||"N/A"}
+                        : "N/A"},{" "}
+                      {req.pick_up_time ?` ${req.pick_up_time}` : ""}
 
                     {req.pick_up_time
                     ? (() => {
