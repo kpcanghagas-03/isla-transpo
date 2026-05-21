@@ -260,10 +260,14 @@ export default function AdminPage() {
 
                     {req.pick_up_time
                     ? (() => {
-                        const time = req.pick_up_time.split(":");
+                        const cleaned= req.pick_up_time.split(":");
+
+                        const hours = Number(cleaned[0]);
+                        const minutes = Number(cleaned[1]);
+
                         const date = new Date();
-                        date.setHours(Number(time[0]), Number(time[1]));
-                        
+                        date.setHours(hours,minutes);
+                      
                         return date.toLocaleTimeString("en-PH", {
                           hour: "2-digit",
                           minute: "2-digit",
