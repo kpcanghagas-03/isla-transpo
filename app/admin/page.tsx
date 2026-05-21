@@ -732,7 +732,7 @@ const totalCount = requests.length;
       >{`
         .container {
           min-height: 100vh;
-          padding: 16px;
+          padding: 14px;
           font-family: Arial, sans-serif;
           color: white;
         }
@@ -918,24 +918,30 @@ const totalCount = requests.length;
         display: grid;
         grid-template-columns: repeat(
           auto-fit,
-          minmax(160px, 1fr)
+          minmax(140px, 1fr)
         );
         gap: 14px;
         margin-bottom: 20px;
       }
+        gap: 14px;
+        margin-bottom: 20px;
+    }
+        gap: 14px;
+        margin-bottom: 20px;
+    }
 
       .statCard {
         background: white;
         color: #111827;
         border-radius: 16px;
-        padding: 18px;
+        padding: 14px;
         box-shadow: 0 6px 18px
           rgba(0, 0, 0, 0.15);
         text-align: center;
       }
 
       .statNumber {
-        font-size: 32px;
+        font-size: 28px;
         font-weight: bold;
       }
 
