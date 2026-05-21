@@ -91,7 +91,7 @@ export default function AdminPage() {
       .eq("id", id);
 
     if (error) {
-      console.log(error);
+      console.log("SUPABASE ERROR:", error);
       alert(error.message);
       return;
     }
