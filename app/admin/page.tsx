@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import LiveMap from "@/components/LiveMap";
+import { Users,Clock,CheckCircle,Truck,AlertTriangle,XCircle,} from "lucide-react";
 
 
 type Request = {
@@ -219,70 +220,64 @@ const totalCount = requests.length;
         />
       </section>
 
-{/* ================= SUMMARY CARDS ================= */}
+
+/* ================= SUMMARY CARDS ================= */
 
 <div className="statsGrid">
-  <div className="statCard">
-    <div className="statNumber">
-      {totalCount}
+  {/* TOTAL */}
+  <div className="statCard total">
+    <div className="statIcon">
+      <Users size={18} />
     </div>
-
-    <div className="statLabel">
-      Total Requests
-    </div>
+    <div className="statNumber">{totalCount}</div>
+    <div className="statLabel">Total Requests</div>
   </div>
 
+  {/* PENDING */}
   <div className="statCard pending">
-    <div className="statNumber">
-      {pendingCount}
+    <div className="statIcon">
+      <Clock size={18} />
     </div>
-
-    <div className="statLabel">
-      Pending
-    </div>
+    <div className="statNumber">{pendingCount}</div>
+    <div className="statLabel">Pending</div>
   </div>
 
+  {/* APPROVED */}
   <div className="statCard approved">
-    <div className="statNumber">
-      {approvedCount}
+    <div className="statIcon">
+      <CheckCircle size={18} />
     </div>
-
-    <div className="statLabel">
-      Approved
-    </div>
+    <div className="statNumber">{approvedCount}</div>
+    <div className="statLabel">Approved</div>
   </div>
 
+  {/* ON THE WAY */}
   <div className="statCard way">
-    <div className="statNumber">
-      {onTheWayCount}
+    <div className="statIcon">
+      <Truck size={18} />
     </div>
-
-    <div className="statLabel">
-      On the Way
-    </div>
+    <div className="statNumber">{onTheWayCount}</div>
+    <div className="statLabel">On the Way</div>
   </div>
 
-  <div className="statCard emergencyCard">
-    <div className="statNumber">
-      {emergencyCount}
+  {/* EMERGENCY */}
+  <div className="statCard emergency">
+    <div className="statIcon">
+      <AlertTriangle size={18} />
     </div>
-
-    <div className="statCard disapprovedCard">
-  <div className="statNumber">
-    {disapprovedCount}
+    <div className="statNumber">{emergencyCount}</div>
+    <div className="statLabel">Emergency</div>
   </div>
 
-  <div className="statLabel">
-    Disapproved
-  </div>
-</div>
-
-    <div className="statLabel">
-      Emergency
+  {/* DISAPPROVED */}
+  <div className="statCard disapproved">
+    <div className="statIcon">
+      <XCircle size={18} />
     </div>
+    <div className="statNumber">{disapprovedCount}</div>
+    <div className="statLabel">Disapproved</div>
   </div>
 </div>
-
       {/* ================= SEARCH & FILTER ================= */}
 
 <div
@@ -790,13 +785,13 @@ const totalCount = requests.length;
     gap: 14px;
   }
 
-  /* ================= STAT GRID ================= */
-  .statsGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 14px;
-    margin-bottom: 20px;
-  }
+  /* ================= STATS GRID ================= */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
 
   /* ================= CARDS ================= */
   .card {
@@ -810,56 +805,52 @@ const totalCount = requests.length;
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
   }
 
-  .statCard {
-    background: #ffffff;
-    color: #111827;
-    border-radius: 16px;
-    padding: 16px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
-    text-align: center;
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    transition: all 0.2s ease;
-  }
+  /* ================= STAT CARD ================= */
+.statCard {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 12px 14px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 
-  .statCard:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.25);
-  }
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 
-  .statNumber {
-    font-size: 34px;
-    font-weight: 800;
-    color: #0f172a;
-    letter-spacing: -0.5px;
-  }
+  min-height: 80px;
+  transition: all 0.2s ease;
+}
 
-  .statLabel {
-    margin-top: 6px;
-    font-size: 14px;
-    color: #1f2937;
-    font-weight: 600;
-  }
+.statCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
+}
 
-  /* ================= STATUS COLORS ================= */
-  .pending {
-    border-top: 6px solid #facc15;
-  }
+.statIcon {
+  display: flex;
+  justify-content: flex-end;
+  color: #475569;
+}
 
-  .approved {
-    border-top: 6px solid #22c55e;
-  }
+.statNumber {
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a;
+}
 
-  .way {
-    border-top: 6px solid #3b82f6;
-  }
+.statLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+}
 
-  .emergencyCard {
-    border-top: 6px solid #dc2626;
-  }
-
-  .disapprovedCard {
-    border-top: 6px solid #6b7280;
-  }
+/* COLORS */
+.total { border-left: 5px solid #0ea5e9; }
+.pending { border-left: 5px solid #facc15; }
+.approved { border-left: 5px solid #22c55e; }
+.way { border-left: 5px solid #3b82f6; }
+.emergency { border-left: 5px solid #dc2626; }
+.disapproved { border-left: 5px solid #6b7280; }
 
   /* ================= SPECIAL STATES ================= */
   .completedCard {
