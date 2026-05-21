@@ -13,8 +13,8 @@ type Request = {
   passengers: string;
   pickup_location: string;
   destination: string;
-  pickup_date: string;
-  pickup_time: string;
+  pick_up_date: string;
+  pick_up_time: string;
   status: string;
   priority: string;
   assigned_vehicle: string;
@@ -250,8 +250,8 @@ export default function AdminPage() {
                   <div className="info">
                     🕒 Pickup Schedule:
                     <br />
-                    {req.pickup_date || "N/A"} —{" "}
-                    {req.pickup_time || "N/A"}
+                    {req.pick_up_date || "N/A"} —{" "}
+                    {req.pick_up_time || "N/A"}
                   </div>
 
                   <div className="info">
@@ -265,7 +265,14 @@ export default function AdminPage() {
                     <br />
                     {new Date(
                       req.created_at
-                    ).toLocaleString()}
+                    ).toLocaleString("en-PH", {
+                      timeZone: "Asia/Manila",
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                   </div>
 
                   {/* STATUS BADGE */}
