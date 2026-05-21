@@ -250,7 +250,13 @@ export default function AdminPage() {
                   <div className="info">
                     🕒 Pickup Schedule:
                     <br />
-                    {req.pick_up_date || "N/A"} —{" "}
+                    {req.pick_up_date
+                    ? new Date(req.pick_up_date).toLocaleDateString("en-PH", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",})
+                        : "N/A"}
+                        
                     {req.pick_up_time
                     ? (() => {
                         const time = req.pick_up_time.split(":");
