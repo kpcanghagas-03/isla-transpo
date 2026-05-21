@@ -91,9 +91,8 @@ export default function AdminPage() {
       .eq("id", id);
 
     if (error) {
-      console.log("UPDATE ERROR:", error);
-      alert("Failed to update request.");
-      fetchRequests();
+      console.log(error);
+      alert(error.message);
       return;
     }
 
