@@ -439,13 +439,40 @@ export default function AdminPage() {
                     value={
                       req.assigned_vehicle || ""
                     }
-                    onChange={(e) =>
-                      updateField(
-                        req.id,
-                        "assigned_vehicle",
-                        e.target.value
-                      )
-                    }
+                    
+                    onChange={async (e) => {
+                      const vehicle = e.target.value;
+                      // instant UI update
+                      setRequests((prev) =>
+                        prev.map((r) =>
+                          r.id === req.id
+                       ? {
+                        ...r,
+                        assigned_vehicle: vehicle,
+                        status: vehicle
+                        ? "Approved"
+                        : "Pending",
+                      }
+                      : r
+                    )
+                  );
+                  // database update
+                  const { error } = await supabase
+                  .from("transport_requests")
+                  .update({
+                    assigned_vehicle: vehicle,
+                      status: vehicle
+                        ? "Approved"
+                        : "Pending",
+                    })
+                    .eq("id", req.id);
+
+                  if (error) {
+                    console.log(error);
+                    alert(error.message);
+                    fetchRequests();
+                  }
+                }}
                   >
                     <option value="">
                       Unassigned
