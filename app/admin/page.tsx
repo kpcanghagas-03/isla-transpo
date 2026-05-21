@@ -48,6 +48,10 @@ export default function AdminPage() {
   const [requests, setRequests] = useState<Request[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const[searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setstatusFilter] = useState("All");
+
+
   // ================= FETCH REQUESTS =================
   const fetchRequests = async () => {
     const { data, error } = await supabase
@@ -143,28 +147,21 @@ export default function AdminPage() {
     return "#d1d5db";
   };
 
-  // ================= SORTING =================
-  const sortedRequests = [...requests].sort((a, b) => {
-    const priorityWeight = (priority: string) => {
-      if (priority === "VIP") return 3;
-      if (priority === "Staff") return 2;
-      return 1;
-    };
-
-    const priorityDiff =
-      priorityWeight(b.priority) -
-      priorityWeight(a.priority);
-
-    if (priorityDiff !== 0) return priorityDiff;
-
-    return (
-      new Date(a.created_at).getTime() -
-      new Date(b.created_at).getTime()
-    );
-  });
+  // ================= SORTED & FILTERED REQUESTS =================
+  const sortedRequests = requests
+    .filter((r) => {
+      if (statusFilter !== "All" && r.status !== statusFilter) return false;
+      const searchLower = searchTerm.toLowerCase();
+      return (
+        r.requester_name.toLowerCase().includes(searchLower) ||
+        r.pickup_location.toLowerCase().includes(searchLower) ||
+        r.destination.toLowerCase().includes(searchLower)
+      );
+    })
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
   // ================= ACTIVE REQUESTS =================
-  const activeRequests = sortedRequests.filter((r) =>
+  const activeRequests = sortedRequests.filter((r: Request) =>
     [
       "Pending",
       "Approved",
@@ -174,7 +171,7 @@ export default function AdminPage() {
   );
 
   // ================= COMPLETED REQUESTS =================
-  const completedRequests = sortedRequests.filter((r) =>
+  const completedRequests = sortedRequests.filter((r: Request) =>
     ["Completed", "Disapproved"].includes(r.status)
   );
 
