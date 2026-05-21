@@ -732,7 +732,7 @@ const totalCount = requests.length;
       >{`
         .container {
           min-height: 100vh;
-          padding: 14px;
+          padding: 16px;
           font-family: Arial, sans-serif;
           color: white;
         }
@@ -930,25 +930,27 @@ const totalCount = requests.length;
         margin-bottom: 20px;
     }
 
-      .statCard {
-        background: white;
-        color: #111827;
-        border-radius: 16px;
-        padding: 14px;
-        box-shadow: 0 6px 18px
-          rgba(0, 0, 0, 0.15);
-        text-align: center;
-      }
-
+          .statCard {
+      background: rgba(255, 255, 255, 0.98);
+      color: #111827;
+      border-radius: 16px;
+      padding: 14px;
+      box-shadow: 0 8px 24px
+        rgba(0, 0, 0, 0.25);
+      text-align: center;
+      backdrop-filter: blur(8px);
+}
       .statNumber {
         font-size: 28px;
         font-weight: bold;
+        color: #111827;
       }
 
       .statLabel {
         margin-top: 6px;
         font-size: 14px;
-        color: #4b5563;
+        color: #1f2937;
+        font-weight: 600;
       }
 
       .pending {
