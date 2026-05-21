@@ -8,14 +8,18 @@ type Request = {
   id: number;
   full_name: string;
   organization: string;
+  email: string;
   contact_number: string;
   passengers: string;
   pickup_location: string;
   destination: string;
-  travel_datetime: string;
+  pickup_date: string;
+  pickup_time: string;
   status: string;
   priority: string;
   assigned_vehicle: string;
+  vehicle_type: string;
+  remarks: string;
   created_at: string;
   driver_lat?: number;
   driver_lng?: number;
@@ -29,10 +33,11 @@ export default function AdminPage() {
   const fetchRequests = async () => {
     const { data, error } = await supabase
       .from("transport_requests")
-      .select("*");
+      .select("*")
+      .order("created_at", { ascending: true });
 
     if (error) {
-      console.log(error);
+      console.log("FETCH ERROR:", error);
       setLoading(false);
       return;
     }
@@ -77,10 +82,21 @@ export default function AdminPage() {
     );
 
     // database update
-    await supabase
+    const { error } = await supabase
       .from("transport_requests")
-      .update({ [field]: value })
+      .update({
+        [field]: value,
+      })
       .eq("id", id);
+
+    if (error) {
+      console.log("UPDATE ERROR:", error);
+      alert("Failed to update request.");
+      fetchRequests();
+      return;
+    }
+
+    console.log("UPDATED SUCCESSFULLY");
   };
 
   // ================= VEHICLE ICON =================
@@ -88,6 +104,9 @@ export default function AdminPage() {
     if (vehicle === "Van") return "🚐";
     if (vehicle === "Bus") return "🚌";
     if (vehicle === "Car") return "🚗";
+    if (vehicle === "Pick-up") return "🛻";
+    if (vehicle === "Motor Vehicle") return "🏍️";
+
     return "🚨";
   };
 
@@ -104,10 +123,6 @@ export default function AdminPage() {
   };
 
   // ================= SORTING =================
-  // VIP first
-  // then Staff
-  // then Attendee
-  // FIFO inside same priority
   const sortedRequests = [...requests].sort((a, b) => {
     const priorityWeight = (priority: string) => {
       if (priority === "VIP") return 3;
@@ -127,22 +142,19 @@ export default function AdminPage() {
     );
   });
 
-  // ================= SEPARATE COMPLETED =================
-  const activeRequests = sortedRequests.filter(
-    (r) =>
-      [
-        "Pending",
-        "Approved",
-        "On the way",
-        "Emergency",
-      ].includes(r.status)
+  // ================= ACTIVE REQUESTS =================
+  const activeRequests = sortedRequests.filter((r) =>
+    [
+      "Pending",
+      "Approved",
+      "On the way",
+      "Emergency",
+    ].includes(r.status)
   );
 
-  const completedRequests = sortedRequests.filter(
-    (r) =>
-      [
-        "Completed","Disapproved",
-      ].includes(r.status)
+  // ================= COMPLETED =================
+  const completedRequests = sortedRequests.filter((r) =>
+    ["Completed", "Disapproved"].includes(r.status)
   );
 
   return (
@@ -204,7 +216,23 @@ export default function AdminPage() {
                     )}
                   </div>
 
-                  {/* INFO */}
+                  {/* DETAILS */}
+                  <div className="info">
+                    🏢 {req.organization}
+                  </div>
+
+                  <div className="info">
+                    📧 {req.email}
+                  </div>
+
+                  <div className="info">
+                    📞 {req.contact_number}
+                  </div>
+
+                  <div className="info">
+                    👥 Passengers: {req.passengers}
+                  </div>
+
                   <div className="info">
                     📍 {req.pickup_location}
                   </div>
@@ -214,13 +242,26 @@ export default function AdminPage() {
                   </div>
 
                   <div className="info">
-                    🕒 Pickup Schedule:
+                    🚗 Requested Vehicle:
                     <br />
-                    {req.travel_datetime || "N/A"}
+                    {req.vehicle_type}
                   </div>
 
                   <div className="info">
-                    📝 Requested:
+                    🕒 Pickup Schedule:
+                    <br />
+                    {req.pickup_date || "N/A"} —{" "}
+                    {req.pickup_time || "N/A"}
+                  </div>
+
+                  <div className="info">
+                    📝 Remarks:
+                    <br />
+                    {req.remarks || "None"}
+                  </div>
+
+                  <div className="info">
+                    📅 Requested:
                     <br />
                     {new Date(
                       req.created_at
@@ -281,9 +322,9 @@ export default function AdminPage() {
                     <option>Emergency</option>
                   </select>
 
-                  {/* VEHICLE */}
+                  {/* ASSIGNED VEHICLE */}
                   <label className="label">
-                    Vehicle
+                    Assigned Vehicle
                   </label>
 
                   <select
@@ -304,6 +345,10 @@ export default function AdminPage() {
                     <option>Van</option>
                     <option>Bus</option>
                     <option>Car</option>
+                    <option>Pick-up</option>
+                    <option>
+                      Motor Vehicle
+                    </option>
                   </select>
 
                   {/* VEHICLE DISPLAY */}
@@ -418,7 +463,7 @@ export default function AdminPage() {
           display: grid;
           grid-template-columns: repeat(
             auto-fit,
-            minmax(300px, 1fr)
+            minmax(320px, 1fr)
           );
           gap: 14px;
         }
