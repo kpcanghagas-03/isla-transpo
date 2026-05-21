@@ -53,7 +53,7 @@ export default function RequestPage() {
 
     if (error) {
       alert("Error submitting request.");
-      console.log(error);
+      console.log("SUPABASE ERROR:", error);
       return;
     }
 
