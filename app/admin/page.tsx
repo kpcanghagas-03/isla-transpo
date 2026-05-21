@@ -219,8 +219,7 @@ const totalCount = requests.length;
           }))}
         />
       </section>
-
-
+      
 /* ================= SUMMARY CARDS ================= */
 
 <div className="statsGrid">
@@ -857,10 +856,10 @@ const totalCount = requests.length;
     opacity: 0.85;
   }
 
-  .emergency {
-    animation: pulse 1s infinite, bounce 0.8s infinite;
-    border: 2px solid #dc2626;
-    box-shadow: 0 0 18px rgba(255, 0, 0, 0.5);
+  /* ONLY visual styling — NO animation */
+.emergency {
+  border-left: 5px solid #dc2626;
+  box-shadow: 0 0 18px rgba(255, 0, 0, 0.5);
   }
 
   /* ================= TEXT ================= */
