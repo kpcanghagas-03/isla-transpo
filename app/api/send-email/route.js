@@ -10,17 +10,16 @@ export async function POST(req) {
       throw new Error("Missing RESEND_API_KEY in environment variables");
     }
 
-    const resend = new Resend(apiKey);
+   const resend = new Resend(process.env.RESEND_API_KEY);
 
-    const data = await resend.emails.send({
-      from: "ISLA-Transpo <onboarding@resend.dev>",
-      to: email,
-      subject: "Request Status Update",
-      html: `
-        <h2>Hello ${name}</h2>
-        <p>Status: ${status}</p>
-      `,
-    });
+const result = await resend.emails.send({
+  from: "onboarding@resend.dev",
+  to: email,
+  subject: "TEST EMAIL",
+  html: `<h1>TEST</h1>`,
+});
+
+console.log("RESEND RESULT:", result);  
 
     return Response.json({ success: true, data });
   } catch (error) {
