@@ -100,7 +100,7 @@ export default function RequestPage() {
     };
 
     const{error} = await supabase
-      .from("transportation_requests")
+      .from("transport_requests")
       .insert([payload]);
 
     if (error) {
