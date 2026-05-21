@@ -255,15 +255,13 @@ export default function AdminPage() {
                         year: "numeric",
                         month: "long",
                         day: "2-digit",})
-                        : "N/A"},{" "}
-                      {req.pick_up_time ?` ${req.pick_up_time}` : ""}
+                        : "N/A"}
 
                     {req.pick_up_time
-                    ? new Date(`1970-01-01T${req.pick_up_time}`).toLocaleTimeString("en-PH", {
-                        hour: "numeric",
+                    ? ` ${new Date(`1970-01-01T${req.pick_up_time}Z`).toLocaleTimeString("en-PH", {
+                        hour: "2-digit",
                         minute: "2-digit",
-                        hour12: true,})
-                        : ""} 
+                        hour12: true,}) } ` :""}
                     </div>
 
                   <div className="info">
