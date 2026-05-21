@@ -254,9 +254,9 @@ export default function AdminPage() {
                     ? new Date(req.pick_up_date).toLocaleDateString("en-PH", {
                         year: "numeric",
                         month: "long",
-                        day: "numeric",})
-                        : "N/A"}
-                        
+                        day: "2-digit",})
+                        : "N/A"},{" "}{req.pick_up_time||"N/A"}
+
                     {req.pick_up_time
                     ? (() => {
                         const time = req.pick_up_time.split(":");
