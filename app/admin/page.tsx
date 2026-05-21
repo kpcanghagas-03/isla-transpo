@@ -187,6 +187,10 @@ const emergencyCount = requests.filter(
   (r) => r.status === "Emergency"
 ).length;
 
+const disapprovedCount = requests.filter(
+  (r) => r.status === "Disapproved"
+).length;
+
 const totalCount = requests.length;
  
   const completedRequests = sortedRequests.filter((r: Request) =>
@@ -262,6 +266,16 @@ const totalCount = requests.length;
     <div className="statNumber">
       {emergencyCount}
     </div>
+
+    <div className="statCard disapprovedCard">
+  <div className="statNumber">
+    {disapprovedCount}
+  </div>
+
+  <div className="statLabel">
+    Disapproved
+  </div>
+</div>
 
     <div className="statLabel">
       Emergency
@@ -945,6 +959,10 @@ const totalCount = requests.length;
 
       .emergencyCard {
         border-top: 6px solid #dc2626;
+      }
+      
+      .disapprovedCard {
+        border-top: 6px solid #6b7280;
       }
 
         @media (max-width: 768px) {
