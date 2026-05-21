@@ -22,8 +22,8 @@ type Request = {
   flight_arrival_date: string;
   flight_arrival_time: string;
 
-  pickup_date: string;
-  pickup_time: string;
+  pick_up_date: string;
+  pick_up_time: string;
 
   contact_person: string;
   contact_number: string;
@@ -325,9 +325,9 @@ export default function AdminPage() {
                     🕒 Pickup Schedule:
                     <br />
 
-                    {req.pickup_date
+                    {req.pick_up_date
                       ? new Date(
-                          req.pickup_date
+                          req.pick_up_date
                         ).toLocaleDateString(
                           "en-PH",
                           {
@@ -338,9 +338,9 @@ export default function AdminPage() {
                         )
                       : "N/A"}
 
-                    {req.pickup_time
+                    {req.pick_up_time
                       ? `, ${new Date(
-                          `1970-01-01T${req.pickup_time}`
+                          `1970-01-01T${req.pick_up_time}`
                         ).toLocaleTimeString(
                           "en-PH",
                           {
