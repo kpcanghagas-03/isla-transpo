@@ -15,8 +15,8 @@ export default function RequestPage() {
     passengers: "",
     pickup_location: "",
     destination: "",
-    travel_date: "",
-    travel_time: "",
+    Pick_Up_date: "",
+    Pick_Up_time: "",
     vehicle_type: "Van",
     remarks: "",
   });
@@ -44,8 +44,8 @@ export default function RequestPage() {
           passengers: formData.passengers,
           pickup_location: formData.pickup_location,
           destination: formData.destination,
-          travel_date: formData.travel_date,
-          travel_time: formData.travel_time,
+          Pick_Up_date: formData.Pick_Up_date,
+          Pick_Up_time: formData.Pick_Up_time,
           vehicle_type: formData.vehicle_type,
           remarks: formData.remarks,
         },
@@ -67,8 +67,8 @@ export default function RequestPage() {
       passengers: "",
       pickup_location: "",
       destination: "",
-      travel_date: "",
-      travel_time: "",
+      Pick_Up_date: "",
+      Pick_Up_time: "",
       vehicle_type: "Van",
       remarks: "",
     });
@@ -224,7 +224,7 @@ export default function RequestPage() {
               <input
                 type="date"
                 name="Pick-up Date"
-                value={formData.travel_date}
+                value={formData.Pick_Up_date}
                 onChange={handleChange}
                 style={{
                   ...inputStyle,
@@ -247,7 +247,7 @@ export default function RequestPage() {
               <input
                 type="time"
                 name="Pick-up Time"
-                value={formData.travel_time}
+                value={formData.Pick_Up_time}
                 onChange={handleChange}
                 style={{
                   ...inputStyle,
