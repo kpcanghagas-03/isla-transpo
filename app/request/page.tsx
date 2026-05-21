@@ -8,18 +8,35 @@ export default function RequestPage() {
   const router = useRouter();
 
   const [formData, setFormData] = useState({
-    full_name: "",
-    organization: "",
+    requester_name: "",
     email: "",
-    contact_number: "",
+    committee_unit: "",
+
     passengers: "",
+    passenger_names: "",
+
     pickup_location: "",
     destination: "",
+
+    flight_no: "",
+    flight_arrival_date: "",
+    flight_arrival_time: "",
+
     pick_up_date: "",
     pick_up_time: "",
+
+    contact_person: "",
+    contact_number: "",
+
+    alternate_contact_person: "",
+    alternate_contact_number: "",
+
     vehicle_type: "Van",
-    remarks: "",
+
+    notes_remarks: "",
   });
+
+  // ================= HANDLE INPUT CHANGE =================
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -32,49 +49,99 @@ export default function RequestPage() {
     });
   };
 
+  // ================= HANDLE SUBMIT =================
+
   const handleSubmit = async () => {
-    const { error } = await supabase
-      .from("transport_requests")
-      .insert([
-        {
-          full_name: formData.full_name,
-          organization: formData.organization,
-          email: formData.email,
-          contact_number: formData.contact_number,
-          passengers: formData.passengers,
-          pickup_location: formData.pickup_location,
-          destination: formData.destination,
-          pick_up_date: formData.pick_up_date,
-          pick_up_time: formData.pick_up_time,
-          vehicle_type: formData.vehicle_type,
-          remarks: formData.remarks,
-        },
-      ]);
+    //================ VALIDATION (MOVE THIS UP)====================
+
+    if (
+      !formData.requester_name ||
+      !formData.pickup_location ||
+      !formData.destination ||
+      !formData.pick_up_date ||
+      !formData.pick_up_time ||
+      !formData.contact_number
+    ) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+  
+    //================ PAYLOAD=====================
+    const payload = {
+      requester_name: formData.requester_name,
+      email: formData.email,
+      committee_unit: formData.committee_unit,
+
+      passengers: formData.passengers,
+      passenger_names: formData.passenger_names,
+
+      pickup_location: formData.pickup_location,
+      destination: formData.destination,
+
+      flight_no: formData.flight_no || null,
+      flight_arrival_date: formData.flight_arrival_date || null,
+      flight_arrival_time: formData.flight_arrival_time || null,
+
+      pick_up_date: formData.pick_up_date || null,
+      pick_up_time: formData.pick_up_time || null,
+
+      contact_person: formData.contact_person,
+      contact_number: formData.contact_number,
+
+      alternate_contact_person: formData.alternate_contact_person || null,
+      alternate_contact_number: formData.alternate_contact_number || null,
+
+      vehicle_type: formData.vehicle_type,
+
+      notes_remarks: formData.notes_remarks || null,  
+
+      status: "Pending",
+      priority: "Attendee",
+    };
+
+    const{error} = await supabase
+      .from("transportation_requests")
+      .insert([payload]);
 
     if (error) {
-      console.log("SUPABASE ERROR:",error);
+      console.log("SUPABASE ERROR", error);
       alert(error.message);
       return;
     }
 
-    alert("Transport request submitted successfully!");
+    alert("Transport Request Submitted Successfully!");
 
     setFormData({
-      full_name: "",
-      organization: "",
+      requester_name: "",
       email: "",
-      contact_number: "",
+      committee_unit: "",
+
       passengers: "",
+      passenger_names: "",
+
       pickup_location: "",
       destination: "",
+
+      flight_no: "",
+      flight_arrival_date: "",
+      flight_arrival_time: "",
+
       pick_up_date: "",
       pick_up_time: "",
+
+      contact_person: "",
+      contact_number: "",
+
+      alternate_contact_person: "",
+      alternate_contact_number: "",
+
       vehicle_type: "Van",
-      remarks: "",
+
+      notes_remarks: "",
     });
   };
-
-  // ================= STYLES =================
+ 
+    // ================= STYLES =================
 
   const pageStyle = {
     padding: "20px",
@@ -93,22 +160,38 @@ export default function RequestPage() {
     marginBottom: 12,
     outline: "none",
     fontSize: 14,
+
+    // FIX WHITE TEXT
+    color: "black",
+
+    // FIX WHITE INPUT BACKGROUND
+    backgroundColor: "white",
   };
 
   const formBox = {
     background: "rgba(255,255,255,0.95)",
     padding: 30,
     borderRadius: 16,
-    maxWidth: 600,
+    maxWidth: 750,
     width: "100%",
     margin: "0 auto",
     boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
     backdropFilter: "blur(8px)",
   };
 
+  const sectionTitleStyle = {
+    color: "#0B3D91",
+    fontSize: "20px",
+    fontWeight: "bold" as const,
+    marginTop: 25,
+    marginBottom: 10,
+  };
+
   return (
     <main style={pageStyle}>
       <div style={formBox}>
+        {/* HEADER */}
+
         <h1
           style={{
             color: "#0B3D91",
@@ -123,76 +206,68 @@ export default function RequestPage() {
           Fill out transportation request details
         </p>
 
-        <input
-          name="full_name"
-          placeholder="Full Name"
-          value={formData.full_name}
-          onChange={handleChange}
-          style={{
-            ...inputStyle,
-            color: "black",
-            fontSize: 16,
-          }}
-        />
+        {/* ================= REQUESTER INFO ================= */}
+
+        <div style={sectionTitleStyle}>
+          👤 Requester Information
+        </div>
 
         <input
-          name="organization"
-          placeholder="Organization"
-          value={formData.organization}
+          name="requester_name"
+          placeholder="Name of Requester"
+          value={formData.requester_name}
           onChange={handleChange}
-          style={{
-            ...inputStyle,
-            color: "black",
-            fontSize: 16,
-          }}
+          style={inputStyle}
         />
 
         <input
           name="email"
-          placeholder="Email"
+          placeholder="Email Address"
           value={formData.email}
           onChange={handleChange}
-          style={{
-            ...inputStyle,
-            color: "black",
-            fontSize: 16,
-          }}
+          style={inputStyle}
         />
 
         <input
-          name="contact_number"
-          placeholder="Contact Number"
-          value={formData.contact_number}
+          name="committee_unit"
+          placeholder="Committee / Unit"
+          value={formData.committee_unit}
           onChange={handleChange}
-          style={{
-            ...inputStyle,
-            color: "black",
-            fontSize: 16,
-          }}
+          style={inputStyle}
         />
+
+        {/* ================= TRANSPORT DETAILS ================= */}
+
+        <div style={sectionTitleStyle}>
+          🚍 Transport Details
+        </div>
 
         <input
           name="passengers"
           placeholder="Number of Passengers"
           value={formData.passengers}
           onChange={handleChange}
+          style={inputStyle}
+        />
+
+        <textarea
+          name="passenger_names"
+          placeholder="Name of Passengers"
+          value={formData.passenger_names}
+          onChange={handleChange}
           style={{
             ...inputStyle,
-            color: "black",
-            fontSize: 16,
+            height: 90,
+            resize: "none",
           }}
         />
 
         <input
           name="pickup_location"
-          placeholder="Pickup Location"
+          placeholder="Pick Up Point"
           value={formData.pickup_location}
           onChange={handleChange}
-          style={{
-            ...inputStyle,
-            color: "black",
-            fontSize: 16,
-          }}
+          style={inputStyle}
         />
 
         <input
@@ -200,95 +275,200 @@ export default function RequestPage() {
           placeholder="Destination"
           value={formData.destination}
           onChange={handleChange}
-          style={{
-            ...inputStyle,
-            color: "black",
-            fontSize: 16,
-          }}
+          style={inputStyle}
+        />
+
+        {/* ================= FLIGHT DETAILS ================= */}
+
+        <div style={sectionTitleStyle}>
+          ✈️ Flight Details (If Airport Pickup)
+        </div>
+
+        <input
+          name="flight_no"
+          placeholder="Flight Number"
+          value={formData.flight_no}
+          onChange={handleChange}
+          style={inputStyle}
         />
 
         <div
-        style={{
-          display: "flex",
-          gap: 20,
-          marginBottom: 12,
-        }}
-      >     
+          style={{
+            display: "flex",
+            gap: 20,
+          }}
+        >
           <div style={{ flex: 1 }}>
-              <label
-                style={{  color: "#334155", fontSize: 14, fontWeight: "bold" }}
-              >
-                Pick Up Date
-              </label>
+            <label
+              style={{
+                color: "#334155",
+                fontSize: 14,
+                fontWeight: "bold",
+              }}
+            >
+              Arrival Date
+            </label>
 
-              <input
-                type="date"
-                name="pick_up_date"
-                value={formData.pick_up_date}
-                onChange={handleChange}
-                style={{
-                  ...inputStyle,
-                  color: "black",
-                  fontSize: 16,
-                  marginTop: 5,
-                }}
-              />
-            </div>
-
-            <div style={{ flex: 1 }}>
-              <label
-                style={{color: "#334155", 
-                  fontSize: 14, fontWeight: "bold"
-                 }}
-              >
-                Pick Up Time
-              </label>
-
-              <input
-                type="time"
-                name="pick_up_time"
-                value={formData.pick_up_time}
-                onChange={handleChange}
-                style={{
-                  ...inputStyle,
-                  color: "black",
-                  fontSize: 16,
-                  marginTop: 5,
-                }}
-              />
-            </div>
+            <input
+              type="date"
+              name="flight_arrival_date"
+              value={formData.flight_arrival_date}
+              onChange={handleChange}
+              style={inputStyle}
+            />
           </div>
+
+          <div style={{ flex: 1 }}>
+            <label
+              style={{
+                color: "#334155",
+                fontSize: 14,
+                fontWeight: "bold",
+              }}
+            >
+              Arrival Time
+            </label>
+
+            <input
+              type="time"
+              name="flight_arrival_time"
+              value={formData.flight_arrival_time}
+              onChange={handleChange}
+              style={inputStyle}
+            />
+          </div>
+        </div>
+
+        {/* ================= PICKUP SCHEDULE ================= */}
+
+        <div style={sectionTitleStyle}>
+          🕒 Pickup Schedule
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            gap: 20,
+          }}
+        >
+          <div style={{ flex: 1 }}>
+            <label
+              style={{
+                color: "#334155",
+                fontSize: 14,
+                fontWeight: "bold",
+              }}
+            >
+              Pick Up Date
+            </label>
+
+            <input
+              type="date"
+              name="pick_up_date"
+              value={formData.pick_up_date}
+              onChange={handleChange}
+              style={inputStyle}
+            />
+          </div>
+
+          <div style={{ flex: 1 }}>
+            <label
+              style={{
+                color: "#334155",
+                fontSize: 14,
+                fontWeight: "bold",
+              }}
+            >
+              Pick Up Time
+            </label>
+
+            <input
+              type="time"
+              name="pick_up_time"
+              value={formData.pick_up_time}
+              onChange={handleChange}
+              style={inputStyle}
+            />
+          </div>
+        </div>
+
+        {/* ================= CONTACT DETAILS ================= */}
+
+        <div style={sectionTitleStyle}>
+          📞 Contact Details
+        </div>
+
+        <input
+          name="contact_person"
+          placeholder="Contact Person"
+          value={formData.contact_person}
+          onChange={handleChange}
+          style={inputStyle}
+        />
+
+        <input
+          name="contact_number"
+          placeholder="Contact Number"
+          value={formData.contact_number}
+          onChange={handleChange}
+          style={inputStyle}
+        />
+
+        <input
+          name="alternate_contact_person"
+          placeholder="Alternate Contact Person"
+          value={formData.alternate_contact_person}
+          onChange={handleChange}
+          style={inputStyle}
+        />
+
+        <input
+          name="alternate_contact_number"
+          placeholder="Alternate Contact Number"
+          value={formData.alternate_contact_number}
+          onChange={handleChange}
+          style={inputStyle}
+        />
+
+        {/* ================= VEHICLE ================= */}
+
+        <div style={sectionTitleStyle}>
+          🚗 Requested Vehicle
+        </div>
 
         <select
           name="vehicle_type"
           value={formData.vehicle_type}
           onChange={handleChange}
-          style={{
-            ...inputStyle,
-            color: "black",
-            fontSize: 16,
-          }}
+          style={inputStyle}
         >
           <option>Van</option>
+          <option>Bus</option>
+          <option>Car</option>
           <option>Pick-up</option>
           <option>Motor Vehicle</option>
         </select>
 
+        {/* ================= REMARKS ================= */}
+
+        <div style={sectionTitleStyle}>
+          📝 Notes / Remarks
+        </div>
+
         <textarea
-          name="remarks"
-          placeholder="remarks"
-          value={formData.remarks}
+          name="notes_remarks"
+          placeholder="Additional Notes / Remarks"
+          value={formData.notes_remarks}
           onChange={handleChange}
           style={{
             ...inputStyle,
-            color: "black",
-            fontSize: 16,
+
             height: 100,
             resize: "none",
           }}
         />
 
-        {/* BUTTONS */}
+        {/* ================= BUTTONS ================= */}
 
         <div
           style={{

@@ -7,21 +7,39 @@ import { request } from "http";
 
 type Request = {
   id: number;
-  full_name: string;
-  organization: string;
+
+  requester_name: string;
   email: string;
-  contact_number: string;
+  committee_unit: string;
+
   passengers: string;
+  passenger_names: string;
+
   pickup_location: string;
   destination: string;
-  pick_up_date: string;
-  pick_up_time: string;
+
+  flight_no: string;
+  flight_arrival_date: string;
+  flight_arrival_time: string;
+
+  pickup_date: string;
+  pickup_time: string;
+
+  contact_person: string;
+  contact_number: string;
+
+  alternate_contact_person: string;
+  alternate_contact_number: string;
+
+  vehicle_type: string;
+  notes_remarks: string;
+
   status: string;
   priority: string;
   assigned_vehicle: string;
-  vehicle_type: string;
-  remarks: string;
+
   created_at: string;
+
   driver_lat?: number;
   driver_lng?: number;
 };
@@ -60,7 +78,9 @@ export default function AdminPage() {
           schema: "public",
           table: "transport_requests",
         },
-        () => fetchRequests()
+        () => {
+          fetchRequests();
+        }
       )
       .subscribe();
 
@@ -93,6 +113,7 @@ export default function AdminPage() {
     if (error) {
       console.log("SUPABASE ERROR:", error);
       alert(error.message);
+      fetchRequests();
       return;
     }
 
@@ -152,7 +173,7 @@ export default function AdminPage() {
     ].includes(r.status)
   );
 
-  // ================= COMPLETED =================
+  // ================= COMPLETED REQUESTS =================
   const completedRequests = sortedRequests.filter((r) =>
     ["Completed", "Disapproved"].includes(r.status)
   );
@@ -171,7 +192,12 @@ export default function AdminPage() {
 
       {/* ================= MAP ================= */}
       <section className="mapSection">
-        <LiveMap requests={requests} />
+        <LiveMap
+          requests={requests.map((req) => ({
+            ...req,
+            full_name: req.requester_name,
+          }))}
+        />
       </section>
 
       {/* ================= ACTIVE REQUESTS ================= */}
@@ -206,7 +232,7 @@ export default function AdminPage() {
                   {/* NAME */}
                   <div className="nameRow">
                     <span className="name">
-                      {req.full_name}
+                      {req.requester_name}
                     </span>
 
                     {req.priority === "VIP" && (
@@ -218,79 +244,149 @@ export default function AdminPage() {
 
                   {/* DETAILS */}
                   <div className="info">
-                    🏢 {req.organization}
+                    🏢 {req.committee_unit || "N/A"}
                   </div>
 
                   <div className="info">
-                    📧 {req.email}
+                    📧 {req.email || "N/A"}
                   </div>
 
                   <div className="info">
-                    📞 {req.contact_number}
+                    📞 {req.contact_number || "N/A"}
                   </div>
 
                   <div className="info">
-                    👥 Passengers: {req.passengers}
+                    👤 Contact Person:
+                    <br />
+                    {req.contact_person || "N/A"}
                   </div>
 
                   <div className="info">
-                    📍 {req.pickup_location}
+                    👥 Passengers:
+                    <br />
+                    {req.passengers || "0"}
                   </div>
 
                   <div className="info">
-                    🎯 {req.destination}
+                    🧍 Passenger Names:
+                    <br />
+                    {req.passenger_names || "N/A"}
+                  </div>
+
+                  <div className="info">
+                    📍 {req.pickup_location || "N/A"}
+                  </div>
+
+                  <div className="info">
+                    🎯 {req.destination || "N/A"}
+                  </div>
+
+                  {/* FLIGHT DETAILS */}
+                  {(req.flight_no ||
+                    req.flight_arrival_date ||
+                    req.flight_arrival_time) && (
+                    <div className="info">
+                      ✈️ Flight Details:
+                      <br />
+                      Flight No:{" "}
+                      {req.flight_no || "N/A"}
+                      <br />
+                      Arrival:
+                      {" "}
+                      {req.flight_arrival_date
+                        ? new Date(
+                            req.flight_arrival_date
+                          ).toLocaleDateString(
+                            "en-PH",
+                            {
+                              year: "numeric",
+                              month: "long",
+                              day: "2-digit",
+                            }
+                          )
+                        : "N/A"}
+                      {req.flight_arrival_time
+                        ? `, ${new Date(
+                            `1970-01-01T${req.flight_arrival_time}`
+                          ).toLocaleTimeString(
+                            "en-PH",
+                            {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              hour12: true,
+                            }
+                          )}`
+                        : ""}
+                    </div>
+                  )}
+
+                  {/* PICKUP SCHEDULE */}
+                  <div className="info">
+                    🕒 Pickup Schedule:
+                    <br />
+
+                    {req.pickup_date
+                      ? new Date(
+                          req.pickup_date
+                        ).toLocaleDateString(
+                          "en-PH",
+                          {
+                            year: "numeric",
+                            month: "long",
+                            day: "2-digit",
+                          }
+                        )
+                      : "N/A"}
+
+                    {req.pickup_time
+                      ? `, ${new Date(
+                          `1970-01-01T${req.pickup_time}`
+                        ).toLocaleTimeString(
+                          "en-PH",
+                          {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: true,
+                          }
+                        )}`
+                      : ""}
                   </div>
 
                   <div className="info">
                     🚗 Requested Vehicle:
                     <br />
-                    {req.vehicle_type}
+                    {req.vehicle_type || "N/A"}
                   </div>
 
                   <div className="info">
-                    🕒 Pickup Schedule:
+                    📝 Notes / Remarks:
                     <br />
-                    {req.pick_up_date
-                    ? new Date(req.pick_up_date).toLocaleDateString("en-PH", {
-                        year: "numeric",
-                        month: "long",
-                        day: "2-digit",})
-                        : "N/A"}
-
-                    {req.pick_up_time
-                    ? ` ${new Date(`1970-01-01T${req.pick_up_time}Z`).toLocaleTimeString("en-PH", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        hour12: true,}) } ` :""}
-                    </div>
-
-                  <div className="info">
-                    📝 Remarks:
-                    <br />
-                    {req.remarks || "None"}
+                    {req.notes_remarks || "None"}
                   </div>
 
                   <div className="info">
                     📅 Requested:
                     <br />
-                    {new Date(req.created_at).toLocaleString(
-                      "en-PH",
-                      {
+                    {new Date(
+                      req.created_at
+                    ).toLocaleString("en-PH", {
                       year: "numeric",
                       month: "short",
                       day: "numeric",
                       hour: "numeric",
                       minute: "2-digit",
                       hour12: true,
-                    })}  
+                      timeZone: "Asia/Manila",
+                    })}
                   </div>
 
                   {/* STATUS BADGE */}
                   <div
                     className="statusBadge"
                     style={{
-                      background:
-                        statusColor(req.status),
+                      background: statusColor(
+                        req.status
+                      ),
                     }}
                   >
                     {req.status}
@@ -302,7 +398,7 @@ export default function AdminPage() {
                   </label>
 
                   <select
-                    value={req.priority}
+                    value={req.priority || "Attendee"}
                     onChange={(e) =>
                       updateField(
                         req.id,
@@ -322,7 +418,7 @@ export default function AdminPage() {
                   </label>
 
                   <select
-                    value={req.status}
+                    value={req.status || "Pending"}
                     onChange={(e) =>
                       updateField(
                         req.id,
@@ -359,6 +455,7 @@ export default function AdminPage() {
                     <option value="">
                       Unassigned
                     </option>
+
                     <option>Van</option>
                     <option>Bus</option>
                     <option>Car</option>
@@ -373,7 +470,9 @@ export default function AdminPage() {
                     {req.assigned_vehicle
                       ? `${vehicleIcon(
                           req.assigned_vehicle
-                        )} ${req.assigned_vehicle}`
+                        )} ${
+                          req.assigned_vehicle
+                        }`
                       : "🚨 No Vehicle Assigned"}
                   </div>
                 </div>
@@ -396,7 +495,7 @@ export default function AdminPage() {
               className="card completedCard"
             >
               <div className="name">
-                {req.full_name}
+                {req.requester_name}
               </div>
 
               <div className="info">
@@ -410,15 +509,21 @@ export default function AdminPage() {
               <div
                 className="statusBadge"
                 style={{
-                  background:
-                    statusColor(req.status),
+                  background: statusColor(
+                    req.status
+                  ),
                 }}
               >
                 {req.status}
               </div>
+
               <button
                 onClick={() =>
-                  updateField(req.id, "status", "Approved")
+                  updateField(
+                    req.id,
+                    "status",
+                    "Approved"
+                  )
                 }
                 style={{
                   marginTop: 10,
@@ -429,7 +534,7 @@ export default function AdminPage() {
                   borderRadius: 8,
                   cursor: "pointer",
                   fontWeight: "bold",
-                }}  
+                }}
               >
                 Restore to Active
               </button>
@@ -482,7 +587,8 @@ export default function AdminPage() {
           border-radius: 16px;
           overflow: hidden;
           margin-bottom: 20px;
-          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+          box-shadow: 0 8px 24px
+            rgba(0, 0, 0, 0.25);
         }
 
         .section {
@@ -491,6 +597,8 @@ export default function AdminPage() {
 
         .sectionTitle {
           margin-bottom: 12px;
+          font-size: 24px;
+          font-weight: bold;
         }
 
         .grid {
@@ -510,7 +618,8 @@ export default function AdminPage() {
           display: flex;
           flex-direction: column;
           gap: 8px;
-          box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+          box-shadow: 0 6px 18px
+            rgba(0, 0, 0, 0.15);
         }
 
         .completedCard {
@@ -522,7 +631,8 @@ export default function AdminPage() {
             pulse 1s infinite,
             bounce 0.8s infinite;
           border: 2px solid #dc2626;
-          box-shadow: 0 0 18px rgba(255, 0, 0, 0.5);
+          box-shadow: 0 0 18px
+            rgba(255, 0, 0, 0.5);
         }
 
         .nameRow {
@@ -548,7 +658,7 @@ export default function AdminPage() {
 
         .info {
           font-size: 13px;
-          line-height: 1.4;
+          line-height: 1.5;
         }
 
         .label {
