@@ -252,12 +252,18 @@ export default function AdminPage() {
                     <br />
                     {req.pick_up_date || "N/A"} —{" "}
                     {req.pick_up_time
-                    ? new Date(`1970-01-01T${req.pick_up_time}:00`).toLocaleTimeString("en-PH", {
-                        hour: "numeric",
-                        minute: "2-digit",
-                        hour12: true,
-                      })
-                    : "N/A"}
+                    ? (() => {
+                        const time = req.pick_up_time.split(":");
+                        const date = new Date();
+                        date.setHours(Number(time[0]), Number(time[1]));
+                        
+                        return date.toLocaleTimeString("en-PH", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          hour12: true,
+                        });
+                        
+                    })() : "N/A"}
                   </div>
 
                   <div className="info">
