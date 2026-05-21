@@ -416,6 +416,23 @@ export default function AdminPage() {
               >
                 {req.status}
               </div>
+              <button
+                onClick={() =>
+                  updateField(req.id, "status", "Approved")
+                }
+                style={{
+                  marginTop: 10,
+                  padding: "8px 10px",
+                  background: "#2563eb",
+                  color: "white",
+                  border: "none",
+                  borderRadius: 8,
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                }}  
+              >
+                Restore to Active
+              </button>
             </div>
           ))}
         </div>
