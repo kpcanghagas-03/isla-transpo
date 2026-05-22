@@ -49,8 +49,39 @@ export default function RequestPage() {
     });
   };
 
-  // ================= HANDLE SUBMIT =================
+// ================= HANDLE SUBMIT =================
 const handleSubmit = async () => {
+  const cleanEmail = formData.email
+    .trim()
+    .toLowerCase();
+
+  const {
+    data: staffList,
+    error: staffError,
+  } = await supabase
+    .from("staff")
+    .select("email");
+
+  console.log("STAFF LIST:", staffList);
+
+  if (staffError) {
+    console.log("STAFF ERROR:", staffError);
+  }
+
+  const isStaff = staffList?.some(
+    (s) =>
+      s.email &&
+      s.email.trim().toLowerCase() === cleanEmail
+  );
+
+  console.log("IS STAFF:", isStaff);
+
+  const staff_email = isStaff
+    ? cleanEmail
+    : null;
+
+  console.log("STAFF EMAIL:", staff_email);
+
   // ================= VALIDATION =================
   if (
     !formData.requester_name ||
@@ -67,7 +98,11 @@ const handleSubmit = async () => {
   // ================= INSERT REQUEST =================
   const payload = {
     requester_name: formData.requester_name,
-    email: formData.email, // <-- keep this
+
+    email: formData.email,
+
+    staff_email: staff_email,
+
     committee_unit: formData.committee_unit,
 
     passengers: formData.passengers,
@@ -77,19 +112,33 @@ const handleSubmit = async () => {
     destination: formData.destination,
 
     flight_no: formData.flight_no || null,
-    flight_arrival_date: formData.flight_arrival_date || null,
-    flight_arrival_time: formData.flight_arrival_time || null,
 
-    pick_up_date: formData.pick_up_date || null,
-    pick_up_time: formData.pick_up_time || null,
+    flight_arrival_date:
+      formData.flight_arrival_date || null,
 
-    contact_person: formData.contact_person,
-    contact_number: formData.contact_number,
+    flight_arrival_time:
+      formData.flight_arrival_time || null,
 
-    alternate_contact_person: formData.alternate_contact_person || null,
-    alternate_contact_number: formData.alternate_contact_number || null,
+    pick_up_date:
+      formData.pick_up_date || null,
 
-    notes_remarks: formData.notes_remarks || null,
+    pick_up_time:
+      formData.pick_up_time || null,
+
+    contact_person:
+      formData.contact_person,
+
+    contact_number:
+      formData.contact_number,
+
+    alternate_contact_person:
+      formData.alternate_contact_person || null,
+
+    alternate_contact_number:
+      formData.alternate_contact_number || null,
+
+    notes_remarks:
+      formData.notes_remarks || null,
 
     status: "Pending",
     priority: "Attendee",
@@ -111,23 +160,31 @@ const handleSubmit = async () => {
     requester_name: "",
     email: "",
     committee_unit: "",
+
     passengers: "",
     passenger_names: "",
+
     pickup_location: "",
     destination: "",
+
     flight_no: "",
     flight_arrival_date: "",
     flight_arrival_time: "",
+
     pick_up_date: "",
     pick_up_time: "",
+
     contact_person: "",
     contact_number: "",
+
     alternate_contact_person: "",
     alternate_contact_number: "",
+
     notes_remarks: "",
   });
 };
- 
+
+
  
     // ================= STYLES =================
 
