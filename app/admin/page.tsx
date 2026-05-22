@@ -11,6 +11,8 @@ type Request = {
 
   requester_name: string;
   email: string;
+  staff_email?:string;
+
   committee_unit: string;
 
   passengers: string;
@@ -125,18 +127,23 @@ export default function AdminPage() {
 
   // ================= AUTO EMAIL =================
   const shouldEmail =
-    field === "status" &&
-    request.status !== value &&
-    ["Approved", "Disapproved", "Completed"].includes(value);
+  field === "status" &&
+  request.status !== value &&
+  ["Approved", "Disapproved", "Completed"].includes(value);
 
-  if (!shouldEmail) return;
+if (!request.staff_email) {
+  console.log("NOT STAFF — EMAIL BLOCKED");
+  return;
+}
 
+if (shouldEmail) {
   try {
     const res = await fetch("/api/send-email", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+
       body: JSON.stringify({
-        email: request.email,
+        email: request.staff_email,
         name: request.requester_name,
         status: value,
         pickup: request.pickup_location,
@@ -147,17 +154,13 @@ export default function AdminPage() {
     });
 
     const data = await res.json();
-    console.log("EMAIL RESPONSE:", data);
 
-    if (!res.ok) {
-      console.log("EMAIL FAILED:", data);
-    } else {
-      console.log("EMAIL SENT SUCCESSFULLY");
-    }
+    console.log("EMAIL RESPONSE:", data);
+    
   } catch (err) {
     console.log("EMAIL ERROR:", err);
   }
-};
+}
 
   // ================= VEHICLE ICON =================
   const vehicleIcon = (vehicle: string) => {
@@ -982,4 +985,4 @@ const totalCount = requests.length;
 
     </main>
   );
-}
+}}
