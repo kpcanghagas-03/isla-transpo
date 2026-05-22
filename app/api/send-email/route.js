@@ -10,6 +10,11 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
+// ================= SAFETY CHECK =================
+if (!process.env.RESEND_API_KEY) {
+  throw new Error("Missing RESEND_API_KEY");
+}
+
 // ================= EMAIL TEMPLATE =================
 const statusMessage = {
   Pending: {
@@ -70,8 +75,8 @@ export async function POST(req) {
       vehicle,
     } = body;
 
-    // ================= CHECK STAFF =================
-    const { data: staff_email, error: staffError } = await supabase
+    // ================= GET STAFF EMAILS =================
+    const { data: staffList, error: staffError } = await supabase
       .from("staff")
       .select("staff_email");
 
@@ -82,22 +87,24 @@ export async function POST(req) {
       );
     }
 
-    const isStaff_email = staff_email?.some((s) => s.staff_email === email);
+    const staffEmails = (staffList || [])
+      .map((s) => s.staff_email)
+      .filter(Boolean);
 
-    if (!isStaff_email) {
+    if (staffEmails.length === 0) {
       return NextResponse.json(
         {
           success: false,
-          message: "Email not in staff directory",
+          message: "No staff emails found in database",
         },
-        { status: 403 }
+        { status: 404 }
       );
     }
 
     // ================= SEND EMAIL =================
     const result = await resend.emails.send({
       from: "ISLA-Transpo <onboarding@resend.dev>",
-      to: email,
+      to: staffEmails,
       subject: `ISLA-Transpo Update: ${status}`,
 
       html: `
@@ -106,17 +113,18 @@ export async function POST(req) {
 
             <h2 style="color:#0B3D91;">🚐 ISLA-Transpo Dispatch System</h2>
 
-            <p>Hello <b>${name}</b>,</p>
+            <p>Hello Team,</p>
 
             <h3>${statusMessage[status]?.title || "📌 Status Update"}</h3>
 
             <p style="color:#334155;">
-              ${statusMessage[status]?.message || "Your request has been updated."}
+              ${statusMessage[status]?.message || "A request has been updated."}
             </p>
 
             <hr />
 
             <h4>📍 Trip Details</h4>
+            <p><b>Requester:</b> ${name}</p>
             <p><b>Pickup:</b> ${pickup}</p>
             <p><b>Destination:</b> ${destination}</p>
             <p><b>Schedule:</b> ${schedule}</p>
@@ -129,7 +137,7 @@ export async function POST(req) {
             </p>
 
             <p style="margin-top:20px;">
-              Thank you for using <b>ISLA-Transpo</b>. Have a safe day!
+              ISLA-Transpo Notification System
             </p>
 
           </div>
@@ -137,10 +145,20 @@ export async function POST(req) {
       `,
     });
 
+    // ================= RESPONSE =================
+    if (result.error) {
+      return NextResponse.json(
+        { success: false, error: result.error },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json({
       success: true,
+      message: "Emails sent to staff successfully",
       result,
     });
+
   } catch (err) {
     return NextResponse.json(
       {
