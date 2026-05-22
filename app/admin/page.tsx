@@ -414,9 +414,9 @@ const totalCount = requests.length;
                     🏢 {req.committee_unit || "N/A"}
                   </div>
 
-                  <div className="info">
-                    📧 EMAIL DEBUG: {req.email || "NO EMAIL"}
-                    </div>
+                 <div className="info">
+                  📧 {req.email || "N/A"}
+                </div>
 
                   <div className="info">
                     📞 {req.contact_number || "N/A"}
