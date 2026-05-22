@@ -50,96 +50,84 @@ export default function RequestPage() {
   };
 
   // ================= HANDLE SUBMIT =================
+const handleSubmit = async () => {
+  // ================= VALIDATION =================
+  if (
+    !formData.requester_name ||
+    !formData.pickup_location ||
+    !formData.destination ||
+    !formData.pick_up_date ||
+    !formData.pick_up_time ||
+    !formData.contact_number
+  ) {
+    alert("Please fill in all required fields.");
+    return;
+  }
 
-  const handleSubmit = async () => {
-    //================ VALIDATION (MOVE THIS UP)====================
+  // ================= INSERT REQUEST =================
+  const payload = {
+    requester_name: formData.requester_name,
+    email: formData.email, // <-- keep this
+    committee_unit: formData.committee_unit,
 
-    if (
-      !formData.requester_name ||
-      !formData.pickup_location ||
-      !formData.destination ||
-      !formData.pick_up_date ||
-      !formData.pick_up_time ||
-      !formData.contact_number
-    ) {
-      alert("Please fill in all required fields.");
-      return;
-    }
-  
-    //================ PAYLOAD=====================
-    const payload = {
-      requester_name: formData.requester_name,
-      email: formData.email,
-      committee_unit: formData.committee_unit,
+    passengers: formData.passengers,
+    passenger_names: formData.passenger_names,
 
-      passengers: formData.passengers,
-      passenger_names: formData.passenger_names,
+    pickup_location: formData.pickup_location,
+    destination: formData.destination,
 
-      pickup_location: formData.pickup_location,
-      destination: formData.destination,
+    flight_no: formData.flight_no || null,
+    flight_arrival_date: formData.flight_arrival_date || null,
+    flight_arrival_time: formData.flight_arrival_time || null,
 
-      flight_no: formData.flight_no || null,
-      flight_arrival_date: formData.flight_arrival_date || null,
-      flight_arrival_time: formData.flight_arrival_time || null,
+    pick_up_date: formData.pick_up_date || null,
+    pick_up_time: formData.pick_up_time || null,
 
-      pick_up_date: formData.pick_up_date || null,
-      pick_up_time: formData.pick_up_time || null,
+    contact_person: formData.contact_person,
+    contact_number: formData.contact_number,
 
-      contact_person: formData.contact_person,
-      contact_number: formData.contact_number,
+    alternate_contact_person: formData.alternate_contact_person || null,
+    alternate_contact_number: formData.alternate_contact_number || null,
 
-      alternate_contact_person: formData.alternate_contact_person || null,
-      alternate_contact_number: formData.alternate_contact_number || null,
+    notes_remarks: formData.notes_remarks || null,
 
-
-
-      notes_remarks: formData.notes_remarks || null,  
-
-      status: "Pending",
-      priority: "Attendee",
-    };
-
-    const{error} = await supabase
-      .from("transport_requests")
-      .insert([payload]);
-
-    if (error) {
-      console.log("SUPABASE ERROR", error);
-      alert(error.message);
-      return;
-    }
-
-    alert("Transport Request Submitted Successfully!");
-
-    setFormData({
-      requester_name: "",
-      email: "",
-      committee_unit: "",
-
-      passengers: "",
-      passenger_names: "",
-
-      pickup_location: "",
-      destination: "",
-
-      flight_no: "",
-      flight_arrival_date: "",
-      flight_arrival_time: "",
-
-      pick_up_date: "",
-      pick_up_time: "",
-
-      contact_person: "",
-      contact_number: "",
-
-      alternate_contact_person: "",
-      alternate_contact_number: "",
-
-
-
-      notes_remarks: "",
-    });
+    status: "Pending",
+    priority: "Attendee",
   };
+
+  const { error } = await supabase
+    .from("transport_requests")
+    .insert([payload]);
+
+  if (error) {
+    console.log("SUPABASE ERROR", error);
+    alert(error.message);
+    return;
+  }
+
+  alert("Transport Request Submitted Successfully!");
+
+  setFormData({
+    requester_name: "",
+    email: "",
+    committee_unit: "",
+    passengers: "",
+    passenger_names: "",
+    pickup_location: "",
+    destination: "",
+    flight_no: "",
+    flight_arrival_date: "",
+    flight_arrival_time: "",
+    pick_up_date: "",
+    pick_up_time: "",
+    contact_person: "",
+    contact_number: "",
+    alternate_contact_person: "",
+    alternate_contact_number: "",
+    notes_remarks: "",
+  });
+};
+ 
  
     // ================= STYLES =================
 
