@@ -606,40 +606,33 @@ const totalCount = requests.length;
                     value={
                       req.assigned_vehicle || ""
                     }
-                    
-                    onChange={async (e) => {
-                      const vehicle = e.target.value;
-                      // instant UI update
-                      setRequests((prev) =>
-                        prev.map((r) =>
-                          r.id === req.id
-                       ? {
-                        ...r,
-                        assigned_vehicle: vehicle,
-                        status: vehicle
-                        ? "Approved"
-                        : "Pending",
-                      }
-                      : r
-                    )
-                  );
-                  // database update
-                  const { error } = await supabase
-                  .from("transport_requests")
-                  .update({
-                    assigned_vehicle: vehicle,
-                      status: vehicle
-                        ? "Approved"
-                        : "Pending",
-                    })
-                    .eq("id", req.id);
 
-                  if (error) {
-                    console.log(error);
-                    alert(error.message);
-                    fetchRequests();
-                  }
-                }}
+                    onChange={async (e) => {
+                    const vehicle = e.target.value;
+
+                    // update vehicle
+                    await updateField(
+                      req.id,
+                      "assigned_vehicle",
+                      vehicle
+                    );
+
+                    // auto update status
+                    if (vehicle) {
+                      await updateField(
+                        req.id,
+                        "status",
+                        "Approved"
+                      );
+                    } else {
+                      await updateField(
+                        req.id,
+                        "status",
+                        "Pending"
+                      );
+                    }
+                  }}
+                                      
                   >
                     <option value="">
                       Unassigned
