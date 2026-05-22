@@ -960,15 +960,21 @@ const totalCount = requests.length;
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        email: "your_email@gmail.com",
+        email: "kpcanghagas@gmail.com",
         name: "Test User",
         status: "Approved",
       }),
     });
 
     const data = await res.json();
-    console.log(data);
-    alert("Email sent! Check inbox.");
+    console.log("STATUS:", res.status);
+    console.log("DATA:", data);
+
+    if (!res.ok) {
+      alert("Email failed");
+      return;
+    }
+    alert("Email sent! Successfully.");
   }}
   style={{
     padding: "10px 14px",

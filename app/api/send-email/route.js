@@ -1,30 +1,39 @@
 import { Resend } from "resend";
+import { NextResponse } from "next/server";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req) {
   try {
+    console.log("API ROUTE HIT");
+
     const body = await req.json();
 
-    console.log("REQUEST BODY:", body);
-    console.log("API KEY EXISTS:", !!process.env.RESEND_API_KEY);
+    console.log("BODY:", body);
 
-    const resend = new Resend(process.env.RESEND_API_KEY);
+    const { email, name, status } = body;
 
-    const result = await resend.emails.send({
-      from: "onboarding@resend.dev",
-      to: "kpcanghagas@gmail.com",
-      subject: "DEBUG EMAIL TEST",
-      html: `<h1>It works</h1><p>Status: ${body.status}</p>`,
+    const data = await resend.emails.send({
+      from: "ISLA Transpo <onboarding@resend.dev>",
+      to: email,
+      subject: "Transport Request Status",
+      html: `
+        <h2>Hello ${name}</h2>
+        <p>Your request status is now:</p>
+        <strong>${status}</strong>
+      `,
     });
 
-    console.log("RESEND RESULT:", result);
+    console.log("RESEND RESPONSE:", data);
 
-    return Response.json({ success: true, result });
+    return NextResponse.json(data);
+
   } catch (error) {
-    console.log("ERROR:", error);
+    console.error("EMAIL ERROR:", error);
 
-    return Response.json({
-      success: false,
-      error: error.message,
-    });
+    return NextResponse.json(
+      { error: "Email failed" },
+      { status: 500 }
+    );
   }
 }
