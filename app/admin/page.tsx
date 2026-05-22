@@ -97,8 +97,13 @@ export default function AdminPage() {
   }, []);
 
   // ================= UPDATE FIELD =================
-  const updateField = async (id: number, field: string, value: string) => {
+  const updateField = async (
+  id: number,
+  field: string,
+  value: string
+) => {
   const request = requests.find((r) => r.id === id);
+
   if (!request) return;
 
   // prevent unnecessary updates
@@ -107,7 +112,9 @@ export default function AdminPage() {
   // instant UI update
   setRequests((prev) =>
     prev.map((r) =>
-      r.id === id ? { ...r, [field]: value } : r
+      r.id === id
+        ? { ...r, [field]: value }
+        : r
     )
   );
 
@@ -126,41 +133,50 @@ export default function AdminPage() {
   console.log("UPDATED SUCCESSFULLY");
 
   // ================= AUTO EMAIL =================
+
   const shouldEmail =
-  field === "status" &&
-  request.status !== value &&
-  ["Approved", "Disapproved", "Completed"].includes(value);
+    field === "status" &&
+    request.status !== value &&
+    ["Approved", "Disapproved", "Completed"].includes(value);
 
-if (!request.staff_email) {
-  console.log("NOT STAFF — EMAIL BLOCKED");
-  return;
-}
-
-if (shouldEmail) {
-  try {
-    const res = await fetch("/api/send-email", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-
-      body: JSON.stringify({
-        email: request.staff_email,
-        name: request.requester_name,
-        status: value,
-        pickup: request.pickup_location,
-        destination: request.destination,
-        schedule: `${request.pick_up_date} ${request.pick_up_time}`,
-        vehicle: request.assigned_vehicle,
-      }),
-    });
-
-    const data = await res.json();
-
-    console.log("EMAIL RESPONSE:", data);
-    
-  } catch (err) {
-    console.log("EMAIL ERROR:", err);
+  // only send to staff directory emails
+  if (!request.staff_email) {
+    console.log("NOT STAFF — EMAIL BLOCKED");
+    return;
   }
-}
+
+  if (shouldEmail) {
+    try {
+      const res = await fetch("/api/send-email", {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify({
+          email: request.staff_email,
+          name: request.requester_name,
+          status: value,
+          pickup: request.pickup_location,
+          destination: request.destination,
+          schedule: `${request.pick_up_date} ${request.pick_up_time}`,
+          vehicle: request.assigned_vehicle,
+        }),
+      });
+
+      const data = await res.json();
+
+      console.log("EMAIL RESPONSE:", data);
+
+      if (!res.ok) {
+        console.log("EMAIL FAILED");
+      }
+    } catch (err) {
+      console.log("EMAIL ERROR:", err);
+    }
+  }
+};
 
   // ================= VEHICLE ICON =================
   const vehicleIcon = (vehicle: string) => {
@@ -985,4 +1001,6 @@ const totalCount = requests.length;
 
     </main>
   );
-}}
+
+  
+}
