@@ -415,8 +415,8 @@ const totalCount = requests.length;
                   </div>
 
                   <div className="info">
-                    📧 {req.email || "N/A"}
-                  </div>
+                    📧 EMAIL DEBUG: {req.email || "NO EMAIL"}
+                    </div>
 
                   <div className="info">
                     📞 {req.contact_number || "N/A"}
