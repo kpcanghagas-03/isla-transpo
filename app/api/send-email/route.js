@@ -71,9 +71,9 @@ export async function POST(req) {
     } = body;
 
     // ================= CHECK STAFF =================
-    const { data: staffList, error: staffError } = await supabase
+    const { data: staff_email, error: staffError } = await supabase
       .from("staff")
-      .select("email");
+      .select("staff_email");
 
     if (staffError) {
       return NextResponse.json(
@@ -82,9 +82,9 @@ export async function POST(req) {
       );
     }
 
-    const isStaff = staffList?.some((s) => s.email === email);
+    const isStaff_email = staff_email?.some((s) => s.staff_email === email);
 
-    if (!isStaff) {
+    if (!isStaff_email) {
       return NextResponse.json(
         {
           success: false,
