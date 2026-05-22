@@ -95,35 +95,68 @@ export default function AdminPage() {
   }, []);
 
   // ================= UPDATE FIELD =================
-  const updateField = async (
-    id: number,
-    field: string,
-    value: string
-  ) => {
-    // instant UI update
-    setRequests((prev) =>
-      prev.map((r) =>
-        r.id === id ? { ...r, [field]: value } : r
-      )
-    );
+  const updateField = async (id: number, field: string, value: string) => {
+  const request = requests.find((r) => r.id === id);
+  if (!request) return;
 
-    // database update
-    const { error } = await supabase
-      .from("transport_requests")
-      .update({
-        [field]: value,
-      })
-      .eq("id", id);
+  // prevent unnecessary updates
+  if ((request as any)[field] === value) return;
 
-    if (error) {
-      console.log("SUPABASE ERROR:", error);
-      alert(error.message);
-      fetchRequests();
-      return;
+  // instant UI update
+  setRequests((prev) =>
+    prev.map((r) =>
+      r.id === id ? { ...r, [field]: value } : r
+    )
+  );
+
+  // update database
+  const { error } = await supabase
+    .from("transport_requests")
+    .update({ [field]: value })
+    .eq("id", id);
+
+  if (error) {
+    alert(error.message);
+    fetchRequests();
+    return;
+  }
+
+  console.log("UPDATED SUCCESSFULLY");
+
+  // ================= AUTO EMAIL =================
+  const shouldEmail =
+    field === "status" &&
+    request.status !== value &&
+    ["Approved", "Disapproved", "Completed"].includes(value);
+
+  if (shouldEmail) {
+    try {
+      const res = await fetch("/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: request.email,
+          name: request.requester_name,
+          status: value,
+          pickup: request.pickup_location,
+          destination: request.destination,
+          schedule: `${request.pick_up_date} ${request.pick_up_time}`,
+          vehicle: request.assigned_vehicle,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        console.log("EMAIL ERROR:", data);
+      } else {
+        console.log("EMAIL SENT:", data);
+      }
+    } catch (err) {
+      console.log("EMAIL REQUEST FAILED:", err);
     }
-
-    console.log("UPDATED SUCCESSFULLY");
-  };
+  }
+};
 
   // ================= VEHICLE ICON =================
   const vehicleIcon = (vehicle: string) => {
@@ -952,40 +985,7 @@ const totalCount = requests.length;
   }
 `}</style>
 
-<button
-  onClick={async () => {
-    const res = await fetch("/api/send-email", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: "kpcanghagas@gmail.com",
-        name: "Test User",
-        status: "Approved",
-      }),
-    });
 
-    const data = await res.json();
-    console.log("STATUS:", res.status);
-    console.log("DATA:", data);
-
-    if (!res.ok) {
-      alert("Email failed");
-      return;
-    }
-    alert("Email sent! Successfully.");
-  }}
-  style={{
-    padding: "10px 14px",
-    background: "#2563eb",
-    color: "white",
-    borderRadius: "8px",
-    border: "none",
-  }}
->
-  Test Email
-</button>
     </main>
   );
 }
