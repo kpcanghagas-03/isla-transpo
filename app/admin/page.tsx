@@ -129,32 +129,33 @@ export default function AdminPage() {
     request.status !== value &&
     ["Approved", "Disapproved", "Completed"].includes(value);
 
-  if (shouldEmail) {
-    try {
-      const res = await fetch("/api/send-email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: request.email,
-          name: request.requester_name,
-          status: value,
-          pickup: request.pickup_location,
-          destination: request.destination,
-          schedule: `${request.pick_up_date} ${request.pick_up_time}`,
-          vehicle: request.assigned_vehicle,
-        }),
-      });
+  if (!shouldEmail) return;
 
-      const data = await res.json();
+  try {
+    const res = await fetch("/api/send-email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: request.email,
+        name: request.requester_name,
+        status: value,
+        pickup: request.pickup_location,
+        destination: request.destination,
+        schedule: `${request.pick_up_date} ${request.pick_up_time}`,
+        vehicle: request.assigned_vehicle,
+      }),
+    });
 
-      if (!res.ok) {
-        console.log("EMAIL ERROR:", data);
-      } else {
-        console.log("EMAIL SENT:", data);
-      }
-    } catch (err) {
-      console.log("EMAIL REQUEST FAILED:", err);
+    const data = await res.json();
+    console.log("EMAIL RESPONSE:", data);
+
+    if (!res.ok) {
+      console.log("EMAIL FAILED:", data);
+    } else {
+      console.log("EMAIL SENT SUCCESSFULLY");
     }
+  } catch (err) {
+    console.log("EMAIL ERROR:", err);
   }
 };
 
