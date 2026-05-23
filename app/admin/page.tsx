@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-
 import LiveMap from "@/components/LiveMap";
 import { Users, Clock, CheckCircle, Truck, AlertTriangle, XCircle } from "lucide-react";
 
+// Shape from DB (allow nulls to match reality)
 type Request = {
   id: number;
 
@@ -22,10 +22,10 @@ type Request = {
   destination: string | null;
 
   flight_no: string | null;
-  flight_arrival_date: string | null; // ISO date string
-  flight_arrival_time: string | null; // HH:mm:ss or HH:mm
-  pick_up_date: string | null;        // ISO date string
-  pick_up_time: string | null;        // HH:mm:ss or HH:mm
+  flight_arrival_date: string | null; // YYYY-MM-DD
+  flight_arrival_time: string | null; // HH:mm[:ss]
+  pick_up_date: string | null;        // YYYY-MM-DD
+  pick_up_time: string | null;        // HH:mm[:ss]
 
   contact_person: string | null;
   contact_number: string | null;
@@ -45,14 +45,35 @@ type Request = {
   driver_lng?: number | null;
 };
 
+// LiveMap expects non-null strings. Create a derived type we pass to it.
+type LiveMapRequest = Omit<Request, "priority" | "email" | "staff_email" | "committee_unit" | "passengers" | "passenger_names" | "pickup_location" | "destination" | "flight_no" | "flight_arrival_date" | "flight_arrival_time" | "pick_up_date" | "pick_up_time" | "contact_person" | "contact_number" | "alternate_contact_person" | "alternate_contact_number" | "notes_remarks" | "assigned_vehicle"> & {
+  priority: "Attendee" | "Staff" | "VIP";
+  email: string;
+  staff_email?: string;
+  committee_unit: string;
+  passengers: string;
+  passenger_names: string;
+  pickup_location: string;
+  destination: string;
+  flight_no: string;
+  flight_arrival_date: string;
+  flight_arrival_time: string;
+  pick_up_date: string;
+  pick_up_time: string;
+  contact_person: string;
+  contact_number: string;
+  alternate_contact_person: string;
+  alternate_contact_number: string;
+  notes_remarks: string;
+  assigned_vehicle: string;
+};
+
 export default function AdminPage() {
   const [requests, setRequests] = useState<Request[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<
-    "All" | Request["status"]
-  >("All");
+  const [statusFilter, setStatusFilter] = useState<"All" | Request["status"]>("All");
 
   // ================= FETCH REQUESTS =================
   const fetchRequests = async () => {
@@ -120,7 +141,6 @@ export default function AdminPage() {
 
   const toPHTime = (time: string | null) => {
     if (!time) return null;
-    // Create a date using an arbitrary base date + provided time
     const d = new Date(`1970-01-01T${time}`);
     if (isNaN(d.getTime())) return null;
     return d.toLocaleTimeString("en-PH", {
@@ -140,7 +160,7 @@ export default function AdminPage() {
 
     // instant UI update
     setRequests((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, [field]: value } as Request : r))
+      prev.map((r) => (r.id === id ? ({ ...r, [field]: value } as Request) : r))
     );
 
     // update database
@@ -160,9 +180,7 @@ export default function AdminPage() {
     const shouldEmail =
       field === "status" &&
       request.status !== value &&
-      ["Pending", "Approved", "On the way", "Disapproved", "Completed", "Emergency"].includes(
-        value
-      );
+      ["Pending", "Approved", "On the way", "Disapproved", "Completed", "Emergency"].includes(value);
 
     if (shouldEmail) {
       try {
@@ -170,7 +188,7 @@ export default function AdminPage() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            email: request.email || undefined, // include requester email for allowlist checks
+            email: request.email || undefined, // allowlist check on server
             name: request.requester_name,
             status: value,
             pickup: request.pickup_location || "",
@@ -194,17 +212,14 @@ export default function AdminPage() {
   const sortedRequests = requests
     .filter((r) => {
       if (statusFilter !== "All" && r.status !== statusFilter) return false;
-      const searchLower = searchTerm.toLowerCase();
+      const s = searchTerm.toLowerCase();
       return (
-        (r.requester_name || "").toLowerCase().includes(searchLower) ||
-        (r.pickup_location || "").toLowerCase().includes(searchLower) ||
-        (r.destination || "").toLowerCase().includes(searchLower)
+        (r.requester_name || "").toLowerCase().includes(s) ||
+        (r.pickup_location || "").toLowerCase().includes(s) ||
+        (r.destination || "").toLowerCase().includes(s)
       );
     })
-    .sort(
-      (a, b) =>
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-    );
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
   const activeRequests = sortedRequests.filter((r) =>
     ["Pending", "Approved", "On the way", "Emergency"].includes(r.status)
@@ -222,6 +237,35 @@ export default function AdminPage() {
   const disapprovedCount = requests.filter((r) => r.status === "Disapproved").length;
   const totalCount = requests.length;
 
+  // Normalize shape for LiveMap (no nulls, no extra keys)
+  const liveMapRequests: LiveMapRequest[] = requests.map((req) => ({
+    id: req.id,
+    requester_name: req.requester_name || "",
+    email: req.email || "",
+    staff_email: req.staff_email || "",
+    committee_unit: req.committee_unit || "",
+    passengers: req.passengers || "0",
+    passenger_names: req.passenger_names || "",
+    pickup_location: req.pickup_location || "",
+    destination: req.destination || "",
+    flight_no: req.flight_no || "",
+    flight_arrival_date: req.flight_arrival_date || "",
+    flight_arrival_time: req.flight_arrival_time || "",
+    pick_up_date: req.pick_up_date || "",
+    pick_up_time: req.pick_up_time || "",
+    contact_person: req.contact_person || "",
+    contact_number: req.contact_number || "",
+    alternate_contact_person: req.alternate_contact_person || "",
+    alternate_contact_number: req.alternate_contact_number || "",
+    notes_remarks: req.notes_remarks || "",
+    status: req.status,
+    priority: req.priority || "Attendee",
+    assigned_vehicle: req.assigned_vehicle || "",
+    created_at: req.created_at,
+    driver_lat: req.driver_lat ?? null,
+    driver_lng: req.driver_lng ?? null,
+  }));
+
   return (
     <main className="container">
       {/* ================= BACKGROUND ================= */}
@@ -236,12 +280,7 @@ export default function AdminPage() {
 
       {/* ================= MAP ================= */}
       <section className="mapSection">
-        <LiveMap
-          requests={requests.map((req) => ({
-            ...req,
-            full_name: req.requester_name,
-          }))}
-        />
+        <LiveMap requests={liveMapRequests} />
       </section>
 
       {/* ================= SUMMARY CARDS ================= */}
@@ -395,8 +434,7 @@ export default function AdminPage() {
                       <br />
                       Flight No: {req.flight_no || "N/A"}
                       <br />
-                      Arrival:{" "}
-                      {toPHDate(req.flight_arrival_date) || "N/A"}
+                      Arrival: {toPHDate(req.flight_arrival_date) || "N/A"}
                       {req.flight_arrival_time ? `, ${toPHTime(req.flight_arrival_time) || ""}` : ""}
                     </div>
                   )}
@@ -428,10 +466,7 @@ export default function AdminPage() {
                     })}
                   </div>
 
-                  <div
-                    className="statusBadge"
-                    style={{ background: statusColor(req.status) }}
-                  >
+                  <div className="statusBadge" style={{ background: statusColor(req.status) }}>
                     {req.status}
                   </div>
 
@@ -463,14 +498,9 @@ export default function AdminPage() {
                     value={req.assigned_vehicle || ""}
                     onChange={async (e) => {
                       const vehicle = e.target.value;
-
                       await updateField(req.id, "assigned_vehicle", vehicle);
-
-                      if (vehicle) {
-                        await updateField(req.id, "status", "Approved");
-                      } else {
-                        await updateField(req.id, "status", "Pending");
-                      }
+                      if (vehicle) await updateField(req.id, "status", "Approved");
+                      else await updateField(req.id, "status", "Pending");
                     }}
                   >
                     <option value="">Unassigned</option>
@@ -505,10 +535,7 @@ export default function AdminPage() {
               <div className="info">📍 {req.pickup_location || "N/A"}</div>
               <div className="info">🎯 {req.destination || "N/A"}</div>
 
-              <div
-                className="statusBadge"
-                style={{ background: statusColor(req.status) }}
-              >
+              <div className="statusBadge" style={{ background: statusColor(req.status) }}>
                 {req.status}
               </div>
 
@@ -534,87 +561,27 @@ export default function AdminPage() {
 
       {/* ================= STYLES ================= */}
       <style jsx>{`
-        .container {
-          min-height: 100vh;
-          padding: 16px;
-          font-family: Arial, sans-serif;
-          color: white;
-        }
-        .bg {
-          position: fixed;
-          inset: 0;
-          background-image: url("/camiguin.jpg");
-          background-size: cover;
-          background-position: center;
-          z-index: -2;
-        }
-        .overlay {
-          position: fixed;
-          inset: 0;
-          background: rgba(0, 0, 0, 0.55);
-          z-index: -1;
-        }
-        .header {
-          text-align: center;
-          margin-bottom: 18px;
-        }
-        .header h1 {
-          font-size: clamp(22px, 4vw, 36px);
-          margin-bottom: 4px;
-        }
+        .container { min-height: 100vh; padding: 16px; font-family: Arial, sans-serif; color: white; }
+        .bg { position: fixed; inset: 0; background-image: url("/camiguin.jpg"); background-size: cover; background-position: center; z-index: -2; }
+        .overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.55); z-index: -1; }
+
+        .header { text-align: center; margin-bottom: 18px; }
+        .header h1 { font-size: clamp(22px, 4vw, 36px); margin-bottom: 4px; }
         .header p { opacity: 0.9; }
 
-        .mapSection {
-          height: 320px;
-          border-radius: 16px;
-          overflow: hidden;
-          margin-bottom: 20px;
-          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
-        }
+        .mapSection { height: 320px; border-radius: 16px; overflow: hidden; margin-bottom: 20px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25); }
 
         .section { margin-bottom: 28px; }
         .sectionTitle { margin-bottom: 12px; font-size: 24px; font-weight: bold; }
 
-        .grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-          gap: 14px;
-        }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px; }
 
-        .statsGrid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-          gap: 12px;
-          margin-bottom: 20px;
-        }
+        .statsGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px; }
 
-        .card {
-          background: white;
-          color: #111827;
-          border-radius: 16px;
-          padding: 14px;
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-          box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
-        }
+        .card { background: white; color: #111827; border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15); }
 
-        .statCard {
-          background: #ffffff;
-          border-radius: 14px;
-          padding: 12px 14px;
-          box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
-          border: 1px solid rgba(0, 0, 0, 0.05);
-          display: flex;
-          flex-direction: column;
-          gap: 6px;
-          min-height: 80px;
-          transition: all 0.2s ease;
-        }
-        .statCard:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
-        }
+        .statCard { background: #ffffff; border-radius: 14px; padding: 12px 14px; box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12); border: 1px solid rgba(0, 0, 0, 0.05); display: flex; flex-direction: column; gap: 6px; min-height: 80px; transition: all 0.2s; }
+        .statCard:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(0,0,0,0.18); }
         .statIcon { display: flex; justify-content: flex-end; color: #475569; }
         .statNumber { font-size: 22px; font-weight: 800; color: #0f172a; }
         .statLabel { font-size: 12px; font-weight: 600; color: #64748b; }
@@ -628,40 +595,17 @@ export default function AdminPage() {
 
         .completedCard { opacity: 0.85; }
 
-        .emergency {
-          border-left: 5px solid #dc2626;
-          box-shadow: 0 0 18px rgba(255, 0, 0, 0.5);
-        }
+        .emergency { border-left: 5px solid #dc2626; box-shadow: 0 0 18px rgba(255, 0, 0, 0.5); }
 
         .nameRow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         .name { font-size: 18px; font-weight: bold; }
-        .vipBadge {
-          background: #dc2626;
-          color: white;
-          font-size: 11px;
-          padding: 4px 8px;
-          border-radius: 999px;
-          font-weight: bold;
-        }
+        .vipBadge { background: #dc2626; color: white; font-size: 11px; padding: 4px 8px; border-radius: 999px; font-weight: bold; }
         .info { font-size: 13px; line-height: 1.5; }
         .label { font-size: 12px; font-weight: bold; margin-top: 4px; }
-        .statusBadge {
-          color: white;
-          padding: 6px 10px;
-          border-radius: 999px;
-          font-size: 12px;
-          width: fit-content;
-          font-weight: bold;
-        }
+        .statusBadge { color: white; padding: 6px 10px; border-radius: 999px; font-size: 12px; width: fit-content; font-weight: bold; }
         .vehicle { font-weight: bold; font-size: 14px; }
 
-        select {
-          padding: 8px;
-          border-radius: 8px;
-          border: 1px solid #d1d5db;
-          background: white;
-          color: black;
-        }
+        select { padding: 8px; border-radius: 8px; border: 1px solid #d1d5db; background: white; color: black; }
 
         .loading { text-align: center; }
 
