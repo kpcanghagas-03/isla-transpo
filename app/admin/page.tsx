@@ -10,40 +10,39 @@ type Request = {
   id: number;
 
   requester_name: string;
-  email: string;
-  staff_email?: string;
+  email: string | null;
+  staff_email?: string | null;
 
-  committee_unit: string;
+  committee_unit: string | null;
 
-  passengers: string;
-  passenger_names: string;
+  passengers: string | null;
+  passenger_names: string | null;
 
-  pickup_location: string;
-  destination: string;
+  pickup_location: string | null;
+  destination: string | null;
 
-  flight_no: string;
-  flight_arrival_date: string;
-  flight_arrival_time: string;
+  flight_no: string | null;
+  flight_arrival_date: string | null; // ISO date string
+  flight_arrival_time: string | null; // HH:mm:ss or HH:mm
+  pick_up_date: string | null;        // ISO date string
+  pick_up_time: string | null;        // HH:mm:ss or HH:mm
 
-  pick_up_date: string;
-  pick_up_time: string;
+  contact_person: string | null;
+  contact_number: string | null;
 
-  contact_person: string;
-  contact_number: string;
+  alternate_contact_person: string | null;
+  alternate_contact_number: string | null;
 
-  alternate_contact_person: string;
-  alternate_contact_number: string;
+  notes_remarks: string | null;
 
-  notes_remarks: string;
+  status: "Pending" | "Approved" | "On the way" | "Completed" | "Disapproved" | "Emergency";
+  priority: "Attendee" | "Staff" | "VIP" | null;
+  assigned_vehicle: string | null;
 
-  status: string;
-  priority: string;
-  assigned_vehicle: string;
+  created_at: string; // ISO timestamp
 
-  created_at: string;
-
-  driver_lat?: number;
-  driver_lng?: number;
+  driver_lat?: number | null;
+  driver_lng?: number | null;
 };
 
 export default function AdminPage() {
@@ -51,8 +50,9 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("All");
-
+  const [statusFilter, setStatusFilter] = useState<
+    "All" | Request["status"]
+  >("All");
 
   // ================= FETCH REQUESTS =================
   const fetchRequests = async () => {
@@ -67,7 +67,7 @@ export default function AdminPage() {
       return;
     }
 
-    setRequests(data || []);
+    setRequests((data as Request[]) || []);
     setLoading(false);
   };
 
@@ -95,16 +95,6 @@ export default function AdminPage() {
     };
   }, []);
 
-  // ================= VEHICLE ICON =================
-  const vehicleIcon = (vehicle: string) => {
-    if (vehicle === "Van") return "🚐";
-    if (vehicle === "Bus") return "🚌";
-    if (vehicle === "Car") return "🚗";
-    if (vehicle === "Pick-up") return "🛻";
-    if (vehicle === "Motor Vehicle") return "🏍️";
-    return "🚨";
-  };
-
   // ================= STATUS COLOR =================
   const statusColor = (status: string) => {
     if (status === "Pending") return "#facc15";
@@ -116,8 +106,32 @@ export default function AdminPage() {
     return "#d1d5db";
   };
 
+  // ================= HELPERS =================
+  const toPHDate = (isoDate: string | null) => {
+    if (!isoDate) return null;
+    const d = new Date(isoDate);
+    if (isNaN(d.getTime())) return null;
+    return d.toLocaleDateString("en-PH", {
+      year: "numeric",
+      month: "long",
+      day: "2-digit",
+    });
+  };
+
+  const toPHTime = (time: string | null) => {
+    if (!time) return null;
+    // Create a date using an arbitrary base date + provided time
+    const d = new Date(`1970-01-01T${time}`);
+    if (isNaN(d.getTime())) return null;
+    return d.toLocaleTimeString("en-PH", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+  };
+
   // ================= UPDATE FIELD =================
-  const updateField = async (id: number, field: string, value: string) => {
+  const updateField = async (id: number, field: keyof Request | string, value: string) => {
     const request = requests.find((r) => r.id === id);
     if (!request) return;
 
@@ -126,7 +140,7 @@ export default function AdminPage() {
 
     // instant UI update
     setRequests((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, [field]: value } : r))
+      prev.map((r) => (r.id === id ? { ...r, [field]: value } as Request : r))
     );
 
     // update database
@@ -154,16 +168,17 @@ export default function AdminPage() {
       try {
         const res = await fetch("/api/send_email", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
+            email: request.email || undefined, // include requester email for allowlist checks
             name: request.requester_name,
             status: value,
-            pickup: request.pickup_location,
-            destination: request.destination,
-            schedule: `${request.pick_up_date} ${request.pick_up_time}`,
-            vehicle: request.assigned_vehicle,
+            pickup: request.pickup_location || "",
+            destination: request.destination || "",
+            schedule: `${toPHDate(request.pick_up_date) || ""}${
+              request.pick_up_time ? `, ${toPHTime(request.pick_up_time) || ""}` : ""
+            }`,
+            vehicle: request.assigned_vehicle || "",
           }),
         });
 
@@ -175,22 +190,28 @@ export default function AdminPage() {
     }
   };
 
-  // ================= SORTED & FILTERED REQUESTS =================
+  // ================= FILTERED + SORTED =================
   const sortedRequests = requests
     .filter((r) => {
       if (statusFilter !== "All" && r.status !== statusFilter) return false;
       const searchLower = searchTerm.toLowerCase();
       return (
-        r.requester_name.toLowerCase().includes(searchLower) ||
-        r.pickup_location.toLowerCase().includes(searchLower) ||
-        r.destination.toLowerCase().includes(searchLower)
+        (r.requester_name || "").toLowerCase().includes(searchLower) ||
+        (r.pickup_location || "").toLowerCase().includes(searchLower) ||
+        (r.destination || "").toLowerCase().includes(searchLower)
       );
     })
-    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    .sort(
+      (a, b) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
 
-  // ================= ACTIVE REQUESTS =================
-  const activeRequests = sortedRequests.filter((r: Request) =>
+  const activeRequests = sortedRequests.filter((r) =>
     ["Pending", "Approved", "On the way", "Emergency"].includes(r.status)
+  );
+
+  const completedRequests = sortedRequests.filter((r) =>
+    ["Completed", "Disapproved"].includes(r.status)
   );
 
   // ================= COUNTS =================
@@ -200,11 +221,6 @@ export default function AdminPage() {
   const emergencyCount = requests.filter((r) => r.status === "Emergency").length;
   const disapprovedCount = requests.filter((r) => r.status === "Disapproved").length;
   const totalCount = requests.length;
-
-  // ================= COMPLETED REQUESTS =================
-  const completedRequests = sortedRequests.filter((r: Request) =>
-    ["Completed", "Disapproved"].includes(r.status)
-  );
 
   return (
     <main className="container">
@@ -230,56 +246,38 @@ export default function AdminPage() {
 
       {/* ================= SUMMARY CARDS ================= */}
       <div className="statsGrid">
-        {/* TOTAL */}
         <div className="statCard total">
-          <div className="statIcon">
-            <Users size={18} />
-          </div>
+          <div className="statIcon"><Users size={18} /></div>
           <div className="statNumber">{totalCount}</div>
           <div className="statLabel">Total Requests</div>
         </div>
 
-        {/* PENDING */}
         <div className="statCard pending">
-          <div className="statIcon">
-            <Clock size={18} />
-          </div>
+          <div className="statIcon"><Clock size={18} /></div>
           <div className="statNumber">{pendingCount}</div>
           <div className="statLabel">Pending</div>
         </div>
 
-        {/* APPROVED */}
         <div className="statCard approved">
-          <div className="statIcon">
-            <CheckCircle size={18} />
-          </div>
+          <div className="statIcon"><CheckCircle size={18} /></div>
           <div className="statNumber">{approvedCount}</div>
           <div className="statLabel">Approved</div>
         </div>
 
-        {/* ON THE WAY */}
         <div className="statCard way">
-          <div className="statIcon">
-            <Truck size={18} />
-          </div>
+          <div className="statIcon"><Truck size={18} /></div>
           <div className="statNumber">{onTheWayCount}</div>
           <div className="statLabel">On the Way</div>
         </div>
 
-        {/* EMERGENCY */}
         <div className="statCard emergency">
-          <div className="statIcon">
-            <AlertTriangle size={18} />
-          </div>
+          <div className="statIcon"><AlertTriangle size={18} /></div>
           <div className="statNumber">{emergencyCount}</div>
           <div className="statLabel">Emergency</div>
         </div>
 
-        {/* DISAPPROVED */}
         <div className="statCard disapproved">
-          <div className="statIcon">
-            <XCircle size={18} />
-          </div>
+          <div className="statIcon"><XCircle size={18} /></div>
           <div className="statNumber">{disapprovedCount}</div>
           <div className="statLabel">Disapproved</div>
         </div>
@@ -315,7 +313,7 @@ export default function AdminPage() {
 
         <select
           value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
+          onChange={(e) => setStatusFilter(e.target.value as any)}
           style={{
             padding: 14,
             borderRadius: 12,
@@ -361,18 +359,13 @@ export default function AdminPage() {
                         : "6px solid #9ca3af",
                   }}
                 >
-                  {/* NAME */}
                   <div className="nameRow">
                     <span className="name">{req.requester_name}</span>
-
                     {req.priority === "VIP" && <span className="vipBadge">VIP</span>}
                   </div>
 
-                  {/* DETAILS */}
                   <div className="info">🏢 {req.committee_unit || "N/A"}</div>
-
                   <div className="info">📧 {req.email || "N/A"}</div>
-
                   <div className="info">📞 {req.contact_number || "N/A"}</div>
 
                   <div className="info">
@@ -394,10 +387,8 @@ export default function AdminPage() {
                   </div>
 
                   <div className="info">📍 {req.pickup_location || "N/A"}</div>
-
                   <div className="info">🎯 {req.destination || "N/A"}</div>
 
-                  {/* FLIGHT DETAILS */}
                   {(req.flight_no || req.flight_arrival_date || req.flight_arrival_time) && (
                     <div className="info">
                       ✈️ Flight Details:
@@ -405,54 +396,16 @@ export default function AdminPage() {
                       Flight No: {req.flight_no || "N/A"}
                       <br />
                       Arrival:{" "}
-                      {req.flight_arrival_date
-                        ? new Date(req.flight_arrival_date).toLocaleDateString("en-PH", {
-                            year: "numeric",
-                            month: "long",
-                            day: "2-digit",
-                          })
-                        : "N/A"}
-                      {req.flight_arrival_time
-                        ? `, ${new Date(`1970-01-01T${req.flight_arrival_time}`).toLocaleTimeString(
-                            "en-PH",
-                            {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                              hour12: true,
-                            }
-                          )}`
-                        : ""}
+                      {toPHDate(req.flight_arrival_date) || "N/A"}
+                      {req.flight_arrival_time ? `, ${toPHTime(req.flight_arrival_time) || ""}` : ""}
                     </div>
                   )}
 
-                  {/* PICKUP SCHEDULE */}
                   <div className="info">
                     🕒 Pickup Schedule:
-
-
                     <br />
-                    {req.pick_up_date
-                      ? new Date(req.pick_up_date).toLocaleDateString("en-PH", {
-                          year: "numeric",
-                          month: "long",
-
-                          day: "2-digit",
-                        })
-                      : "N/A"}
-                    {req.pick_up_time
-                      ? `, ${new Date(`1970-01-01T${req.pick_up_time}`).toLocaleTimeString(
-                          "en-PH",
-                          {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            hour12: true,
-                          }
-                        )}`
-                      : ""}
-
-
-
-
+                    {toPHDate(req.pick_up_date) || "N/A"}
+                    {req.pick_up_time ? `, ${toPHTime(req.pick_up_time) || ""}` : ""}
                   </div>
 
                   <div className="info">
@@ -475,17 +428,13 @@ export default function AdminPage() {
                     })}
                   </div>
 
-                  {/* STATUS BADGE */}
                   <div
                     className="statusBadge"
-                    style={{
-                      background: statusColor(req.status),
-                    }}
+                    style={{ background: statusColor(req.status) }}
                   >
                     {req.status}
                   </div>
 
-                  {/* PRIORITY */}
                   <label className="label">Priority</label>
                   <select
                     value={req.priority || "Attendee"}
@@ -496,7 +445,6 @@ export default function AdminPage() {
                     <option>VIP</option>
                   </select>
 
-                  {/* STATUS */}
                   <label className="label">Status</label>
                   <select
                     value={req.status || "Pending"}
@@ -510,17 +458,14 @@ export default function AdminPage() {
                     <option>Emergency</option>
                   </select>
 
-                  {/* ASSIGNED VEHICLE */}
                   <label className="label">Assigned Vehicle</label>
                   <select
                     value={req.assigned_vehicle || ""}
                     onChange={async (e) => {
                       const vehicle = e.target.value;
 
-                      // update vehicle
                       await updateField(req.id, "assigned_vehicle", vehicle);
 
-                      // auto update status
                       if (vehicle) {
                         await updateField(req.id, "status", "Approved");
                       } else {
@@ -539,7 +484,6 @@ export default function AdminPage() {
                     <option value="Backup Vehicle - BKP 7777 - Driver 8">🚨 Backup Vehicle - BKP 7777 - Driver 8</option>
                   </select>
 
-                  {/* VEHICLE DISPLAY */}
                   <div className="vehicle">
                     {req.assigned_vehicle ? `✅ ${req.assigned_vehicle}` : "🚨 No Vehicle Assigned"}
                   </div>
@@ -547,7 +491,6 @@ export default function AdminPage() {
               );
             })}
           </div>
-
         )}
       </section>
 
@@ -559,16 +502,12 @@ export default function AdminPage() {
           {completedRequests.map((req) => (
             <div key={req.id} className="card completedCard">
               <div className="name">{req.requester_name}</div>
-
-              <div className="info">📍 {req.pickup_location}</div>
-
-              <div className="info">🎯 {req.destination}</div>
+              <div className="info">📍 {req.pickup_location || "N/A"}</div>
+              <div className="info">🎯 {req.destination || "N/A"}</div>
 
               <div
                 className="statusBadge"
-                style={{
-                  background: statusColor(req.status),
-                }}
+                style={{ background: statusColor(req.status) }}
               >
                 {req.status}
               </div>
@@ -601,7 +540,6 @@ export default function AdminPage() {
           font-family: Arial, sans-serif;
           color: white;
         }
-
         .bg {
           position: fixed;
           inset: 0;
@@ -610,27 +548,21 @@ export default function AdminPage() {
           background-position: center;
           z-index: -2;
         }
-
         .overlay {
-          position: fixed,
+          position: fixed;
           inset: 0;
           background: rgba(0, 0, 0, 0.55);
           z-index: -1;
         }
-
         .header {
           text-align: center;
           margin-bottom: 18px;
         }
-
         .header h1 {
           font-size: clamp(22px, 4vw, 36px);
           margin-bottom: 4px;
         }
-
-        .header p {
-          opacity: 0.9;
-        }
+        .header p { opacity: 0.9; }
 
         .mapSection {
           height: 320px;
@@ -640,15 +572,8 @@ export default function AdminPage() {
           box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
         }
 
-        .section {
-          margin-bottom: 28px;
-        }
-
-        .sectionTitle {
-          margin-bottom: 12px;
-          font-size: 24px;
-          font-weight: bold;
-        }
+        .section { margin-bottom: 28px; }
+        .sectionTitle { margin-bottom: 12px; font-size: 24px; font-weight: bold; }
 
         .grid {
           display: grid;
@@ -686,29 +611,13 @@ export default function AdminPage() {
           min-height: 80px;
           transition: all 0.2s ease;
         }
-
         .statCard:hover {
           transform: translateY(-2px);
           box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
         }
-
-        .statIcon {
-          display: flex;
-          justify-content: flex-end;
-          color: #475569;
-        }
-
-        .statNumber {
-          font-size: 22px;
-          font-weight: 800;
-          color: #0f172a;
-        }
-
-        .statLabel {
-          font-size: 12px;
-          font-weight: 600;
-          color: #64748b;
-        }
+        .statIcon { display: flex; justify-content: flex-end; color: #475569; }
+        .statNumber { font-size: 22px; font-weight: 800; color: #0f172a; }
+        .statLabel { font-size: 12px; font-weight: 600; color: #64748b; }
 
         .total { border-left: 5px solid #0ea5e9; }
         .pending { border-left: 5px solid #facc15; }
@@ -724,15 +633,8 @@ export default function AdminPage() {
           box-shadow: 0 0 18px rgba(255, 0, 0, 0.5);
         }
 
-        .nameRow {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          flex-wrap: wrap;
-        }
-
+        .nameRow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         .name { font-size: 18px; font-weight: bold; }
-
         .vipBadge {
           background: #dc2626;
           color: white;
@@ -741,11 +643,8 @@ export default function AdminPage() {
           border-radius: 999px;
           font-weight: bold;
         }
-
         .info { font-size: 13px; line-height: 1.5; }
-
         .label { font-size: 12px; font-weight: bold; margin-top: 4px; }
-
         .statusBadge {
           color: white;
           padding: 6px 10px;
@@ -754,7 +653,6 @@ export default function AdminPage() {
           width: fit-content;
           font-weight: bold;
         }
-
         .vehicle { font-weight: bold; font-size: 14px; }
 
         select {
@@ -766,20 +664,6 @@ export default function AdminPage() {
         }
 
         .loading { text-align: center; }
-
-        @keyframes pulse {
-          0% { transform: scale(1); }
-          50% { transform: scale(1.02); }
-          100% { transform: scale(1); }
-        }
-
-        @keyframes bounce {
-          0% { transform: translateY(0); }
-          30% { transform: translateY(-4px); }
-          50% { transform: translateY(0); }
-          70% { transform: translateY(-2px); }
-          100% { transform: translateY(0); }
-        }
 
         @media (max-width: 768px) {
           .mapSection { height: 240px; }
