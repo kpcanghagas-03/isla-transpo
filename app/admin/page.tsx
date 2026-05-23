@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+
 import LiveMap from "@/components/LiveMap";
 import { Users,Clock,CheckCircle,Truck,AlertTriangle,XCircle,} from "lucide-react";
 
@@ -52,7 +53,7 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
 
   const[searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("All");
+  const [statusFilter, setStatusFilter] = useState("All")
 
 
   // ================= FETCH REQUESTS =================
@@ -135,49 +136,38 @@ export default function AdminPage() {
   // ================= AUTO EMAIL =================
 
   const shouldEmail =
-    field === "status" &&
-    request.status !== value &&
-    ["Approved", "Disapproved", "Completed"].includes(value);
+  field === "status" &&
+  request.status !== value &&
+  ["Pending", "Approved", "On the way", "Disapproved", "Completed", "Emergency"].includes(value);
 
-  // only send to staff directory emails
-  if (!request.staff_email) {
-    console.log("NOT STAFF — EMAIL BLOCKED");
-    return;
+if (shouldEmail) {
+  try {
+    const res = await fetch("/api/send_email", {
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json",
+      },
+
+      body: JSON.stringify({
+        name: request.requester_name,
+        status: value,
+        pickup: request.pickup_location,
+        destination: request.destination,
+        schedule: `${request.pick_up_date} ${request.pick_up_time}`,
+        vehicle: request.assigned_vehicle,
+      }),
+    });
+
+    const data = await res.json();
+
+    console.log("EMAIL RESPONSE:", data);
+
+  } catch (err) {
+    console.log("EMAIL ERROR:", err);
   }
 
-  if (shouldEmail) {
-    try {
-      const res = await fetch("/api/send-email", {
-        method: "POST",
-
-        headers: {
-          "Content-Type": "application/json",
-        },
-
-        body: JSON.stringify({
-          email: request.staff_email,
-          name: request.requester_name,
-          status: value,
-          pickup: request.pickup_location,
-          destination: request.destination,
-          schedule: `${request.pick_up_date} ${request.pick_up_time}`,
-          vehicle: request.assigned_vehicle,
-        }),
-      });
-
-      const data = await res.json();
-
-      console.log("EMAIL RESPONSE:", data);
-
-      if (!res.ok) {
-        console.log("EMAIL FAILED");
-      }
-    } catch (err) {
-      console.log("EMAIL ERROR:", err);
-    }
-  }
 };
-
   // ================= VEHICLE ICON =================
   const vehicleIcon = (vehicle: string) => {
     if (vehicle === "Van") return "🚐";
@@ -997,10 +987,6 @@ const totalCount = requests.length;
     }
   }
 `}</style>
-
-
-    </main>
-  );
-
-  
+</main>
+   )
 }
