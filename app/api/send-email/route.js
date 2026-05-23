@@ -1,93 +1,80 @@
 import { NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
 
-// ================= HEARTWARMING STATUS MESSAGES =================
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
+
+// ================= MESSAGE ENGINE =================
 function getStatusMessage(status, name) {
+  const base = `Dear ${name},\n\n`;
+
   switch (status) {
     case "Pending":
       return {
         subject: "We’ve received your request 💙",
-        message: `Dear ${name},
-
-Thank you for trusting ISLA-TRANSPO. Your request is now pending review.
-
-“Every journey begins with a single step.”
-
-We will update you as soon as possible. 🚐`,
+        message:
+          base +
+          "Thank you for trusting ISLA-TRANSPO.\n\n“Every journey begins with trust.” 🚐",
       };
 
     case "Approved":
       return {
-        subject: "Your request has been approved ✅",
-        message: `Dear ${name},
-
-Great news! Your transport request has been approved.
-
-“We’re honored to serve you and ensure a safe and comfortable journey.”
-
-Thank you for choosing ISLA-TRANSPO 💙`,
+        subject: "Request Approved ✅",
+        message:
+          base +
+          "Your request has been approved.\n\n“We are honored to serve you safely.” 💙",
       };
 
     case "On the way":
       return {
         subject: "Your vehicle is on the way 🚗",
-        message: `Dear ${name},
-
-Your assigned vehicle is now on the way to your location.
-
-“Good things are already moving toward you.”
-
-Please be ready at your pickup point. 🚐`,
+        message:
+          base +
+          "Your transport is now en route.\n\n“Help is already moving toward you.”",
       };
 
     case "Completed":
       return {
-        subject: "Trip completed 🎉",
-        message: `Dear ${name},
-
-Your trip has been successfully completed.
-
-“Safe travels create lasting memories.”
-
-Thank you for riding with ISLA-TRANSPO 💙`,
+        subject: "Trip Completed 🎉",
+        message:
+          base +
+          "Your trip is completed.\n\n“Safe journeys create lasting memories.”",
       };
 
     case "Disapproved":
       return {
         subject: "Request Update",
-        message: `Dear ${name},
-
-We regret to inform you that your request could not be approved at this time.
-
-“Sometimes delays lead us to better timing.”
-
-Thank you for your understanding.`,
-      };
-
-    case "Emergency":
-      return {
-        subject: "Emergency Transport Update 🚨",
-        message: `Dear ${name},
-
-We have received your emergency request and are prioritizing it immediately.
-
-“You are not alone — help is already in motion.”
-
-Stay calm and wait for further updates.`,
+        message:
+          base +
+          "Your request was not approved at this time.\n\n“Sometimes delays lead to better timing.”",
       };
 
     default:
       return {
-        subject: "Request Update",
-        message: `Dear ${name},
-
-Your transport request has been updated.
-
-Thank you for using ISLA-TRANSPO 💙`,
+        subject: "Update",
+        message: base + "Your request has been updated.",
       };
   }
 }
 
-// ================= MAIN API ROUTE =================
+// ================= EMAIL SENDER (WITH LOGGING) =================
+async function sendEmail(payload) {
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const data = await res.json();
+  return { ok: res.ok, data };
+}
+
+// ================= MAIN ROUTE =================
 export async function POST(req) {
   try {
     const body = await req.json();
@@ -100,62 +87,60 @@ export async function POST(req) {
       destination,
       schedule,
       vehicle,
+      request_id,
     } = body;
-
-    if (!email) {
-      return NextResponse.json(
-        { success: false, message: "Missing email" },
-        { status: 400 }
-      );
-    }
 
     const emailContent = getStatusMessage(status, name);
 
-    // ================= SEND EMAIL (RESEND EXAMPLE) =================
-    const response = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+    const payload = {
+      from: "ISLA-TRANSPO <onboarding@resend.dev>",
+      to: email,
+      subject: emailContent.subject,
+      html: `
+        <div style="font-family:Arial; padding:20px; line-height:1.6;">
+          <h2>${emailContent.subject}</h2>
+          <p style="white-space:pre-line">${emailContent.message}</p>
+          <hr/>
+          <p><b>Pickup:</b> ${pickup || "N/A"}</p>
+          <p><b>Destination:</b> ${destination || "N/A"}</p>
+          <p><b>Schedule:</b> ${schedule || "N/A"}</p>
+          <p><b>Vehicle:</b> ${vehicle || "Not assigned"}</p>
+        </div>
+      `,
+    };
+
+    // ================= TRY EMAIL =================
+    const { ok, data } = await sendEmail(payload);
+
+    // ================= LOG RESULT (ALWAYS) =================
+    await supabase.from("notification_logs").insert([
+      {
+        request_id,
+        email,
+        status,
+        message: emailContent.subject,
+        success: ok,
+        error: ok ? null : JSON.stringify(data),
       },
-      body: JSON.stringify({
-        from: "ISLA-TRANSPO <noreply@yourdomain.com>",
-        to: email,
-        subject: emailContent.subject,
-        html: `
-          <div style="font-family:Arial;padding:20px;line-height:1.6;">
-            <h2>${emailContent.subject}</h2>
-            <p style="white-space:pre-line">${emailContent.message}</p>
+    ]);
 
-            <hr/>
-
-            <h4>Trip Details</h4>
-            <p><b>Pickup:</b> ${pickup || "N/A"}</p>
-            <p><b>Destination:</b> ${destination || "N/A"}</p>
-            <p><b>Schedule:</b> ${schedule || "N/A"}</p>
-            <p><b>Vehicle:</b> ${vehicle || "Not assigned"}</p>
-
-            <br/>
-            <p style="color:gray;font-size:12px;">
-              ISLA-TRANSPO • Safe & Reliable Transport Service
-            </p>
-          </div>
-        `,
-      }),
-    });
-
-    const data = await response.json();
+    if (!ok) {
+      return NextResponse.json(
+        { success: false, message: "Email failed", data },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({
       success: true,
-      message: "Email sent successfully",
+      message: "Email sent + logged",
       data,
     });
-  } catch (error) {
-    console.error("EMAIL ERROR:", error);
+  } catch (err) {
+    console.error(err);
 
     return NextResponse.json(
-      { success: false, message: "Server error", error: error.message },
+      { success: false, message: "Server error", error: err.message },
       { status: 500 }
     );
   }
