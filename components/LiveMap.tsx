@@ -1,117 +1,72 @@
 "use client";
 
-import dynamic from "next/dynamic";
+import { useEffect } from "react";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 
-const MapContainer = dynamic(
-  () =>
-    import("react-leaflet").then(
-      (mod) => mod.MapContainer
-    ),
-  {
-    ssr: false,
-  }
-);
-
-const TileLayer = dynamic(
-  () =>
-    import("react-leaflet").then(
-      (mod) => mod.TileLayer
-    ),
-  {
-    ssr: false,
-  }
-);
-
-const Marker = dynamic(
-  () =>
-    import("react-leaflet").then(
-      (mod) => mod.Marker
-    ),
-  {
-    ssr: false,
-  }
-);
-
-const Popup = dynamic(
-  () =>
-    import("react-leaflet").then(
-      (mod) => mod.Popup
-    ),
-  {
-    ssr: false,
-  }
-);
-
-type Request = {
+// IMPORTANT: Match your AdminPage Request type (flexible version)
+export type LiveMapRequest = {
   id: number;
-  full_name: string;
-  priority: string;
-  status: string;
-  assigned_vehicle?: string;
-  driver_lat?: number;
-  driver_lng?: number;
+  requester_name: string;
+  pickup_location: string | null;
+  destination: string | null;
+
+  status: "Pending" | "Approved" | "On the way" | "Completed" | "Disapproved" | "Emergency";
+
+  driver_lat?: number | null;
+  driver_lng?: number | null;
 };
 
-export default function LiveMap({
-  requests,
-}: {
-  requests: Request[];
-}) {
-  return (
-    <div
-      style={{
-        height: "100%",
-        width: "100%",
-      }}
-    >
-      <MapContainer
-        center={[14.5995, 120.9842]}
-        zoom={12}
-        style={{
-          height: "100%",
-          width: "100%",
-        }}
-      >
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution="© OpenStreetMap contributors"
-        />
+type Props = {
+  requests: LiveMapRequest[];
+};
 
-        {requests?.map((r) => {
-          if (
-            !r.driver_lat ||
-            !r.driver_lng
-          ) {
-            return null;
-          }
+export default function LiveMap({ requests }: Props) {
+  useEffect(() => {
+    // prevent multiple map instances
+    const container = L.DomUtil.get("map");
 
-          return (
-            <Marker
-              key={r.id}
-              position={[
-                Number(r.driver_lat),
-                Number(r.driver_lng),
-              ]}
-            >
-              <Popup>
-                <div>
-                  <b>{r.full_name}</b>
+    if (container != null) {
+      (container as any)._leaflet_id = null;
+    }
 
-                  <br />
+    const map = L.map("map").setView([6.9214, 122.079], 12); // Zamboanga default
 
-                  {r.priority} - {r.status}
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "&copy; OpenStreetMap contributors",
+    }).addTo(map);
 
-                  <br />
+    // add markers
+    requests.forEach((req) => {
+      if (req.driver_lat && req.driver_lng) {
+        const color =
+          req.status === "Approved"
+            ? "green"
+            : req.status === "On the way"
+            ? "blue"
+            : req.status === "Emergency"
+            ? "red"
+            : "gray";
 
-                  🚐{" "}
-                  {r.assigned_vehicle ||
-                    "No vehicle"}
-                </div>
-              </Popup>
-            </Marker>
-          );
-        })}
-      </MapContainer>
-    </div>
-  );
+        const marker = L.circleMarker([req.driver_lat, req.driver_lng], {
+          radius: 10,
+          color,
+          fillColor: color,
+          fillOpacity: 0.8,
+        }).addTo(map);
+
+        marker.bindPopup(`
+          <b>${req.requester_name}</b><br/>
+          ${req.pickup_location || "No pickup"} → ${req.destination || "No destination"}<br/>
+          Status: ${req.status}
+        `);
+      }
+    });
+
+    return () => {
+      map.remove();
+    };
+  }, [requests]);
+
+  return <div id="map" style={{ height: "100%", width: "100%" }} />;
 }

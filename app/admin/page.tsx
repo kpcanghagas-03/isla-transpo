@@ -47,6 +47,7 @@ type Request = {
 
 // LiveMap expects non-null strings. Create a derived type we pass to it.
 type LiveMapRequest = Omit<Request, "priority" | "email" | "staff_email" | "committee_unit" | "passengers" | "passenger_names" | "pickup_location" | "destination" | "flight_no" | "flight_arrival_date" | "flight_arrival_time" | "pick_up_date" | "pick_up_time" | "contact_person" | "contact_number" | "alternate_contact_person" | "alternate_contact_number" | "notes_remarks" | "assigned_vehicle"> & {
+  requester_name: string;
   priority: "Attendee" | "Staff" | "VIP";
   email: string;
   staff_email?: string;
