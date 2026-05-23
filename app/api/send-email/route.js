@@ -1,112 +1,161 @@
 import { NextResponse } from "next/server";
 
-function getStatusMessage(status: string, name: string) {
+// ================= HEARTWARMING STATUS MESSAGES =================
+function getStatusMessage(status, name) {
   switch (status) {
     case "Pending":
       return {
-        title: "We’ve received your request 🤍",
-        message: `Hi ${name}, thank you for trusting ISLA-TRANSPO. Your request is now being reviewed by our team. We’ll update you as soon as possible.`,
-        quote: "“Patience is not about waiting, but how you behave while waiting.”",
+        subject: "We’ve received your request 💙",
+        message: `Dear ${name},
+
+Thank you for trusting ISLA-TRANSPO. Your request is now pending review.
+
+“Every journey begins with a single step.”
+
+We will update you as soon as possible. 🚐`,
       };
 
     case "Approved":
       return {
-        title: "Your request has been approved 🎉",
-        message: `Good news, ${name}! Your transport request has been approved. Our team is now preparing everything to ensure a smooth and safe trip for you.`,
-        quote: "“Great things are coming together for you.”",
+        subject: "Your request has been approved ✅",
+        message: `Dear ${name},
+
+Great news! Your transport request has been approved.
+
+“We’re honored to serve you and ensure a safe and comfortable journey.”
+
+Thank you for choosing ISLA-TRANSPO 💙`,
       };
 
     case "On the way":
       return {
-        title: "Your ride is on the way 🚗",
-        message: `Hi ${name}, your assigned vehicle is now on the way. Please stay ready and reachable. We’re almost there!`,
-        quote: "“Good service is not just speed, but care on the way.”",
+        subject: "Your vehicle is on the way 🚗",
+        message: `Dear ${name},
+
+Your assigned vehicle is now on the way to your location.
+
+“Good things are already moving toward you.”
+
+Please be ready at your pickup point. 🚐`,
       };
 
     case "Completed":
       return {
-        title: "Trip completed successfully 🙏",
-        message: `Thank you, ${name}, for riding with ISLA-TRANSPO. We hope your trip was safe and comfortable. We’re always here whenever you need us.`,
-        quote: "“Gratitude turns ordinary service into meaningful connection.”",
+        subject: "Trip completed 🎉",
+        message: `Dear ${name},
+
+Your trip has been successfully completed.
+
+“Safe travels create lasting memories.”
+
+Thank you for riding with ISLA-TRANSPO 💙`,
       };
 
     case "Disapproved":
       return {
-        title: "Update on your request",
-        message: `Hi ${name}, we sincerely apologize. After careful review, your request could not be approved at this time. You may submit again or contact support for assistance.`,
-        quote: "“Every no today can lead to a better yes tomorrow.”",
+        subject: "Request Update",
+        message: `Dear ${name},
+
+We regret to inform you that your request could not be approved at this time.
+
+“Sometimes delays lead us to better timing.”
+
+Thank you for your understanding.`,
       };
 
     case "Emergency":
       return {
-        title: "Emergency transport update 🚨",
-        message: `Hi ${name}, we are prioritizing your emergency request. Our team is already taking immediate action to assist you as quickly as possible.`,
-        quote: "“In urgent moments, care becomes our fastest response.”",
+        subject: "Emergency Transport Update 🚨",
+        message: `Dear ${name},
+
+We have received your emergency request and are prioritizing it immediately.
+
+“You are not alone — help is already in motion.”
+
+Stay calm and wait for further updates.`,
       };
 
     default:
       return {
-        title: "Update from ISLA-TRANSPO",
-        message: `Hi ${name}, there is an update regarding your transport request.`,
-        quote: "“We’re here to make your journey easier.”",
+        subject: "Request Update",
+        message: `Dear ${name},
+
+Your transport request has been updated.
+
+Thank you for using ISLA-TRANSPO 💙`,
       };
   }
 }
 
-export async function POST(req: Request) {
+// ================= MAIN API ROUTE =================
+export async function POST(req) {
   try {
     const body = await req.json();
 
-    const { email, name, status, pickup, destination, schedule, vehicle } = body;
+    const {
+      email,
+      name,
+      status,
+      pickup,
+      destination,
+      schedule,
+      vehicle,
+    } = body;
 
-    const content = getStatusMessage(status, name);
+    if (!email) {
+      return NextResponse.json(
+        { success: false, message: "Missing email" },
+        { status: 400 }
+      );
+    }
 
-    console.log("EMAIL TRIGGER:", body);
+    const emailContent = getStatusMessage(status, name);
 
-    // 🔥 Here you would integrate Resend / Email provider
-    // Example payload structure:
+    // ================= SEND EMAIL (RESEND EXAMPLE) =================
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+      },
+      body: JSON.stringify({
+        from: "ISLA-TRANSPO <noreply@yourdomain.com>",
+        to: email,
+        subject: emailContent.subject,
+        html: `
+          <div style="font-family:Arial;padding:20px;line-height:1.6;">
+            <h2>${emailContent.subject}</h2>
+            <p style="white-space:pre-line">${emailContent.message}</p>
 
-    /*
-    await resend.emails.send({
-      from: "ISLA-TRANSPO <noreply@yourdomain.com>",
-      to: email,
-      subject: content.title,
-      html: `
-        <div style="font-family:Arial;padding:20px">
-          <h2>${content.title}</h2>
+            <hr/>
 
-          <p>${content.message}</p>
+            <h4>Trip Details</h4>
+            <p><b>Pickup:</b> ${pickup || "N/A"}</p>
+            <p><b>Destination:</b> ${destination || "N/A"}</p>
+            <p><b>Schedule:</b> ${schedule || "N/A"}</p>
+            <p><b>Vehicle:</b> ${vehicle || "Not assigned"}</p>
 
-          <hr/>
-
-          <p><b>Trip Details:</b></p>
-          <p>Pickup: ${pickup}</p>
-          <p>Destination: ${destination}</p>
-          <p>Schedule: ${schedule}</p>
-          <p>Vehicle: ${vehicle}</p>
-
-          <br/>
-
-          <blockquote style="font-style:italic;color:#555">
-            ${content.quote}
-          </blockquote>
-
-          <br/>
-
-          <p>— ISLA-TRANSPO Team 🚐</p>
-        </div>
-      `,
+            <br/>
+            <p style="color:gray;font-size:12px;">
+              ISLA-TRANSPO • Safe & Reliable Transport Service
+            </p>
+          </div>
+        `,
+      }),
     });
-    */
+
+    const data = await response.json();
 
     return NextResponse.json({
       success: true,
-      message: "Warm email prepared successfully",
-      preview: content,
+      message: "Email sent successfully",
+      data,
     });
-  } catch (error: any) {
+  } catch (error) {
+    console.error("EMAIL ERROR:", error);
+
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, message: "Server error", error: error.message },
       { status: 500 }
     );
   }
