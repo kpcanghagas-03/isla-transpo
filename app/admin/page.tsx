@@ -2,7 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import LiveMap from "@/components/LiveMap";
+import dynamic from "next/dynamic";
+
+const LiveMap = dynamic(() => import("@/components/LiveMap"), {
+  ssr: false,
+});
 import { Users, Clock, CheckCircle, Truck, AlertTriangle, XCircle } from "lucide-react";
 
 // Shape from DB (allow nulls to match reality)
