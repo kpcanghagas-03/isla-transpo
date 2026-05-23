@@ -4,15 +4,14 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
 import LiveMap from "@/components/LiveMap";
-import { Users,Clock,CheckCircle,Truck,AlertTriangle,XCircle,} from "lucide-react";
-
+import { Users, Clock, CheckCircle, Truck, AlertTriangle, XCircle } from "lucide-react";
 
 type Request = {
   id: number;
 
   requester_name: string;
   email: string;
-  staff_email?:string;
+  staff_email?: string;
 
   committee_unit: string;
 
@@ -35,7 +34,6 @@ type Request = {
   alternate_contact_person: string;
   alternate_contact_number: string;
 
-  
   notes_remarks: string;
 
   status: string;
@@ -52,8 +50,8 @@ export default function AdminPage() {
   const [requests, setRequests] = useState<Request[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const[searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("All")
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
 
 
   // ================= FETCH REQUESTS =================
@@ -97,77 +95,6 @@ export default function AdminPage() {
     };
   }, []);
 
-  // ================= UPDATE FIELD =================
-  const updateField = async (
-  id: number,
-  field: string,
-  value: string
-) => {
-  const request = requests.find((r) => r.id === id);
-
-  if (!request) return;
-
-  // prevent unnecessary updates
-  if ((request as any)[field] === value) return;
-
-  // instant UI update
-  setRequests((prev) =>
-    prev.map((r) =>
-      r.id === id
-        ? { ...r, [field]: value }
-        : r
-    )
-  );
-
-  // update database
-  const { error } = await supabase
-    .from("transport_requests")
-    .update({ [field]: value })
-    .eq("id", id);
-
-  if (error) {
-    alert(error.message);
-    fetchRequests();
-    return;
-  }
-
-  console.log("UPDATED SUCCESSFULLY");
-
-  // ================= AUTO EMAIL =================
-
-  const shouldEmail =
-  field === "status" &&
-  request.status !== value &&
-  ["Pending", "Approved", "On the way", "Disapproved", "Completed", "Emergency"].includes(value);
-
-if (shouldEmail) {
-  try {
-    const res = await fetch("/api/send_email", {
-      method: "POST",
-
-      headers: {
-        "Content-Type": "application/json",
-      },
-
-      body: JSON.stringify({
-        name: request.requester_name,
-        status: value,
-        pickup: request.pickup_location,
-        destination: request.destination,
-        schedule: `${request.pick_up_date} ${request.pick_up_time}`,
-        vehicle: request.assigned_vehicle,
-      }),
-    });
-
-    const data = await res.json();
-
-    console.log("EMAIL RESPONSE:", data);
-
-  } catch (err) {
-    console.log("EMAIL ERROR:", err);
-  }
-
-};
   // ================= VEHICLE ICON =================
   const vehicleIcon = (vehicle: string) => {
     if (vehicle === "Van") return "🚐";
@@ -175,7 +102,6 @@ if (shouldEmail) {
     if (vehicle === "Car") return "🚗";
     if (vehicle === "Pick-up") return "🛻";
     if (vehicle === "Motor Vehicle") return "🏍️";
-
     return "🚨";
   };
 
@@ -187,8 +113,66 @@ if (shouldEmail) {
     if (status === "Completed") return "#6b7280";
     if (status === "Disapproved") return "#ef4444";
     if (status === "Emergency") return "#dc2626";
-
     return "#d1d5db";
+  };
+
+  // ================= UPDATE FIELD =================
+  const updateField = async (id: number, field: string, value: string) => {
+    const request = requests.find((r) => r.id === id);
+    if (!request) return;
+
+    // prevent unnecessary updates
+    if ((request as any)[field] === value) return;
+
+    // instant UI update
+    setRequests((prev) =>
+      prev.map((r) => (r.id === id ? { ...r, [field]: value } : r))
+    );
+
+    // update database
+    const { error } = await supabase
+      .from("transport_requests")
+      .update({ [field]: value })
+      .eq("id", id);
+
+    if (error) {
+      alert(error.message);
+      fetchRequests();
+      return;
+    }
+    console.log("UPDATED SUCCESSFULLY");
+
+    // ================= AUTO EMAIL =================
+    const shouldEmail =
+      field === "status" &&
+      request.status !== value &&
+      ["Pending", "Approved", "On the way", "Disapproved", "Completed", "Emergency"].includes(
+        value
+      );
+
+    if (shouldEmail) {
+      try {
+        const res = await fetch("/api/send_email", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: request.requester_name,
+            status: value,
+            pickup: request.pickup_location,
+            destination: request.destination,
+            schedule: `${request.pick_up_date} ${request.pick_up_time}`,
+            vehicle: request.assigned_vehicle,
+          }),
+        });
+
+        const data = await res.json();
+        console.log("EMAIL RESPONSE:", data);
+      } catch (err) {
+        console.log("EMAIL ERROR:", err);
+      }
+    }
   };
 
   // ================= SORTED & FILTERED REQUESTS =================
@@ -206,37 +190,18 @@ if (shouldEmail) {
 
   // ================= ACTIVE REQUESTS =================
   const activeRequests = sortedRequests.filter((r: Request) =>
-    [
-      "Pending",
-      "Approved",
-      "On the way",
-      "Emergency",
-    ].includes(r.status)
+    ["Pending", "Approved", "On the way", "Emergency"].includes(r.status)
   );
 
+  // ================= COUNTS =================
+  const pendingCount = requests.filter((r) => r.status === "Pending").length;
+  const approvedCount = requests.filter((r) => r.status === "Approved").length;
+  const onTheWayCount = requests.filter((r) => r.status === "On the way").length;
+  const emergencyCount = requests.filter((r) => r.status === "Emergency").length;
+  const disapprovedCount = requests.filter((r) => r.status === "Disapproved").length;
+  const totalCount = requests.length;
+
   // ================= COMPLETED REQUESTS =================
- const pendingCount = requests.filter(
-  (r) => r.status === "Pending"
-).length;
-
-const approvedCount = requests.filter(
-  (r) => r.status === "Approved"
-).length;
-
-const onTheWayCount = requests.filter(
-  (r) => r.status === "On the way"
-).length;
-
-const emergencyCount = requests.filter(
-  (r) => r.status === "Emergency"
-).length;
-
-const disapprovedCount = requests.filter(
-  (r) => r.status === "Disapproved"
-).length;
-
-const totalCount = requests.length;
- 
   const completedRequests = sortedRequests.filter((r: Request) =>
     ["Completed", "Disapproved"].includes(r.status)
   );
@@ -263,140 +228,130 @@ const totalCount = requests.length;
         />
       </section>
 
-{/* ================= SUMMARY CARDS ================= */}
+      {/* ================= SUMMARY CARDS ================= */}
+      <div className="statsGrid">
+        {/* TOTAL */}
+        <div className="statCard total">
+          <div className="statIcon">
+            <Users size={18} />
+          </div>
+          <div className="statNumber">{totalCount}</div>
+          <div className="statLabel">Total Requests</div>
+        </div>
 
-<div className="statsGrid">
-  {/* TOTAL */}
-  <div className="statCard total">
-    <div className="statIcon">
-      <Users size={18} />
-    </div>
-    <div className="statNumber">{totalCount}</div>
-    <div className="statLabel">Total Requests</div>
-  </div>
+        {/* PENDING */}
+        <div className="statCard pending">
+          <div className="statIcon">
+            <Clock size={18} />
+          </div>
+          <div className="statNumber">{pendingCount}</div>
+          <div className="statLabel">Pending</div>
+        </div>
 
-  {/* PENDING */}
-  <div className="statCard pending">
-    <div className="statIcon">
-      <Clock size={18} />
-    </div>
-    <div className="statNumber">{pendingCount}</div>
-    <div className="statLabel">Pending</div>
-  </div>
+        {/* APPROVED */}
+        <div className="statCard approved">
+          <div className="statIcon">
+            <CheckCircle size={18} />
+          </div>
+          <div className="statNumber">{approvedCount}</div>
+          <div className="statLabel">Approved</div>
+        </div>
 
-  {/* APPROVED */}
-  <div className="statCard approved">
-    <div className="statIcon">
-      <CheckCircle size={18} />
-    </div>
-    <div className="statNumber">{approvedCount}</div>
-    <div className="statLabel">Approved</div>
-  </div>
+        {/* ON THE WAY */}
+        <div className="statCard way">
+          <div className="statIcon">
+            <Truck size={18} />
+          </div>
+          <div className="statNumber">{onTheWayCount}</div>
+          <div className="statLabel">On the Way</div>
+        </div>
 
-  {/* ON THE WAY */}
-  <div className="statCard way">
-    <div className="statIcon">
-      <Truck size={18} />
-    </div>
-    <div className="statNumber">{onTheWayCount}</div>
-    <div className="statLabel">On the Way</div>
-  </div>
+        {/* EMERGENCY */}
+        <div className="statCard emergency">
+          <div className="statIcon">
+            <AlertTriangle size={18} />
+          </div>
+          <div className="statNumber">{emergencyCount}</div>
+          <div className="statLabel">Emergency</div>
+        </div>
 
-  {/* EMERGENCY */}
-  <div className="statCard emergency">
-    <div className="statIcon">
-      <AlertTriangle size={18} />
-    </div>
-    <div className="statNumber">{emergencyCount}</div>
-    <div className="statLabel">Emergency</div>
-  </div>
+        {/* DISAPPROVED */}
+        <div className="statCard disapproved">
+          <div className="statIcon">
+            <XCircle size={18} />
+          </div>
+          <div className="statNumber">{disapprovedCount}</div>
+          <div className="statLabel">Disapproved</div>
+        </div>
+      </div>
 
-  {/* DISAPPROVED */}
-  <div className="statCard disapproved">
-    <div className="statIcon">
-      <XCircle size={18} />
-    </div>
-    <div className="statNumber">{disapprovedCount}</div>
-    <div className="statLabel">Disapproved</div>
-  </div>
-</div>
       {/* ================= SEARCH & FILTER ================= */}
+      <div
+        style={{
+          display: "flex",
+          gap: 12,
+          marginBottom: 20,
+          flexWrap: "wrap",
+        }}
+      >
+        <input
+          type="text"
+          placeholder="Search requester, pickup, destination..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{
+            flex: 1,
+            minWidth: 250,
+            padding: 14,
+            borderRadius: 12,
+            border: "2px solid #cbd5e1",
+            fontSize: 14,
+            color: "#111827",
+            background: "white",
+            outline: "none",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
+          }}
+        />
 
-<div
-  style={{
-    display: "flex",
-    gap: 12,
-    marginBottom: 20,
-    flexWrap: "wrap",
-  }}
->
-  <input
-    type="text"
-    placeholder="Search requester, pickup, destination..."
-    value={searchTerm}
-    onChange={(e) =>
-      setSearchTerm(e.target.value)
-    }
-    style={{
-    flex: 1,
-    minWidth: 250,
-    padding: 14,
-    borderRadius: 12,
-    border: "2px solid #cbd5e1",
-    fontSize: 14,
-    color: "#111827",
-    background: "white",
-    outline: "none",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
-  }}
-  />
-
-  <select
-    value={statusFilter}
-    onChange={(e) =>
-      setStatusFilter(e.target.value)
-    }
-    style={{
-    padding: 14,
-    borderRadius: 12,
-    border: "2px solid #cbd5e1",
-    color: "#111827",
-    minWidth: 180,
-    background: "white",
-    outline: "none",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
-  }}
-  >
-    <option>All</option>
-    <option>Pending</option>
-    <option>Approved</option>
-    <option>On the way</option>
-    <option>Completed</option>
-    <option>Disapproved</option>
-    <option>Emergency</option>
-  </select>
-</div>
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          style={{
+            padding: 14,
+            borderRadius: 12,
+            border: "2px solid #cbd5e1",
+            color: "#111827",
+            minWidth: 180,
+            background: "white",
+            outline: "none",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
+          }}
+        >
+          <option>All</option>
+          <option>Pending</option>
+          <option>Approved</option>
+          <option>On the way</option>
+          <option>Completed</option>
+          <option>Disapproved</option>
+          <option>Emergency</option>
+        </select>
+      </div>
 
       {/* ================= ACTIVE REQUESTS ================= */}
       <section className="section">
-        <h2 className="sectionTitle">
-          Active Transport Requests
-        </h2>
+        <h2 className="sectionTitle">Active Transport Requests</h2>
 
         {loading ? (
           <p className="loading">Loading...</p>
         ) : (
           <div className="grid">
             {activeRequests.map((req) => {
-              const emergency =
-                req.status === "Emergency";
+              const emergency = req.status === "Emergency";
 
               return (
                 <div
                   key={req.id}
-                  className={`card ${
-                    emergency ? "emergency" : ""
-                  }`}
+                  className={`card ${emergency ? "emergency" : ""}`}
                   style={{
                     borderLeft:
                       req.priority === "VIP"
@@ -408,29 +363,17 @@ const totalCount = requests.length;
                 >
                   {/* NAME */}
                   <div className="nameRow">
-                    <span className="name">
-                      {req.requester_name}
-                    </span>
+                    <span className="name">{req.requester_name}</span>
 
-                    {req.priority === "VIP" && (
-                      <span className="vipBadge">
-                        VIP
-                      </span>
-                    )}
+                    {req.priority === "VIP" && <span className="vipBadge">VIP</span>}
                   </div>
 
                   {/* DETAILS */}
-                  <div className="info">
-                    🏢 {req.committee_unit || "N/A"}
-                  </div>
+                  <div className="info">🏢 {req.committee_unit || "N/A"}</div>
 
-                 <div className="info">
-                  📧 {req.email || "N/A"}
-                </div>
+                  <div className="info">📧 {req.email || "N/A"}</div>
 
-                  <div className="info">
-                    📞 {req.contact_number || "N/A"}
-                  </div>
+                  <div className="info">📞 {req.contact_number || "N/A"}</div>
 
                   <div className="info">
                     👤 Contact Person:
@@ -450,42 +393,27 @@ const totalCount = requests.length;
                     {req.passenger_names || "N/A"}
                   </div>
 
-                  <div className="info">
-                    📍 {req.pickup_location || "N/A"}
-                  </div>
+                  <div className="info">📍 {req.pickup_location || "N/A"}</div>
 
-                  <div className="info">
-                    🎯 {req.destination || "N/A"}
-                  </div>
+                  <div className="info">🎯 {req.destination || "N/A"}</div>
 
                   {/* FLIGHT DETAILS */}
-                  {(req.flight_no ||
-                    req.flight_arrival_date ||
-                    req.flight_arrival_time) && (
+                  {(req.flight_no || req.flight_arrival_date || req.flight_arrival_time) && (
                     <div className="info">
                       ✈️ Flight Details:
                       <br />
-                      Flight No:{" "}
-                      {req.flight_no || "N/A"}
+                      Flight No: {req.flight_no || "N/A"}
                       <br />
-                      Arrival:
-                      {" "}
+                      Arrival:{" "}
                       {req.flight_arrival_date
-                        ? new Date(
-                            req.flight_arrival_date
-                          ).toLocaleDateString(
-                            "en-PH",
-                            {
-                              year: "numeric",
-                              month: "long",
-                              day: "2-digit",
-                            }
-                          )
+                        ? new Date(req.flight_arrival_date).toLocaleDateString("en-PH", {
+                            year: "numeric",
+                            month: "long",
+                            day: "2-digit",
+                          })
                         : "N/A"}
                       {req.flight_arrival_time
-                        ? `, ${new Date(
-                            `1970-01-01T${req.flight_arrival_time}`
-                          ).toLocaleTimeString(
+                        ? `, ${new Date(`1970-01-01T${req.flight_arrival_time}`).toLocaleTimeString(
                             "en-PH",
                             {
                               hour: "2-digit",
@@ -500,25 +428,19 @@ const totalCount = requests.length;
                   {/* PICKUP SCHEDULE */}
                   <div className="info">
                     🕒 Pickup Schedule:
+
+
                     <br />
-
                     {req.pick_up_date
-                      ? new Date(
-                          req.pick_up_date
-                        ).toLocaleDateString(
-                          "en-PH",
-                          {
-                            year: "numeric",
-                            month: "long",
-                            day: "2-digit",
-                          }
-                        )
-                      : "N/A"}
+                      ? new Date(req.pick_up_date).toLocaleDateString("en-PH", {
+                          year: "numeric",
+                          month: "long",
 
+                          day: "2-digit",
+                        })
+                      : "N/A"}
                     {req.pick_up_time
-                      ? `, ${new Date(
-                          `1970-01-01T${req.pick_up_time}`
-                        ).toLocaleTimeString(
+                      ? `, ${new Date(`1970-01-01T${req.pick_up_time}`).toLocaleTimeString(
                           "en-PH",
                           {
                             hour: "2-digit",
@@ -527,8 +449,11 @@ const totalCount = requests.length;
                           }
                         )}`
                       : ""}
+
+
+
+
                   </div>
-                  
 
                   <div className="info">
                     📝 Notes / Remarks:
@@ -539,9 +464,7 @@ const totalCount = requests.length;
                   <div className="info">
                     📅 Requested:
                     <br />
-                    {new Date(
-                      req.created_at
-                    ).toLocaleString("en-PH", {
+                    {new Date(req.created_at).toLocaleString("en-PH", {
                       year: "numeric",
                       month: "short",
                       day: "numeric",
@@ -556,28 +479,17 @@ const totalCount = requests.length;
                   <div
                     className="statusBadge"
                     style={{
-                      background: statusColor(
-                        req.status
-                      ),
+                      background: statusColor(req.status),
                     }}
                   >
                     {req.status}
                   </div>
 
                   {/* PRIORITY */}
-                  <label className="label">
-                    Priority
-                  </label>
-
+                  <label className="label">Priority</label>
                   <select
                     value={req.priority || "Attendee"}
-                    onChange={(e) =>
-                      updateField(
-                        req.id,
-                        "priority",
-                        e.target.value
-                      )
-                    }
+                    onChange={(e) => updateField(req.id, "priority", e.target.value)}
                   >
                     <option>Attendee</option>
                     <option>Staff</option>
@@ -585,19 +497,10 @@ const totalCount = requests.length;
                   </select>
 
                   {/* STATUS */}
-                  <label className="label">
-                    Status
-                  </label>
-
+                  <label className="label">Status</label>
                   <select
                     value={req.status || "Pending"}
-                    onChange={(e) =>
-                      updateField(
-                        req.id,
-                        "status",
-                        e.target.value
-                      )
-                    }
+                    onChange={(e) => updateField(req.id, "status", e.target.value)}
                   >
                     <option>Pending</option>
                     <option>Approved</option>
@@ -608,136 +511,70 @@ const totalCount = requests.length;
                   </select>
 
                   {/* ASSIGNED VEHICLE */}
-                  <label className="label">
-                    Assigned Vehicle
-                  </label>
-
+                  <label className="label">Assigned Vehicle</label>
                   <select
-                    value={
-                      req.assigned_vehicle || ""
-                    }
-
+                    value={req.assigned_vehicle || ""}
                     onChange={async (e) => {
-                    const vehicle = e.target.value;
+                      const vehicle = e.target.value;
 
-                    // update vehicle
-                    await updateField(
-                      req.id,
-                      "assigned_vehicle",
-                      vehicle
-                    );
+                      // update vehicle
+                      await updateField(req.id, "assigned_vehicle", vehicle);
 
-                    // auto update status
-                    if (vehicle) {
-                      await updateField(
-                        req.id,
-                        "status",
-                        "Approved"
-                      );
-                    } else {
-                      await updateField(
-                        req.id,
-                        "status",
-                        "Pending"
-                      );
-                    }
-                  }}
-                                      
+                      // auto update status
+                      if (vehicle) {
+                        await updateField(req.id, "status", "Approved");
+                      } else {
+                        await updateField(req.id, "status", "Pending");
+                      }
+                    }}
                   >
-                    <option value="">
-                      Unassigned
-                      </option>
-
-                      <option value="Van 1 - ZAM 1023 - Driver 1">
-                        🚐 Van 1 - ZAM 1023 - Driver 1
-                      </option>
-
-                      <option value="Van 2 - ZAM 1456 - Driver 2">
-                        🚐 Van 2 - ZAM 1456 - Driver 2
-                      </option>
-
-                      <option value="SUV 1 - SUV 8831 - Driver 3">
-                        🚗 SUV 1 - SUV 8831 - Driver 3
-                      </option>
-
-                      <option value="SUV 2 - SUV 1942 - Driver 4">
-                        🚗 SUV 2 - SUV 1942 - Driver 4
-                      </option>
-
-                      <option value="Mini Bus 1 - BUS 1001 - Driver 5">
-                        🚌 Mini Bus 1 - BUS 1001 - Driver 5
-                      </option>
-
-                      <option value="Service Car 1 - CAR 9921 - Driver 6">
-                        🚗 Service Car 1 - CAR 9921 - Driver 6
-                      </option>
-
-                      <option value="Van 3 - VAN 5555 - Driver 7">
-                        🚐 Van 3 - VAN 5555 - Driver 7
-                      </option>
-
-                      <option value="Backup Vehicle - BKP 7777 - Driver 8">
-                        🚨 Backup Vehicle - BKP 7777 - Driver 8
-                      </option>
+                    <option value="">Unassigned</option>
+                    <option value="Van 1 - ZAM 1023 - Driver 1">🚐 Van 1 - ZAM 1023 - Driver 1</option>
+                    <option value="Van 2 - ZAM 1456 - Driver 2">🚐 Van 2 - ZAM 1456 - Driver 2</option>
+                    <option value="SUV 1 - SUV 8831 - Driver 3">🚗 SUV 1 - SUV 8831 - Driver 3</option>
+                    <option value="SUV 2 - SUV 1942 - Driver 4">🚗 SUV 2 - SUV 1942 - Driver 4</option>
+                    <option value="Mini Bus 1 - BUS 1001 - Driver 5">🚌 Mini Bus 1 - BUS 1001 - Driver 5</option>
+                    <option value="Service Car 1 - CAR 9921 - Driver 6">🚗 Service Car 1 - CAR 9921 - Driver 6</option>
+                    <option value="Van 3 - VAN 5555 - Driver 7">🚐 Van 3 - VAN 5555 - Driver 7</option>
+                    <option value="Backup Vehicle - BKP 7777 - Driver 8">🚨 Backup Vehicle - BKP 7777 - Driver 8</option>
                   </select>
 
                   {/* VEHICLE DISPLAY */}
-                  
                   <div className="vehicle">
-                    {req.assigned_vehicle
-                    ? `✅ ${req.assigned_vehicle}`
-                    : "🚨 No Vehicle Assigned"}
-                    </div>
+                    {req.assigned_vehicle ? `✅ ${req.assigned_vehicle}` : "🚨 No Vehicle Assigned"}
+                  </div>
                 </div>
               );
             })}
           </div>
+
         )}
       </section>
 
       {/* ================= COMPLETED ================= */}
       <section className="section">
-        <h2 className="sectionTitle">
-          Completed / Disapproved
-        </h2>
+        <h2 className="sectionTitle">Completed / Disapproved</h2>
 
         <div className="grid">
           {completedRequests.map((req) => (
-            <div
-              key={req.id}
-              className="card completedCard"
-            >
-              <div className="name">
-                {req.requester_name}
-              </div>
+            <div key={req.id} className="card completedCard">
+              <div className="name">{req.requester_name}</div>
 
-              <div className="info">
-                📍 {req.pickup_location}
-              </div>
+              <div className="info">📍 {req.pickup_location}</div>
 
-              <div className="info">
-                🎯 {req.destination}
-              </div>
+              <div className="info">🎯 {req.destination}</div>
 
               <div
                 className="statusBadge"
                 style={{
-                  background: statusColor(
-                    req.status
-                  ),
+                  background: statusColor(req.status),
                 }}
               >
                 {req.status}
               </div>
 
               <button
-                onClick={() =>
-                  updateField(
-                    req.id,
-                    "status",
-                    "Approved"
-                  )
-                }
+                onClick={() => updateField(req.id, "status", "Approved")}
                 style={{
                   marginTop: 10,
                   padding: "8px 10px",
@@ -757,236 +594,199 @@ const totalCount = requests.length;
       </section>
 
       {/* ================= STYLES ================= */}
-     <style jsx>{`
-  .container {
-    min-height: 100vh;
-    padding: 16px;
-    font-family: Arial, sans-serif;
-    color: white;
-  }
+      <style jsx>{`
+        .container {
+          min-height: 100vh;
+          padding: 16px;
+          font-family: Arial, sans-serif;
+          color: white;
+        }
 
-  .bg {
-    position: fixed;
-    inset: 0;
-    background-image: url("/camiguin.jpg");
-    background-size: cover;
-    background-position: center;
-    z-index: -2;
-  }
+        .bg {
+          position: fixed;
+          inset: 0;
+          background-image: url("/camiguin.jpg");
+          background-size: cover;
+          background-position: center;
+          z-index: -2;
+        }
 
-  .overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.55);
-    z-index: -1;
-  }
+        .overlay {
+          position: fixed,
+          inset: 0;
+          background: rgba(0, 0, 0, 0.55);
+          z-index: -1;
+        }
 
-  .header {
-    text-align: center;
-    margin-bottom: 18px;
-  }
+        .header {
+          text-align: center;
+          margin-bottom: 18px;
+        }
 
-  .header h1 {
-    font-size: clamp(22px, 4vw, 36px);
-    margin-bottom: 4px;
-  }
+        .header h1 {
+          font-size: clamp(22px, 4vw, 36px);
+          margin-bottom: 4px;
+        }
 
-  .header p {
-    opacity: 0.9;
-  }
+        .header p {
+          opacity: 0.9;
+        }
 
-  .mapSection {
-    height: 320px;
-    border-radius: 16px;
-    overflow: hidden;
-    margin-bottom: 20px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
-  }
+        .mapSection {
+          height: 320px;
+          border-radius: 16px;
+          overflow: hidden;
+          margin-bottom: 20px;
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+        }
 
-  .section {
-    margin-bottom: 28px;
-  }
+        .section {
+          margin-bottom: 28px;
+        }
 
-  .sectionTitle {
-    margin-bottom: 12px;
-    font-size: 24px;
-    font-weight: bold;
-  }
+        .sectionTitle {
+          margin-bottom: 12px;
+          font-size: 24px;
+          font-weight: bold;
+        }
 
-  /* ================= GRID ================= */
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 14px;
-  }
+        .grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+          gap: 14px;
+        }
 
-  /* ================= STATS GRID ================= */
-.statsGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 12px;
-  margin-bottom: 20px;
-}
+        .statsGrid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+          gap: 12px;
+          margin-bottom: 20px;
+        }
 
-  /* ================= CARDS ================= */
-  .card {
-    background: white;
-    color: #111827;
-    border-radius: 16px;
-    padding: 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
-  }
+        .card {
+          background: white;
+          color: #111827;
+          border-radius: 16px;
+          padding: 14px;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+        }
 
-  /* ================= STAT CARD ================= */
-.statCard {
-  background: #ffffff;
-  border-radius: 14px;
-  padding: 12px 14px;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
-  border: 1px solid rgba(0, 0, 0, 0.05);
+        .statCard {
+          background: #ffffff;
+          border-radius: 14px;
+          padding: 12px 14px;
+          box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+          border: 1px solid rgba(0, 0, 0, 0.05);
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+          min-height: 80px;
+          transition: all 0.2s ease;
+        }
 
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+        .statCard:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
+        }
 
-  min-height: 80px;
-  transition: all 0.2s ease;
-}
+        .statIcon {
+          display: flex;
+          justify-content: flex-end;
+          color: #475569;
+        }
 
-.statCard:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
-}
+        .statNumber {
+          font-size: 22px;
+          font-weight: 800;
+          color: #0f172a;
+        }
 
-.statIcon {
-  display: flex;
-  justify-content: flex-end;
-  color: #475569;
-}
+        .statLabel {
+          font-size: 12px;
+          font-weight: 600;
+          color: #64748b;
+        }
 
-.statNumber {
-  font-size: 22px;
-  font-weight: 800;
-  color: #0f172a;
-}
+        .total { border-left: 5px solid #0ea5e9; }
+        .pending { border-left: 5px solid #facc15; }
+        .approved { border-left: 5px solid #22c55e; }
+        .way { border-left: 5px solid #3b82f6; }
+        .emergency { border-left: 5px solid #dc2626; }
+        .disapproved { border-left: 5px solid #6b7280; }
 
-.statLabel {
-  font-size: 12px;
-  font-weight: 600;
-  color: #64748b;
-}
+        .completedCard { opacity: 0.85; }
 
-/* COLORS */
-.total { border-left: 5px solid #0ea5e9; }
-.pending { border-left: 5px solid #facc15; }
-.approved { border-left: 5px solid #22c55e; }
-.way { border-left: 5px solid #3b82f6; }
-.emergency { border-left: 5px solid #dc2626; }
-.disapproved { border-left: 5px solid #6b7280; }
+        .emergency {
+          border-left: 5px solid #dc2626;
+          box-shadow: 0 0 18px rgba(255, 0, 0, 0.5);
+        }
 
-  /* ================= SPECIAL STATES ================= */
-  .completedCard {
-    opacity: 0.85;
-  }
+        .nameRow {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          flex-wrap: wrap;
+        }
 
-  /* ONLY visual styling — NO animation */
-.emergency {
-  border-left: 5px solid #dc2626;
-  box-shadow: 0 0 18px rgba(255, 0, 0, 0.5);
-  }
+        .name { font-size: 18px; font-weight: bold; }
 
-  /* ================= TEXT ================= */
-  .nameRow {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
+        .vipBadge {
+          background: #dc2626;
+          color: white;
+          font-size: 11px;
+          padding: 4px 8px;
+          border-radius: 999px;
+          font-weight: bold;
+        }
 
-  .name {
-    font-size: 18px;
-    font-weight: bold;
-  }
+        .info { font-size: 13px; line-height: 1.5; }
 
-  .vipBadge {
-    background: #dc2626;
-    color: white;
-    font-size: 11px;
-    padding: 4px 8px;
-    border-radius: 999px;
-    font-weight: bold;
-  }
+        .label { font-size: 12px; font-weight: bold; margin-top: 4px; }
 
-  .info {
-    font-size: 13px;
-    line-height: 1.5;
-  }
+        .statusBadge {
+          color: white;
+          padding: 6px 10px;
+          border-radius: 999px;
+          font-size: 12px;
+          width: fit-content;
+          font-weight: bold;
+        }
 
-  .label {
-    font-size: 12px;
-    font-weight: bold;
-    margin-top: 4px;
-  }
+        .vehicle { font-weight: bold; font-size: 14px; }
 
-  .statusBadge {
-    color: white;
-    padding: 6px 10px;
-    border-radius: 999px;
-    font-size: 12px;
-    width: fit-content;
-    font-weight: bold;
-  }
+        select {
+          padding: 8px;
+          border-radius: 8px;
+          border: 1px solid #d1d5db;
+          background: white;
+          color: black;
+        }
 
-  .vehicle {
-    font-weight: bold;
-    font-size: 14px;
-  }
+        .loading { text-align: center; }
 
-  select {
-    padding: 8px;
-    border-radius: 8px;
-    border: 1px solid #d1d5db;
-    background: white;
-    color: black;
-  }
+        @keyframes pulse {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.02); }
+          100% { transform: scale(1); }
+        }
 
-  .loading {
-    text-align: center;
-  }
+        @keyframes bounce {
+          0% { transform: translateY(0); }
+          30% { transform: translateY(-4px); }
+          50% { transform: translateY(0); }
+          70% { transform: translateY(-2px); }
+          100% { transform: translateY(0); }
+        }
 
-  /* ================= ANIMATIONS ================= */
-  @keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.02); }
-    100% { transform: scale(1); }
-  }
-
-  @keyframes bounce {
-    0% { transform: translateY(0); }
-    30% { transform: translateY(-4px); }
-    50% { transform: translateY(0); }
-    70% { transform: translateY(-2px); }
-    100% { transform: translateY(0); }
-  }
-
-  /* ================= MOBILE ================= */
-  @media (max-width: 768px) {
-    .mapSection {
-      height: 240px;
-    }
-
-    .grid {
-      grid-template-columns: 1fr;
-    }
-
-    .statsGrid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-`}</style>
-</main>
-   )
+        @media (max-width: 768px) {
+          .mapSection { height: 240px; }
+          .grid { grid-template-columns: 1fr; }
+          .statsGrid { grid-template-columns: repeat(2, 1fr); }
+        }
+      `}</style>
+    </main>
+  );
 }
