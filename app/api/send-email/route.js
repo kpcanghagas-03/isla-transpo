@@ -1,143 +1,113 @@
-const {
-  email,       // requester email (for allowlist check)
-  name,
-  status,
-  pickup,
-  destination,
-  schedule,
-  vehicle,
-} = body || {};
+import { NextResponse } from "next/server";
 
-if (!name || !status) {
-  return NextResponse.json(
-    { success: false, error: "Missing required fields: name or status" },
-    { status: 400 }
-  );
+function getStatusMessage(status: string, name: string) {
+  switch (status) {
+    case "Pending":
+      return {
+        title: "We’ve received your request 🤍",
+        message: `Hi ${name}, thank you for trusting ISLA-TRANSPO. Your request is now being reviewed by our team. We’ll update you as soon as possible.`,
+        quote: "“Patience is not about waiting, but how you behave while waiting.”",
+      };
+
+    case "Approved":
+      return {
+        title: "Your request has been approved 🎉",
+        message: `Good news, ${name}! Your transport request has been approved. Our team is now preparing everything to ensure a smooth and safe trip for you.`,
+        quote: "“Great things are coming together for you.”",
+      };
+
+    case "On the way":
+      return {
+        title: "Your ride is on the way 🚗",
+        message: `Hi ${name}, your assigned vehicle is now on the way. Please stay ready and reachable. We’re almost there!`,
+        quote: "“Good service is not just speed, but care on the way.”",
+      };
+
+    case "Completed":
+      return {
+        title: "Trip completed successfully 🙏",
+        message: `Thank you, ${name}, for riding with ISLA-TRANSPO. We hope your trip was safe and comfortable. We’re always here whenever you need us.`,
+        quote: "“Gratitude turns ordinary service into meaningful connection.”",
+      };
+
+    case "Disapproved":
+      return {
+        title: "Update on your request",
+        message: `Hi ${name}, we sincerely apologize. After careful review, your request could not be approved at this time. You may submit again or contact support for assistance.`,
+        quote: "“Every no today can lead to a better yes tomorrow.”",
+      };
+
+    case "Emergency":
+      return {
+        title: "Emergency transport update 🚨",
+        message: `Hi ${name}, we are prioritizing your emergency request. Our team is already taking immediate action to assist you as quickly as possible.`,
+        quote: "“In urgent moments, care becomes our fastest response.”",
+      };
+
+    default:
+      return {
+        title: "Update from ISLA-TRANSPO",
+        message: `Hi ${name}, there is an update regarding your transport request.`,
+        quote: "“We’re here to make your journey easier.”",
+      };
+  }
 }
 
-// ================= ALLOWLIST CHECK (optional but recommended) =================
-// Only send notifications if requester email is in your directory.
-// Directory table: allowed_users(email). Change to your table/column as needed.
-if (!email) {
-  return NextResponse.json(
-    { success: true, message: "No requester email provided. Skipping allowlist check and notification." },
-    { status: 200 }
-  );
-}
+export async function POST(req: Request) {
+  try {
+    const body = await req.json();
 
-const { data: allowed, error: allowError } = await supabase
-  .from("allowed_users")
-  .select("email")
-  .eq("email", email)
-  .maybeSingle();
+    const { email, name, status, pickup, destination, schedule, vehicle } = body;
 
-if (allowError) {
-  return NextResponse.json(
-    { success: false, error: allowError.message },
-    { status: 500 }
-  );
-}
+    const content = getStatusMessage(status, name);
 
-if (!allowed) {
-  return NextResponse.json(
-    { success: true, message: "Requester email not in allowlist. Notification skipped." },
-    { status: 200 }
-  );
-}
+    console.log("EMAIL TRIGGER:", body);
 
-// ================= GET STAFF EMAILS =================
-const { data: staffList, error: staffError } = await supabase
-  .from("staff")
-  .select("staff_email");
+    // 🔥 Here you would integrate Resend / Email provider
+    // Example payload structure:
 
-if (staffError) {
-  return NextResponse.json(
-    { success: false, error: staffError.message },
-    { status: 500 }
-  );
-}
+    /*
+    await resend.emails.send({
+      from: "ISLA-TRANSPO <noreply@yourdomain.com>",
+      to: email,
+      subject: content.title,
+      html: `
+        <div style="font-family:Arial;padding:20px">
+          <h2>${content.title}</h2>
 
-const staffEmails = (staffList || [])
-  .map((s) => s.staff_email)
-  .filter(Boolean);
+          <p>${content.message}</p>
 
-if (staffEmails.length === 0) {
-  return NextResponse.json(
-    { success: false, message: "No staff emails found in database" },
-    { status: 404 }
-  );
-}
+          <hr/>
 
-const template = statusMessage[status] || {};
-const title = template.title || "📌 Status Update";
-const msg = template.message || "There’s an update on a request.";
-const comfort = (comfortLinesByStatus[status] && comfortLinesByStatus[status].length)
-  ? pick(comfortLinesByStatus[status])
-  : "We’re here if you need anything.";
-const quote = pick(quotes);
+          <p><b>Trip Details:</b></p>
+          <p>Pickup: ${pickup}</p>
+          <p>Destination: ${destination}</p>
+          <p>Schedule: ${schedule}</p>
+          <p>Vehicle: ${vehicle}</p>
 
-// ================= SEND EMAIL =================
-const result = await resend.emails.send({
-  from: "ISLA-Transpo <onboarding@resend.dev>", // replace with verified sender
-  to: staffEmails,
-  subject: `ISLA‑Transpo Update: ${status}`,
-  html: `
-    <div style="font-family:Arial,Helvetica,sans-serif;background:#f8fafc;padding:24px;">
-      <div style="max-width:640px;margin:auto;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #e2e8f0;">
-        <div style="background:linear-gradient(90deg,#0ea5e9,#2563eb);padding:18px 22px;color:#fff;">
-          <h2 style="margin:0;font-size:20px;letter-spacing:0.2px;">🚐 ISLA‑Transpo</h2>
-          <div style="opacity:0.9;font-size:13px;margin-top:2px;">Dispatch & Trip Updates</div>
-        </div>
+          <br/>
 
-        <div style="padding:22px;">
-          <p style="margin:0 0 12px 0;color:#0f172a;">Hello Team,</p>
-
-          <h3 style="margin:0 0 8px 0;color:#0f172a;">${title}</h3>
-          <p style="margin:0 0 14px 0;color:#334155;line-height:1.5;">${msg}</p>
-
-          <div style="margin:16px 0;padding:14px;border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc;">
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:13px;color:#334155;">
-              <div><b>Requester:</b> ${name}${email ? ` (${email})` : ""}</div>
-              <div><b>Vehicle:</b> ${vehicle || "Not assigned yet"}</div>
-              <div><b>Pickup:</b> ${pickup || "—"}</div>
-              <div><b>Destination:</b> ${destination || "—"}</div>
-              <div style="grid-column:1/-1;"><b>Schedule:</b> ${schedule || "—"}</div>
-            </div>
-          </div>
-
-          <div style="margin:16px 0;padding:14px;border-left:4px solid #22c55e;background:#f0fdf4;border-radius:10px;">
-            <div style="color:#14532d;font-size:13px;line-height:1.5;">
-              ${comfort}
-            </div>
-          </div>
-
-          <blockquote style="margin:18px 0 4px 0;padding:14px 16px;border-left:4px solid #2563eb;background:#eff6ff;border-radius:10px;color:#1e3a8a;font-style:italic;font-size:13px;">
-            ${quote}
+          <blockquote style="font-style:italic;color:#555">
+            ${content.quote}
           </blockquote>
 
-          <p style="margin:18px 0 0 0;color:#475569;font-size:12px;line-height:1.5;">
-            Warmly,<br/>
-            ISLA‑Transpo Notification System
-          </p>
-        </div>
+          <br/>
 
-        <div style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:12px 18px;color:#64748b;font-size:11px;">
-          Need help? Reply to this email or contact dispatch.
+          <p>— ISLA-TRANSPO Team 🚐</p>
         </div>
-      </div>
-    </div>
-  `,
-});
+      `,
+    });
+    */
 
-if (result && result.error) {
-  return NextResponse.json(
-    { success: false, error: result.error },
-    { status: 500 }
-  );
+    return NextResponse.json({
+      success: true,
+      message: "Warm email prepared successfully",
+      preview: content,
+    });
+  } catch (error: any) {
+    return NextResponse.json(
+      { success: false, error: error.message },
+      { status: 500 }
+    );
+  }
 }
-
-return NextResponse.json({
-  success: true,
-  message: "Emails sent to staff successfully",
-  result,
-});
