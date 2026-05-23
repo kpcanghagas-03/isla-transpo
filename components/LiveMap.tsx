@@ -17,8 +17,7 @@ export type LiveMapRequest = {
   driver_lng?: number | null;
 };
 
-type Props = {
-  requests: LiveMapRequest[];
+type Props = {requests: LiveMapRequest[];
 };
 
 export default function LiveMap({ requests }: Props) {
