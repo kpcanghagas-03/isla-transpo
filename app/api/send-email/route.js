@@ -98,7 +98,7 @@ export async function POST(req: Request) {
     const body = await req.json();
 
     const {
-      email,       // requester email (to check allowlist)
+      email,       // requester email (for allowlist check)
       name,
       status,
       pickup,
@@ -123,20 +123,17 @@ export async function POST(req: Request) {
     }
 
     // ================= ALLOWLIST CHECK (optional but recommended) =================
-    // Only send notifications if the requester email exists in the directory.
-    // Directory table options: "allowed_users" with column "email", or reuse "staff" with "staff_email".
+    // Only send notifications if requester email is in your directory.
+    // Directory table: allowed_users(email). Change to your table/column as needed.
     if (!email) {
-      // If you want to strictly require requester email to gate notifications, make this a 400.
-      // Otherwise, you can allow and notify staff anyway.
       return NextResponse.json(
         { success: true, message: "No requester email provided. Skipping allowlist check and notification." },
         { status: 200 }
       );
     }
 
-    // Change table/column here to match your directory source:
     const { data: allowed, error: allowError } = await supabase
-      .from("allowed_users") // e.g., a table you maintain with approved requester emails
+      .from("allowed_users")
       .select("email")
       .eq("email", email)
       .maybeSingle();
@@ -149,12 +146,8 @@ export async function POST(req: Request) {
     }
 
     if (!allowed) {
-      // Requester not in directory — skip staff notification silently (or 200 with message)
       return NextResponse.json(
-        {
-          success: true,
-          message: "Requester email not in allowlist. Notification skipped.",
-        },
+        { success: true, message: "Requester email not in allowlist. Notification skipped." },
         { status: 200 }
       );
     }
@@ -184,15 +177,14 @@ export async function POST(req: Request) {
 
     const title = statusMessage[status]?.title || "📌 Status Update";
     const msg = statusMessage[status]?.message || "There’s an update on a request.";
-    const comfort =
-      comfortLinesByStatus[status]?.length
-        ? pick(comfortLinesByStatus[status])
-        : "We’re here if you need anything.";
+    const comfort = comfortLinesByStatus[status]?.length
+      ? pick(comfortLinesByStatus[status])
+      : "We’re here if you need anything.";
     const quote = pick(quotes);
 
     // ================= SEND EMAIL =================
     const result = await resend.emails.send({
-      from: "ISLA-Transpo <onboarding@resend.dev>", // replace with a verified sender in production
+      from: "ISLA-Transpo <onboarding@resend.dev>", // replace with verified sender
       to: staffEmails,
       subject: `ISLA‑Transpo Update: ${status}`,
       html: `
