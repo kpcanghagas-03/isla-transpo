@@ -144,16 +144,18 @@ export async function POST(req) {
       html,
     });
 
-    await supabase.from("notification_logs").insert([
-      {
-        request_id,
-        email,
-        status,
-        message: emailContent.subject,
-        success: ok,
-        error: ok ? null : JSON.stringify(data),
-      },
-    ]);
+    const logResult = await supabase.from("notification_logs").insert([
+  {
+    request_id,
+    email,
+    status,
+    message: emailContent.subject,
+    success: ok,
+    error: ok ? null : JSON.stringify(data),
+  },
+]);
+
+console.log("SUPABASE LOG RESULT:", logResult);
 
     if (!ok) {
       return NextResponse.json(
