@@ -1,10 +1,25 @@
+export const runtime = "nodejs";
+
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import nodemailer from "nodemailer";
 
+// ================= SUPABASE =================
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
+
+// ================= SMTP TRANSPORTER =================
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: Number(process.env.SMTP_PORT),
+  secure: false, // true only for 465
+  auth: {
+    user: process.env.SMTP_EMAIL,
+    pass: process.env.SMTP_PASSWORD,
+  },
+});
 
 // ================= MESSAGE ENGINE =================
 function getStatusMessage(status, name) {
@@ -59,19 +74,20 @@ function getStatusMessage(status, name) {
   }
 }
 
-// ================= EMAIL SENDER (WITH LOGGING) =================
-async function sendEmail(payload) {
-  const res = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-    },
-    body: JSON.stringify(payload),
-  });
+// ================= EMAIL SENDER =================
+async function sendEmail({ email, subject, html }) {
+  try {
+    const info = await transporter.sendMail({
+      from: process.env.SMTP_FROM,
+      to: email,
+      subject,
+      html,
+    });
 
-  const data = await res.json();
-  return { ok: res.ok, data };
+    return { ok: true, data: info };
+  } catch (error) {
+    return { ok: false, data: error };
+  }
 }
 
 // ================= MAIN ROUTE =================
@@ -90,29 +106,45 @@ export async function POST(req) {
       request_id,
     } = body;
 
+    if (!email) {
+      return NextResponse.json(
+        { success: false, message: "No email provided" },
+        { status: 400 }
+      );
+    }
+
     const emailContent = getStatusMessage(status, name);
 
-    const payload = {
-      from: "ISLA-TRANSPO <onboarding@resend.dev>",
-      to: email,
-      subject: emailContent.subject,
-      html: `
-        <div style="font-family:Arial; padding:20px; line-height:1.6;">
-          <h2>${emailContent.subject}</h2>
-          <p style="white-space:pre-line">${emailContent.message}</p>
-          <hr/>
-          <p><b>Pickup:</b> ${pickup || "N/A"}</p>
-          <p><b>Destination:</b> ${destination || "N/A"}</p>
-          <p><b>Schedule:</b> ${schedule || "N/A"}</p>
-          <p><b>Vehicle:</b> ${vehicle || "Not assigned"}</p>
+    const html = `
+      <div style="font-family: Arial; padding: 20px; line-height: 1.7; color:#111827;">
+        <div style="max-width:600px;margin:auto;background:#fff;padding:24px;border-radius:14px;border:1px solid #e5e7eb;">
+
+          <h2 style="color:#2563eb;">
+            ${emailContent.subject}
+          </h2>
+
+          <p style="white-space:pre-line;">
+            ${emailContent.message}
+          </p>
+
+          <hr style="margin:20px 0;" />
+
+          <p><strong>📍 Pickup:</strong> ${pickup || "N/A"}</p>
+          <p><strong>🎯 Destination:</strong> ${destination || "N/A"}</p>
+          <p><strong>🕒 Schedule:</strong> ${schedule || "N/A"}</p>
+          <p><strong>🚐 Vehicle:</strong> ${vehicle || "Not assigned yet"}</p>
+
         </div>
-      `,
-    };
+      </div>
+    `;
 
-    // ================= TRY EMAIL =================
-    const { ok, data } = await sendEmail(payload);
+    const { ok, data } = await sendEmail({
+      email,
+      subject: emailContent.subject,
+      html,
+    });
 
-    // ================= LOG RESULT (ALWAYS) =================
+    // ================= LOG =================
     await supabase.from("notification_logs").insert([
       {
         request_id,
@@ -126,21 +158,26 @@ export async function POST(req) {
 
     if (!ok) {
       return NextResponse.json(
-        { success: false, message: "Email failed", data },
+        {
+          success: false,
+          message: "Email failed",
+          error: data?.message || "SMTP error",
+        },
         { status: 500 }
       );
     }
 
     return NextResponse.json({
       success: true,
-      message: "Email sent + logged",
-      data,
+      message: "Email sent successfully",
     });
   } catch (err) {
-    console.error(err);
-
     return NextResponse.json(
-      { success: false, message: "Server error", error: err.message },
+      {
+        success: false,
+        message: "Server error",
+        error: err.message,
+      },
       { status: 500 }
     );
   }

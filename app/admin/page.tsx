@@ -193,17 +193,20 @@ export default function AdminPage() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            email: request.email || undefined, // allowlist check on server
-            name: request.requester_name,
-            status: value,
-            pickup: request.pickup_location || "",
-            destination: request.destination || "",
-            schedule: `${toPHDate(request.pick_up_date) || ""}${
-              request.pick_up_time ? `, ${toPHTime(request.pick_up_time) || ""}` : ""
-            }`,
-            vehicle: request.assigned_vehicle || "",
-          }),
-        });
+                email: request.email || undefined,
+                name: request.requester_name,
+                status: value,
+                pickup: request.pickup_location || "",
+                destination: request.destination || "",
+                schedule: `${toPHDate(request.pick_up_date) || ""}${
+                  request.pick_up_time
+                    ? `, ${toPHTime(request.pick_up_time) || ""}`
+                    : ""
+                }`,
+                vehicle: request.assigned_vehicle || "",
+                request_id: request.id,
+              }),
+                });
 
         const data = await res.json();
         console.log("EMAIL RESPONSE:", data);
@@ -587,7 +590,7 @@ export default function AdminPage() {
 
         .statCard { background: #ffffff; border-radius: 14px; padding: 12px 14px; box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12); border: 1px solid rgba(0, 0, 0, 0.05); display: flex; flex-direction: column; gap: 6px; min-height: 80px; transition: all 0.2s; }
         .statCard:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(0,0,0,0.18); }
-        .statIcon { display: flex; justify-content: flex-end; color: #475569; }
+        .statIcon { display: flex; justify-content: flex-end; color: #5c646f; }
         .statNumber { font-size: 22px; font-weight: 800; color: #0f172a; }
         .statLabel { font-size: 12px; font-weight: 600; color: #64748b; }
 

@@ -83,8 +83,11 @@ const handleSubmit = async () => {
   console.log("STAFF EMAIL:", staff_email);
 
   // ================= VALIDATION =================
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
   if (
     !formData.requester_name ||
+    !formData.email ||
     !formData.pickup_location ||
     !formData.destination ||
     !formData.pick_up_date ||
@@ -95,11 +98,16 @@ const handleSubmit = async () => {
     return;
   }
 
+  if (!emailRegex.test(cleanEmail)) {
+    alert("Please enter a valid email address.");
+    return;
+  }
+
   // ================= INSERT REQUEST =================
   const payload = {
     requester_name: formData.requester_name,
 
-    email: formData.email,
+    email: cleanEmail,
 
     staff_email: staff_email,
 
@@ -149,9 +157,25 @@ const handleSubmit = async () => {
     .insert([payload]);
 
   if (error) {
-    console.log("SUPABASE ERROR", error);
-    alert(error.message);
-    return;
+    try {
+  await fetch("/api/send_email", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email: cleanEmail,
+      name: formData.requester_name,
+      status: "Pending",
+      pickup: formData.pickup_location,
+      destination: formData.destination,
+      schedule: `${formData.pick_up_date}, ${formData.pick_up_time}`,
+      vehicle: "",
+    }),
+  });
+} catch (err) {
+  console.log("AUTO EMAIL ERROR:", err);
+}
   }
 
   alert("Transport Request Submitted Successfully!");
