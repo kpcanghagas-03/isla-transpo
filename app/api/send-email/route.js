@@ -10,17 +10,6 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-// ================= SMTP TRANSPORTER =================
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT),
-  secure: false, // true only for 465
-  auth: {
-    user: process.env.SMTP_EMAIL,
-    pass: process.env.SMTP_PASSWORD,
-  },
-});
-
 // ================= MESSAGE ENGINE =================
 function getStatusMessage(status, name) {
   const base = `Dear ${name},\n\n`;
@@ -77,6 +66,17 @@ function getStatusMessage(status, name) {
 // ================= EMAIL SENDER =================
 async function sendEmail({ email, subject, html }) {
   try {
+    // 🔥 IMPORTANT: create transporter HERE (not globally)
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: Number(process.env.SMTP_PORT),
+      secure: false,
+      auth: {
+        user: process.env.SMTP_EMAIL,
+        pass: process.env.SMTP_PASSWORD,
+      },
+    });
+
     const info = await transporter.sendMail({
       from: process.env.SMTP_FROM,
       to: email,
@@ -144,7 +144,6 @@ export async function POST(req) {
       html,
     });
 
-    // ================= LOG =================
     await supabase.from("notification_logs").insert([
       {
         request_id,
