@@ -60,7 +60,7 @@ const handleSubmit = async () => {
     error: staffError,
   } = await supabase
     .from("staff")
-    .select("email");
+    .select("staff_email");
 
   console.log("STAFF LIST:", staffList);
 
@@ -70,8 +70,8 @@ const handleSubmit = async () => {
 
   const isStaff = staffList?.some(
     (s) =>
-      s.email &&
-      s.email.trim().toLowerCase() === cleanEmail
+      s.staff_email &&
+      s.staff_email.trim().toLowerCase() === cleanEmail
   );
 
   console.log("IS STAFF:", isStaff);
