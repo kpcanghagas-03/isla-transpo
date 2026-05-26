@@ -156,6 +156,9 @@ export async function POST(req) {
 ]);
 
 console.log("SUPABASE LOG RESULT:", logResult);
+console.log("REQUEST BODY:", body);
+console.log("EMAIL RESULT:", { ok, data });
+console.log("LOGGING TO SUPABASE...");
 
     if (!ok) {
       return NextResponse.json(
@@ -172,14 +175,8 @@ console.log("SUPABASE LOG RESULT:", logResult);
       success: true,
       message: "Email sent successfully",
     });
-  } catch (err) {
-    return NextResponse.json(
-      {
-        success: false,
-        message: "Server error",
-        error: err.message,
-      },
-      { status: 500 }
-    );
-  }
+  } catch (error) {
+  console.error("SMTP ERROR:", error);
+  return { ok: false, data: error.message || error };
+}
 }
