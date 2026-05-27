@@ -2,7 +2,7 @@ export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
-import { supabaseAdmin } from "@/lib/supabaseAdmin";
+import { supabase } from "@/lib/supabase";
 
 // ================= MESSAGE ENGINE =================
 function getStatusMessage(status, name) {
@@ -142,7 +142,7 @@ export async function POST(req) {
     console.log("EMAIL RESULT:", { ok, data });
 
     // ================= LOG TO SUPABASE (CRITICAL FIX) =================
-    const logResult = await supabaseAdmin.from("notification_logs").insert([
+    const logResult = await supabase.from("notification_logs").insert([
       {
         request_id,
         email,
