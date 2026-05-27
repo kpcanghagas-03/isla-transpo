@@ -60,6 +60,8 @@ function getStatusMessage(status, name) {
 // ================= SMTP EMAIL =================
 async function sendEmail({ email, subject, html }) {
   try {
+    console.log("📨 SENDING EMAIL TO:", email);
+
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       port: Number(process.env.SMTP_PORT),
@@ -70,6 +72,10 @@ async function sendEmail({ email, subject, html }) {
       },
     });
 
+    // 🔥 FORCE CHECK LOGIN FIRST
+    await transporter.verify();
+    console.log("✅ SMTP VERIFIED SUCCESSFULLY");
+
     const info = await transporter.sendMail({
       from: process.env.SMTP_FROM,
       to: email,
@@ -77,12 +83,12 @@ async function sendEmail({ email, subject, html }) {
       html,
     });
 
-    console.log("EMAIL SENT:", info.messageId);
+    console.log("✅ EMAIL SENT:", info.messageId);
 
     return { ok: true, data: info };
   } catch (error) {
-    console.error("SMTP ERROR:", error);
-    return { ok: false, data: error?.message || error };
+    console.error("❌ SMTP FAILED:", error);
+    return { ok: false, data: error };
   }
 }
 
