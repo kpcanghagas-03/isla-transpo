@@ -1,14 +1,8 @@
 export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
 import nodemailer from "nodemailer";
-
-// ================= SUPABASE =================
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+import { supabaseAdmin } from "@/lib/supabaseAdmin";
 
 // ================= MESSAGE ENGINE =================
 function getStatusMessage(status, name) {
@@ -63,14 +57,13 @@ function getStatusMessage(status, name) {
   }
 }
 
-// ================= EMAIL SENDER =================
+// ================= SMTP EMAIL =================
 async function sendEmail({ email, subject, html }) {
   try {
-    // 🔥 IMPORTANT: create transporter HERE (not globally)
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       port: Number(process.env.SMTP_PORT),
-      secure: false,
+      secure: Number(process.env.SMTP_PORT) === 465,
       auth: {
         user: process.env.SMTP_EMAIL,
         pass: process.env.SMTP_PASSWORD,
@@ -84,9 +77,12 @@ async function sendEmail({ email, subject, html }) {
       html,
     });
 
+    console.log("EMAIL SENT:", info.messageId);
+
     return { ok: true, data: info };
   } catch (error) {
-    return { ok: false, data: error };
+    console.error("SMTP ERROR:", error);
+    return { ok: false, data: error?.message || error };
   }
 }
 
@@ -106,6 +102,8 @@ export async function POST(req) {
       request_id,
     } = body;
 
+    console.log("REQUEST RECEIVED:", body);
+
     if (!email) {
       return NextResponse.json(
         { success: false, message: "No email provided" },
@@ -119,13 +117,9 @@ export async function POST(req) {
       <div style="font-family: Arial; padding: 20px; line-height: 1.7; color:#111827;">
         <div style="max-width:600px;margin:auto;background:#fff;padding:24px;border-radius:14px;border:1px solid #e5e7eb;">
 
-          <h2 style="color:#2563eb;">
-            ${emailContent.subject}
-          </h2>
+          <h2 style="color:#2563eb;">${emailContent.subject}</h2>
 
-          <p style="white-space:pre-line;">
-            ${emailContent.message}
-          </p>
+          <p style="white-space:pre-line;">${emailContent.message}</p>
 
           <hr style="margin:20px 0;" />
 
@@ -138,34 +132,36 @@ export async function POST(req) {
       </div>
     `;
 
+    // ================= SEND EMAIL =================
     const { ok, data } = await sendEmail({
       email,
       subject: emailContent.subject,
       html,
     });
 
-    const logResult = await supabase.from("notification_logs").insert([
-  {
-    request_id,
-    email,
-    status,
-    message: emailContent.subject,
-    success: ok,
-    error: ok ? null : JSON.stringify(data),
-  },
-]);
+    console.log("EMAIL RESULT:", { ok, data });
 
-console.log("SUPABASE LOG RESULT:", logResult);
-console.log("REQUEST BODY:", body);
-console.log("EMAIL RESULT:", { ok, data });
-console.log("LOGGING TO SUPABASE...");
+    // ================= LOG TO SUPABASE (CRITICAL FIX) =================
+    const logResult = await supabaseAdmin.from("notification_logs").insert([
+      {
+        request_id,
+        email,
+        status,
+        message: emailContent.subject,
+        success: ok,
+        error: ok ? null : JSON.stringify(data),
+      },
+    ]);
 
+    console.log("SUPABASE LOG RESULT:", logResult);
+
+    // ================= RESPONSE =================
     if (!ok) {
       return NextResponse.json(
         {
           success: false,
           message: "Email failed",
-          error: data?.message || "SMTP error",
+          error: data,
         },
         { status: 500 }
       );
@@ -175,8 +171,16 @@ console.log("LOGGING TO SUPABASE...");
       success: true,
       message: "Email sent successfully",
     });
-  } catch (error) {
-  console.error("SMTP ERROR:", error);
-  return { ok: false, data: error.message || error };
-}
+  } catch (err) {
+    console.error("SERVER ERROR:", err);
+
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Server error",
+        error: err.message,
+      },
+      { status: 500 }
+    );
+  }
 }
