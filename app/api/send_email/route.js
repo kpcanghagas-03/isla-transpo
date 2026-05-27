@@ -6,71 +6,72 @@ import { supabase } from "@/lib/supabase";
 
 // ================= MESSAGE ENGINE =================
 function getStatusMessage(status, name) {
-  const base = `Dear ${name},\n\n`;
+  const base = `Hi ${name},\n\n`;
 
   switch (status) {
     case "Pending":
       return {
-        subject: "We’ve received your request 💙",
+        subject: "Welcome to ISLA-Transpo 🚐",
         message:
           base +
-          "Thank you for choosing ISLA-TRANSPO.\n\n" +
-          "We’ve successfully received your request and our team is now reviewing it.\n\n" +
-          "“Every great journey starts with a single request.” 🚐\n\n" +
-          "We’ll keep you updated as soon as there’s progress.",
+          "Welcome to ISLA-Transpo.\n\n" +
+          "We’ve received your request, and it is now being reviewed by our team with care.\n\n" +
+          "Every request matters to us — because behind every ride is a person with a purpose and a journey.\n\n" +
+          "“Every journey begins with trust, and we’re grateful you placed yours in us.” 🌿\n\n" +
+          "We’ll update you as soon as there is progress. Thank you for letting us serve you.",
       };
 
     case "Approved":
       return {
-        subject: "Request Approved ✅",
+        subject: "Your ISLA-Transpo request is approved 💙",
         message:
           base +
           "Good news — your request has been approved.\n\n" +
-          "Our team is now preparing everything for your trip.\n\n" +
-          "“Prepared today, delivered safely tomorrow.” 💙\n\n" +
-          "You may wait for further updates regarding your assigned vehicle and schedule.",
+          "We are now preparing everything to ensure your trip is safe, smooth, and comfortable.\n\n" +
+          "“When care leads the way, every journey becomes meaningful.” 🌤️\n\n" +
+          "We’re honored to be part of your journey.",
       };
 
     case "On the way":
       return {
-        subject: "Your vehicle is on the way 🚗",
+        subject: "Your ISLA-Transpo ride is on the way 🚐",
         message:
           base +
-          "Your assigned vehicle is now en route to your pickup location.\n\n" +
-          "Please be ready at your designated area.\n\n" +
-          "“Good service is not promised — it is already moving toward you.” 🚐\n\n" +
-          "Stay safe and wait for arrival confirmation.",
+          "Your vehicle is now on its way to your location.\n\n" +
+          "Please get ready at your pickup point.\n\n" +
+          "“We may not always be seen, but we are always moving with purpose toward you.” 🌿\n\n" +
+          "Thank you for your patience — we’re almost there.",
       };
 
     case "Completed":
       return {
-        subject: "Trip Completed 🎉",
+        subject: "Thank you for riding with ISLA-Transpo 💙",
         message:
           base +
-          "Your trip has been successfully completed.\n\n" +
-          "Thank you for riding with ISLA-TRANSPO.\n\n" +
-          "“Safe journeys are the ones we remember the most.” 💙\n\n" +
-          "We hope to serve you again soon.",
+          "Your trip has been completed safely, and we are truly grateful for your trust.\n\n" +
+          "“Safe journeys are shared moments of trust and care.” 🌏\n\n" +
+          "We hope your experience was smooth and comfortable. We look forward to serving you again.",
       };
 
     case "Disapproved":
       return {
-        subject: "Request Update",
+        subject: "A gentle update from ISLA-Transpo",
         message:
           base +
-          "We regret to inform you that your request could not be approved at this time.\n\n" +
-          "This may be due to scheduling or operational limitations.\n\n" +
-          "“Not all paths open today, but better timing often comes next.”\n\n" +
-          "You may submit another request for a different schedule.",
+          "Thank you for your request and for considering ISLA-Transpo.\n\n" +
+          "At this time, we are unable to approve your request due to scheduling or operational limits.\n\n" +
+          "We understand this may not be the outcome you hoped for, and we sincerely appreciate your understanding.\n\n" +
+          "“Sometimes timing teaches patience, and better moments follow.” 🌱\n\n" +
+          "We hope to serve you in a future trip.",
       };
 
     default:
       return {
-        subject: "Update from ISLA-TRANSPO",
+        subject: "Update from ISLA-Transpo 💙",
         message:
           base +
           "Your request has been updated.\n\n" +
-          "“We keep you informed every step of the way.”",
+          "“Every step forward is still part of the journey.” 🌿",
       };
   }
 }
@@ -80,7 +81,6 @@ export async function sendEmail({ email, subject, html }) {
   try {
     console.log("📨 SENDING EMAIL TO:", email);
 
-    // 🔥 FAIL FAST if env missing (prevents localhost fallback issues)
     if (
       !process.env.SMTP_HOST ||
       !process.env.SMTP_PORT ||
@@ -100,7 +100,6 @@ export async function sendEmail({ email, subject, html }) {
       },
     });
 
-    // verify connection
     await transporter.verify();
     console.log("✅ SMTP VERIFIED SUCCESSFULLY");
 
@@ -166,7 +165,6 @@ export async function POST(req) {
       </div>
     `;
 
-    // ================= SEND EMAIL =================
     const { ok, data } = await sendEmail({
       email,
       subject: emailContent.subject,
@@ -175,7 +173,6 @@ export async function POST(req) {
 
     console.log("EMAIL RESULT:", { ok, data });
 
-    // ================= LOG TO SUPABASE (CRITICAL FIX) =================
     const logResult = await supabase.from("notification_logs").insert([
       {
         request_id,
@@ -189,7 +186,6 @@ export async function POST(req) {
 
     console.log("SUPABASE LOG RESULT:", logResult);
 
-    // ================= RESPONSE =================
     if (!ok) {
       return NextResponse.json(
         {
