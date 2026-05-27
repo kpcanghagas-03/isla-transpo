@@ -58,9 +58,19 @@ function getStatusMessage(status, name) {
 }
 
 // ================= SMTP EMAIL =================
-async function sendEmail({ email, subject, html }) {
+export async function sendEmail({ email, subject, html }) {
   try {
     console.log("📨 SENDING EMAIL TO:", email);
+
+    // 🔥 FAIL FAST if env missing (prevents localhost fallback issues)
+    if (
+      !process.env.SMTP_HOST ||
+      !process.env.SMTP_PORT ||
+      !process.env.SMTP_EMAIL ||
+      !process.env.SMTP_PASSWORD
+    ) {
+      throw new Error("Missing SMTP environment variables");
+    }
 
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
@@ -72,12 +82,12 @@ async function sendEmail({ email, subject, html }) {
       },
     });
 
-    // 🔥 FORCE CHECK LOGIN FIRST
+    // verify connection
     await transporter.verify();
     console.log("✅ SMTP VERIFIED SUCCESSFULLY");
 
     const info = await transporter.sendMail({
-      from: process.env.SMTP_FROM,
+      from: process.env.SMTP_FROM || process.env.SMTP_EMAIL,
       to: email,
       subject,
       html,
@@ -88,7 +98,7 @@ async function sendEmail({ email, subject, html }) {
     return { ok: true, data: info };
   } catch (error) {
     console.error("❌ SMTP FAILED:", error);
-    return { ok: false, data: error };
+    return { ok: false, error };
   }
 }
 
