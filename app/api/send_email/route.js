@@ -14,7 +14,10 @@ function getStatusMessage(status, name) {
         subject: "We’ve received your request 💙",
         message:
           base +
-          "Thank you for trusting ISLA-TRANSPO.\n\n“Every journey begins with trust.” 🚐",
+          "Thank you for choosing ISLA-TRANSPO.\n\n" +
+          "We’ve successfully received your request and our team is now reviewing it.\n\n" +
+          "“Every great journey starts with a single request.” 🚐\n\n" +
+          "We’ll keep you updated as soon as there’s progress.",
       };
 
     case "Approved":
@@ -22,7 +25,10 @@ function getStatusMessage(status, name) {
         subject: "Request Approved ✅",
         message:
           base +
-          "Your request has been approved.\n\n“We are honored to serve you safely.” 💙",
+          "Good news — your request has been approved.\n\n" +
+          "Our team is now preparing everything for your trip.\n\n" +
+          "“Prepared today, delivered safely tomorrow.” 💙\n\n" +
+          "You may wait for further updates regarding your assigned vehicle and schedule.",
       };
 
     case "On the way":
@@ -30,7 +36,10 @@ function getStatusMessage(status, name) {
         subject: "Your vehicle is on the way 🚗",
         message:
           base +
-          "Your transport is now en route.\n\n“Help is already moving toward you.”",
+          "Your assigned vehicle is now en route to your pickup location.\n\n" +
+          "Please be ready at your designated area.\n\n" +
+          "“Good service is not promised — it is already moving toward you.” 🚐\n\n" +
+          "Stay safe and wait for arrival confirmation.",
       };
 
     case "Completed":
@@ -38,7 +47,10 @@ function getStatusMessage(status, name) {
         subject: "Trip Completed 🎉",
         message:
           base +
-          "Your trip is completed.\n\n“Safe journeys create lasting memories.”",
+          "Your trip has been successfully completed.\n\n" +
+          "Thank you for riding with ISLA-TRANSPO.\n\n" +
+          "“Safe journeys are the ones we remember the most.” 💙\n\n" +
+          "We hope to serve you again soon.",
       };
 
     case "Disapproved":
@@ -46,13 +58,19 @@ function getStatusMessage(status, name) {
         subject: "Request Update",
         message:
           base +
-          "Your request was not approved at this time.\n\n“Sometimes delays lead to better timing.”",
+          "We regret to inform you that your request could not be approved at this time.\n\n" +
+          "This may be due to scheduling or operational limitations.\n\n" +
+          "“Not all paths open today, but better timing often comes next.”\n\n" +
+          "You may submit another request for a different schedule.",
       };
 
     default:
       return {
-        subject: "Update",
-        message: base + "Your request has been updated.",
+        subject: "Update from ISLA-TRANSPO",
+        message:
+          base +
+          "Your request has been updated.\n\n" +
+          "“We keep you informed every step of the way.”",
       };
   }
 }
