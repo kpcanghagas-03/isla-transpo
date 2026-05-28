@@ -37,56 +37,51 @@ export default function AttendeePage() {
       style={{
         minHeight: "100vh",
         backgroundImage:
-          "linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.55)), url('/camiguin.jpg')",
+          "linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.65)), url('/camiguin.jpg')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         padding: 20,
         fontFamily: "Segoe UI, sans-serif",
       }}
     >
-      <div
-        style={{
-          maxWidth: 900,
-          margin: "0 auto",
-        }}
-      >
+      <div style={{ maxWidth: 950, margin: "0 auto" }}>
         {/* Back Button */}
         <button
           onClick={() => router.push("/")}
           style={{
-            marginBottom: 20,
-            padding: "10px 18px",
+            marginBottom: 18,
+            padding: "10px 16px",
+            borderRadius: 10,
             border: "none",
-            borderRadius: 12,
             background: "white",
-            cursor: "pointer",
             fontWeight: "bold",
+            cursor: "pointer",
           }}
         >
           ← Back to Home
         </button>
 
-        {/* Card */}
+        {/* MAIN CARD */}
         <div
           style={{
-            background: "rgba(255,255,255,0.15)",
-            backdropFilter: "blur(16px)",
-            borderRadius: 24,
+            background: "rgba(255,255,255,0.18)",
+            backdropFilter: "blur(18px)",
+            borderRadius: 26,
             padding: 35,
-            border: "1px solid rgba(255,255,255,0.2)",
-            boxShadow: "0 20px 40px rgba(0,0,0,0.3)",
+            border: "1px solid rgba(255,255,255,0.25)",
+            boxShadow: "0 20px 50px rgba(0,0,0,0.35)",
           }}
         >
           <h1
             style={{
               color: "white",
-              fontSize: "clamp(28px, 5vw, 48px)",
-              marginBottom: 10,
-              fontWeight: "800",
+              fontSize: "clamp(30px, 5vw, 50px)",
               textAlign: "center",
+              fontWeight: "800",
+              marginBottom: 8,
             }}
           >
-            Fare & Barge Trips
+            Barge Schedule & Trips
           </h1>
 
           <p
@@ -94,24 +89,19 @@ export default function AttendeePage() {
               textAlign: "center",
               color: "#E2E8F0",
               marginBottom: 30,
-              fontSize: 16,
+              fontSize: 15,
             }}
           >
-            Camiguin Ferry Schedule & Fare Information for RSTW Participants
+            Camiguin Ferry Timetable for RSTW Participants
           </p>
 
-          {/* Trip Cards */}
-          <div
-            style={{
-              display: "grid",
-              gap: 18,
-            }}
-          >
+          {/* TRIP LIST */}
+          <div style={{ display: "grid", gap: 16 }}>
             {trips.map((trip, index) => (
               <div
                 key={index}
                 style={{
-                  background: "rgba(255,255,255,0.95)",
+                  background: "white",
                   borderRadius: 18,
                   padding: 20,
                   boxShadow: "0 10px 25px rgba(0,0,0,0.15)",
@@ -120,9 +110,9 @@ export default function AttendeePage() {
                 <h2
                   style={{
                     color: "#0B3D91",
-                    marginBottom: 12,
-                    fontSize: 20,
+                    fontSize: 18,
                     fontWeight: "bold",
+                    marginBottom: 12,
                   }}
                 >
                   {trip.route}
@@ -132,33 +122,80 @@ export default function AttendeePage() {
                   style={{
                     display: "grid",
                     gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
-                    gap: 10,
+                    gap: 12,
                   }}
                 >
+                  {/* Departure */}
                   <div>
-                    <p style={{ color: "#64748B", fontSize: 13 }}>
+                    <p
+                      style={{
+                        color: "#64748B",
+                        fontSize: 13,
+                        marginBottom: 4,
+                      }}
+                    >
                       Departure
                     </p>
-                    <strong>{trip.departure}</strong>
+                    <p
+                      style={{
+                        color: "#0F172A",
+                        fontSize: 16,
+                        fontWeight: "700",
+                      }}
+                    >
+                      {trip.departure}
+                    </p>
                   </div>
 
+                  {/* Arrival */}
                   <div>
-                    <p style={{ color: "#64748B", fontSize: 13 }}>
+                    <p
+                      style={{
+                        color: "#64748B",
+                        fontSize: 13,
+                        marginBottom: 4,
+                      }}
+                    >
                       Arrival
                     </p>
-                    <strong>{trip.arrival}</strong>
+                    <p
+                      style={{
+                        color: "#0F172A",
+                        fontSize: 16,
+                        fontWeight: "700",
+                      }}
+                    >
+                      {trip.arrival}
+                    </p>
                   </div>
 
+                  {/* Fare */}
                   <div>
-                    <p style={{ color: "#64748B", fontSize: 13 }}>Fare</p>
-                    <strong>{trip.fare}</strong>
+                    <p
+                      style={{
+                        color: "#64748B",
+                        fontSize: 13,
+                        marginBottom: 4,
+                      }}
+                    >
+                      Fare
+                    </p>
+                    <p
+                      style={{
+                        color: "#0B3D91",
+                        fontSize: 18,
+                        fontWeight: "800",
+                      }}
+                    >
+                      {trip.fare}
+                    </p>
                   </div>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Footer Note */}
+          {/* FOOTNOTE */}
           <p
             style={{
               marginTop: 25,
@@ -167,7 +204,7 @@ export default function AttendeePage() {
               fontSize: 13,
             }}
           >
-            Schedules may change depending on weather and ferry availability.
+            Schedule may change depending on weather and ferry operations.
           </p>
         </div>
       </div>
