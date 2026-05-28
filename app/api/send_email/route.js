@@ -211,8 +211,6 @@ function getStatusMessage(status, name,vehicle,driver_number,requestDetails = {}
             Unfortunately, we’re unable to approve this trip due to current scheduling or operational limitations.
           </p>
 
-          ${tripInfo}
-
           <p style="font-family:Arial;">
             We truly appreciate your understanding and hope to serve you in the future.
           </p>
