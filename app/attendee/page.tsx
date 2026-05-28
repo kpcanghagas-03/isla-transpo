@@ -586,7 +586,7 @@ export default function AttendeePage() {
             marginTop: 20,
           }}
         >
-          © 2025 Regional Science & Technology Week — Camiguin
+          © 2026 Regional Science & Technology Week — Camiguin
         </p>
       </div>
     </main>
