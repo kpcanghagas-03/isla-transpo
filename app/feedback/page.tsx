@@ -70,290 +70,119 @@ export default function ProgramPage() {
     <main
       style={{
         minHeight: "100vh",
-        // LIGHTER BACKGROUND: soft sky-to-sand gradient with a subtle texture overlay
-        backgroundImage:
-          "linear-gradient(160deg, #E0F2FE 0%, #F0F9FF 35%, #FFF7ED 100%), url('/noise.png')",
-        backgroundBlendMode: "overlay",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
+        background:
+          "radial-gradient(circle at top, #0B3D91 0%, #020617 55%, #000000 100%)",
         padding: 20,
         fontFamily: "Segoe UI, sans-serif",
       }}
     >
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-        {/* Back Button */}
+        {/* BACK */}
         <button
           onClick={() => router.push("/")}
           style={{
             marginBottom: 20,
-            padding: "12px 20px",
+            padding: "12px 18px",
             borderRadius: 12,
-            border: "1px solid rgba(15, 23, 42, 0.08)",
+            border: "1px solid rgba(255,255,255,0.2)",
             color: "#0B3D91",
             background: "white",
             fontWeight: "bold",
             cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            boxShadow: "0 4px 14px rgba(15,23,42,0.08)",
           }}
         >
           ← Back to Home
         </button>
 
-        {/* Header */}
+        {/* HEADER */}
         <div
           style={{
             textAlign: "center",
-            marginBottom: 36,
-            padding: "28px 20px",
-            background: "rgba(255,255,255,0.8)",
-            border: "1px solid rgba(15,23,42,0.06)",
-            borderRadius: 24,
-            backdropFilter: "blur(6px)",
-            boxShadow: "0 12px 30px rgba(15,23,42,0.08)",
+            marginBottom: 40,
+            padding: 30,
+            background: "rgba(255,255,255,0.08)",
+            backdropFilter: "blur(20px)",
+            borderRadius: 26,
+            border: "1px solid rgba(255,255,255,0.15)",
+            boxShadow: "0 25px 60px rgba(0,0,0,0.5)",
           }}
         >
-          <div
-            style={{
-              display: "inline-block",
-              background: "linear-gradient(90deg,#EFF6FF,#E0F2FE)",
-              border: "1px solid rgba(15,23,42,0.06)",
-              borderRadius: 50,
-              padding: "8px 24px",
-              marginBottom: 14,
-            }}
-          >
-            <span style={{ fontSize: 14, color: "#0F172A", fontWeight: 700 }}>
-              📅 June 2-5, 2025 | Camiguin Island
-            </span>
-          </div>
-
           <h1
             style={{
-              color: "#0F172A",
-              fontSize: "clamp(32px, 7vw, 56px)",
-              fontWeight: "900",
-              marginBottom: 10,
-              lineHeight: 1.1,
+              color: "white",
+              fontSize: "clamp(34px, 6vw, 60px)",
+              fontWeight: 900,
             }}
           >
             Program of Activities
           </h1>
 
-          <p
-            style={{
-              color: "#334155",
-              fontSize: 18,
-              maxWidth: 640,
-              margin: "0 auto",
-            }}
-          >
-            Regional Science & Technology Week 2025
+          <p style={{ color: "#E2E8F0", fontSize: 16 }}>
+            Regional Science & Technology Week 2025 • Camiguin Island
           </p>
         </div>
 
-        {/* Day Navigation Pills */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            flexWrap: "wrap",
-            gap: 12,
-            marginBottom: 30,
-          }}
-        >
-          {programDays.map((day, index) => (
-            <a
-              key={index}
-              href={`#${day.day.toLowerCase().replace(" ", "-")}`}
-              style={{
-                background: "white",
-                color: day.color,
-                padding: "12px 22px",
-                borderRadius: 999,
-                fontWeight: 800,
-                fontSize: 14,
-                textDecoration: "none",
-                border: `2px solid ${day.color}`,
-                boxShadow: "0 6px 18px rgba(15,23,42,0.06)",
-              }}
-            >
-              {day.day}: {day.theme}
-            </a>
-          ))}
-        </div>
-
-        {/* Program Days */}
-        {programDays.map((dayData, dayIndex) => (
-          <div
-            key={dayIndex}
-            id={dayData.day.toLowerCase().replace(" ", "-")}
-            style={{ marginBottom: 28, scrollMarginTop: 20 }}
-          >
-            {/* Day Header */}
+        {/* DAYS */}
+        {programDays.map((dayData, i) => (
+          <div key={i} style={{ marginBottom: 30 }}>
+            {/* DAY HEADER */}
             <div
               style={{
-                background: "white",
-                border: "1px solid rgba(15,23,42,0.08)",
-                borderRadius: "20px 20px 0 0",
-                padding: "22px 26px",
+                background: "rgba(255,255,255,0.95)",
+                padding: 22,
+                borderRadius: 18,
                 display: "flex",
                 justifyContent: "space-between",
-                alignItems: "center",
                 flexWrap: "wrap",
-                gap: 12,
-                boxShadow: "0 8px 24px rgba(15,23,42,0.05)",
               }}
             >
               <div>
-                <h2
-                  style={{
-                    color: "#0F172A",
-                    fontSize: 26,
-                    fontWeight: 900,
-                    margin: 0,
-                    marginBottom: 4,
-                  }}
-                >
+                <h2 style={{ margin: 0, color: "#0F172A", fontWeight: 900 }}>
                   {dayData.day}
                 </h2>
-                <p
-                  style={{
-                    color: "#334155",
-                    fontSize: 16,
-                    margin: 0,
-                    fontWeight: 600,
-                  }}
-                >
-                  {dayData.date}
-                </p>
+                <p style={{ margin: 0, color: "#475569" }}>{dayData.date}</p>
               </div>
+
               <div
                 style={{
-                  background: dayData.color + "12",
-                  color: dayData.color,
-                  padding: "10px 16px",
+                  background: dayData.color,
+                  color: "white",
+                  padding: "8px 14px",
                   borderRadius: 999,
                   fontWeight: 800,
-                  border: `1px solid ${dayData.color}33`,
+                  marginTop: 8,
                 }}
               >
-                🎯 {dayData.theme}
+                {dayData.theme}
               </div>
             </div>
 
-            {/* Events List */}
+            {/* EVENTS */}
             <div
               style={{
                 background: "white",
-                border: "1px solid rgba(15,23,42,0.08)",
-                borderTop: "none",
-                borderRadius: "0 0 20px 20px",
-                padding: "8px 0",
-                boxShadow: "0 16px 36px rgba(15,23,42,0.06)",
+                borderRadius: "0 0 18px 18px",
+                padding: 10,
               }}
             >
-              {dayData.events.map((event, eventIndex) => (
+              {dayData.events.map((event, idx) => (
                 <div
-                  key={eventIndex}
+                  key={idx}
                   style={{
+                    padding: 16,
+                    borderBottom: "1px solid #eee",
                     display: "flex",
-                    alignItems: "flex-start",
-                    padding: "16px 22px",
-                    borderBottom:
-                      eventIndex < dayData.events.length - 1
-                        ? "1px solid #E2E8F0"
-                        : "none",
-                    background: event.highlight ? dayData.color + "08" : "white",
-                    borderLeft: event.highlight
-                      ? `4px solid ${dayData.color}`
-                      : "4px solid transparent",
+                    gap: 12,
                   }}
                 >
-                  {/* Icon */}
-                  <div
-                    style={{
-                      width: 48,
-                      height: 48,
-                      borderRadius: 12,
-                      background: event.highlight ? dayData.color : "#F1F5F9",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: 22,
-                      marginRight: 16,
-                      flexShrink: 0,
-                      color: event.highlight ? "white" : "#0F172A",
-                    }}
-                  >
-                    {event.icon}
-                  </div>
+                  <div style={{ fontSize: 22 }}>{event.icon}</div>
 
-                  {/* Content */}
-                  <div style={{ flex: 1 }}>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        flexWrap: "wrap",
-                        gap: 10,
-                        marginBottom: 6,
-                      }}
-                    >
-                      <span
-                        style={{
-                          background: "#F1F5F9",
-                          color: "#475569",
-                          padding: "4px 12px",
-                          borderRadius: 20,
-                          fontSize: 13,
-                          fontWeight: 700,
-                        }}
-                      >
-                        🕐 {event.time}
-                      </span>
-
-                      {event.highlight && (
-                        <span
-                          style={{
-                            background: dayData.color,
-                            color: "white",
-                            padding: "4px 10px",
-                            borderRadius: 20,
-                            fontSize: 11,
-                            fontWeight: 800,
-                            textTransform: "uppercase",
-                          }}
-                        >
-                          Highlight
-                        </span>
-                      )}
-                    </div>
-
-                    <h3
-                      style={{
-                        color: "#0F172A",
-                        fontSize: 17,
-                        fontWeight: 800,
-                        margin: "6px 0 4px 0",
-                      }}
-                    >
+                  <div>
+                    <p style={{ margin: 0, fontWeight: 800 }}>
                       {event.title}
-                    </h3>
-
-                    <p
-                      style={{
-                        color: "#64748B",
-                        fontSize: 14,
-                        margin: 0,
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 6,
-                      }}
-                    >
-                      📍 {event.location}
+                    </p>
+                    <p style={{ margin: 0, fontSize: 13, color: "#64748B" }}>
+                      {event.time} • {event.location}
                     </p>
                   </div>
                 </div>
@@ -361,90 +190,6 @@ export default function ProgramPage() {
             </div>
           </div>
         ))}
-
-        {/* Important Notes */}
-        <div
-          style={{
-            background: "white",
-            border: "1px solid rgba(15,23,42,0.08)",
-            borderRadius: 18,
-            padding: 24,
-            marginBottom: 26,
-            boxShadow: "0 12px 28px rgba(15,23,42,0.06)",
-          }}
-        >
-          <h3
-            style={{
-              color: "#0F172A",
-              fontSize: 20,
-              fontWeight: 900,
-              marginBottom: 14,
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-            }}
-          >
-            📌 Important Reminders
-          </h3>
-
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-              gap: 14,
-            }}
-          >
-            {[
-              { icon: "👔", title: "Dress Code", text: "Smart casual for sessions; formal for ceremonies." },
-              { icon: "🪪", title: "ID Required", text: "Always wear your event ID badge inside the venue." },
-              { icon: "⏰", title: "Be Punctual", text: "Arrive 15 minutes before each session." },
-              { icon: "📱", title: "Silent Mode", text: "Keep phones on silent during presentations." },
-            ].map((item, index) => (
-              <div
-                key={index}
-                style={{
-                  display: "flex",
-                  alignItems: "flex-start",
-                  gap: 12,
-                  padding: 14,
-                  background: "#F8FAFC",
-                  borderRadius: 12,
-                  border: "1px solid #E2E8F0",
-                }}
-              >
-                <span style={{ fontSize: 26 }}>{item.icon}</span>
-                <div>
-                  <p
-                    style={{
-                      fontWeight: 800,
-                      color: "#0F172A",
-                      margin: "0 0 4px 0",
-                      fontSize: 15,
-                    }}
-                  >
-                    {item.title}
-                  </p>
-                  <p style={{ color: "#475569", margin: 0, fontSize: 14 }}>
-                    {item.text}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Footer */}
-        <p
-          style={{
-            textAlign: "center",
-            color: "#475569",
-            fontSize: 13,
-            marginTop: 16,
-            paddingBottom: 16,
-          }}
-        >
-          © 2025 Regional Science & Technology Week — Camiguin | Program schedule subject to change
-        </p>
       </div>
     </main>
   );
