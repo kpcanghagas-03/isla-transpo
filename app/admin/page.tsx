@@ -194,80 +194,96 @@ export default function AdminPage() {
 };
 
   // ================= UPDATE FIELD =================
-  const updateField = async (id: number, field: keyof Request | string, value: string) => {
-    const request = requests.find((r) => r.id === id);
-    if (!request) return;
+  const updateField = async (
+  id: number,
+  field: keyof Request | string,
+  value: string
+) => {
+  const request = requests.find((r) => r.id === id);
 
-    // prevent unnecessary updates
-    if ((request as any)[field] === value) return;
+  if (!request) return;
 
-    // instant UI update
-    setRequests((prev) =>
-      prev.map((r) => (r.id === id ? ({ ...r, [field]: value } as Request) : r))
-    );
+  // prevent unnecessary updates
+  if ((request as any)[field] === value) return;
 
-    // update database
-    const { error } = await supabase
-      .from("transport_requests")
-      .update({ [field]: value })
-      .eq("id", id);
+  // instant UI update
+  setRequests((prev) =>
+    prev.map((r) =>
+      r.id === id ? ({ ...r, [field]: value } as Request) : r
+    )
+  );
 
-    if (error) {
-      alert(error.message);
-      fetchRequests();
-      return;
+  // update database
+  const { error } = await supabase
+    .from("transport_requests")
+    .update({ [field]: value })
+    .eq("id", id);
+
+  if (error) {
+    alert(error.message);
+    fetchRequests();
+    return;
+  }
+
+  console.log("UPDATED SUCCESSFULLY");
+
+  // ================= AUTO EMAIL =================
+  const shouldEmail =
+    field === "status" &&
+    request.status !== value &&
+    [
+      "Pending",
+      "Approved",
+      "On the way",
+      "Disapproved",
+      "Completed",
+      "Emergency",
+    ].includes(value);
+
+  if (shouldEmail) {
+    try {
+      const vehicleInfo =
+        vehicleMap[request.assigned_vehicle || ""] || {
+          driver: "",
+          phone: "",
+        };
+
+      const res = await fetch("/api/send_email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify({
+          email: request.email || undefined,
+          name: request.requester_name,
+          status: value,
+
+          pickup: request.pickup_location || "",
+          destination: request.destination || "",
+
+          schedule: `${toPHDate(request.pick_up_date) || ""}${
+            request.pick_up_time
+              ? `, ${toPHTime(request.pick_up_time) || ""}`
+              : ""
+          }`,
+
+          vehicle: request.assigned_vehicle
+            ? `🚐 ${request.assigned_vehicle} - ${vehicleInfo.driver}`
+            : "",
+
+          driver_number: vehicleInfo.phone,
+
+          request_id: request.id,
+        }),
+      });
+
+      const data = await res.json();
+
+      console.log("EMAIL RESPONSE:", data);
+    } catch (err) {
+      console.log("EMAIL ERROR:", err);
     }
-    console.log("UPDATED SUCCESSFULLY");
-
-    // ================= AUTO EMAIL =================
-    const shouldEmail =
-      field === "status" &&
-      request.status !== value &&
-      ["Pending", "Approved", "On the way", "Disapproved", "Completed", "Emergency"].includes(value);
-
-   if (shouldEmail) {
-  try {
-    const vehicleInfo =
-      vehicleMap[request.assigned_vehicle || ""] || {
-        driver: "",
-        phone: "",
-      };
-
-    const res = await fetch("/api/send_email", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-
-      body: JSON.stringify({
-        email: request.email || undefined,
-        name: request.requester_name,
-        status: value,
-
-        pickup: request.pickup_location || "",
-        destination: request.destination || "",
-
-        schedule: `${toPHDate(request.pick_up_date) || ""}${
-          request.pick_up_time
-            ? `, ${toPHTime(request.pick_up_time) || ""}`
-            : ""
-        }`,
-
-        vehicle: request.assigned_vehicle
-          ? `🚐 ${request.assigned_vehicle} - ${vehicleInfo.driver}`
-          : "",
-
-        driver_number: vehicleInfo.phone,
-
-        request_id: request.id,
-      }),
-    });
-
-    const data = await res.json();
-
-    console.log("EMAIL RESPONSE:", data);
-  } catch (err) {
-    console.log("EMAIL ERROR:", err);
   }
 };
 
@@ -710,4 +726,4 @@ export default function AdminPage() {
     </main>
   );
 }
-}
+
