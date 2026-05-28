@@ -32,6 +32,34 @@ export default function AttendeePage() {
     },
   ];
 
+  const program = [
+    {
+      day: "Day 1",
+      title: "Opening Ceremony & Registration",
+      time: "8:00 AM - 12:00 NN",
+    },
+    {
+      day: "Day 1",
+      title: "Exhibits & Innovation Showcase",
+      time: "1:00 PM - 5:00 PM",
+    },
+    {
+      day: "Day 2",
+      title: "Technical Sessions & Workshops",
+      time: "8:00 AM - 5:00 PM",
+    },
+    {
+      day: "Day 3",
+      title: "Competitions & Judging",
+      time: "8:00 AM - 3:00 PM",
+    },
+    {
+      day: "Day 4",
+      title: "Awarding Ceremony & Closing",
+      time: "9:00 AM - 12:00 NN",
+    },
+  ];
+
   return (
     <main
       style={{
@@ -89,12 +117,75 @@ export default function AttendeePage() {
             style={{
               textAlign: "center",
               color: "#E2E8F0",
-              marginBottom: 30,
+              marginBottom: 25,
               fontSize: 15,
             }}
           >
             Camiguin Ferry Timetable for RSTW Participants
           </p>
+
+          {/* PROGRAM OF ACTIVITIES */}
+          <div
+            style={{
+              background: "rgba(255,255,255,0.92)",
+              borderRadius: 18,
+              padding: 20,
+              marginBottom: 25,
+            }}
+          >
+            <h2
+              style={{
+                color: "#0B3D91",
+                fontSize: 20,
+                fontWeight: "800",
+                marginBottom: 15,
+              }}
+            >
+              RSTW Program of Activities
+            </h2>
+
+            <div style={{ display: "grid", gap: 12 }}>
+              {program.map((item, index) => (
+                <div
+                  key={index}
+                  style={{
+                    borderLeft: "4px solid #0B3D91",
+                    paddingLeft: 12,
+                  }}
+                >
+                  <p
+                    style={{
+                      fontSize: 13,
+                      color: "#64748B",
+                      marginBottom: 2,
+                      fontWeight: 600,
+                    }}
+                  >
+                    {item.day}
+                  </p>
+
+                  <p
+                    style={{
+                      fontSize: 15,
+                      fontWeight: 700,
+                      color: "#0F172A",
+                    }}
+                  >
+                    {item.title}
+                  </p>
+
+                  <p
+                    style={{
+                      fontSize: 13,
+                      color: "#334155",
+                    }}
+                  >
+                    {item.time}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
 
           {/* TRIP LIST */}
           <div style={{ display: "grid", gap: 16 }}>
@@ -126,15 +217,8 @@ export default function AttendeePage() {
                     gap: 12,
                   }}
                 >
-                  {/* Departure */}
                   <div>
-                    <p
-                      style={{
-                        color: "#64748B",
-                        fontSize: 13,
-                        marginBottom: 4,
-                      }}
-                    >
+                    <p style={{ color: "#64748B", fontSize: 13 }}>
                       Departure
                     </p>
                     <p
@@ -148,15 +232,8 @@ export default function AttendeePage() {
                     </p>
                   </div>
 
-                  {/* Arrival */}
                   <div>
-                    <p
-                      style={{
-                        color: "#64748B",
-                        fontSize: 13,
-                        marginBottom: 4,
-                      }}
-                    >
+                    <p style={{ color: "#64748B", fontSize: 13 }}>
                       Arrival
                     </p>
                     <p
@@ -170,17 +247,8 @@ export default function AttendeePage() {
                     </p>
                   </div>
 
-                  {/* Fare */}
                   <div>
-                    <p
-                      style={{
-                        color: "#64748B",
-                        fontSize: 13,
-                        marginBottom: 4,
-                      }}
-                    >
-                      Fare
-                    </p>
+                    <p style={{ color: "#64748B", fontSize: 13 }}>Fare</p>
                     <p
                       style={{
                         color: "#0B3D91",
