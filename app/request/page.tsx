@@ -25,11 +25,10 @@ export default function RequestPage() {
     pick_up_date: "",
     pick_up_time: "",
 
-    airline: "", // NEW FIELD
+    airline: "",
 
     contact_person: "",
     contact_number: "",
-
     alternate_contact_person: "",
     alternate_contact_number: "",
 
@@ -38,9 +37,7 @@ export default function RequestPage() {
 
   // ================= HANDLE CHANGE =================
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     setFormData({
       ...formData,
@@ -52,13 +49,9 @@ export default function RequestPage() {
   const handleSubmit = async () => {
     const cleanEmail = formData.email.trim().toLowerCase();
 
-    const { data: staffList, error: staffError } = await supabase
+    const { data: staffList } = await supabase
       .from("staff")
       .select("staff_email");
-
-    if (staffError) {
-      console.log("STAFF ERROR:", staffError);
-    }
 
     const isStaff = staffList?.some(
       (s: any) =>
@@ -88,14 +81,12 @@ export default function RequestPage() {
       return;
     }
 
-    // ================= PAYLOAD =================
     const payload = {
       requester_name: formData.requester_name,
       email: cleanEmail,
       staff_email,
 
       committee_unit: formData.committee_unit,
-
       passengers: formData.passengers,
       passenger_names: formData.passenger_names,
 
@@ -109,15 +100,12 @@ export default function RequestPage() {
       pick_up_date: formData.pick_up_date || null,
       pick_up_time: formData.pick_up_time || null,
 
-      airline: formData.airline || null, // NEW
+      airline: formData.airline || null,
 
       contact_person: formData.contact_person,
       contact_number: formData.contact_number,
-
-      alternate_contact_person:
-        formData.alternate_contact_person || null,
-      alternate_contact_number:
-        formData.alternate_contact_number || null,
+      alternate_contact_person: formData.alternate_contact_person || null,
+      alternate_contact_number: formData.alternate_contact_number || null,
 
       notes_remarks: formData.notes_remarks || null,
 
@@ -135,13 +123,11 @@ export default function RequestPage() {
       return;
     }
 
-    // EMAIL (kept from your original)
+    // EMAIL
     try {
       await fetch("/api/send_email", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: cleanEmail,
           name: formData.requester_name,
@@ -158,7 +144,7 @@ export default function RequestPage() {
 
     alert("Transport Request Submitted Successfully!");
 
-    // RESET FORM
+    // RESET
     setFormData({
       requester_name: "",
       email: "",
@@ -181,7 +167,7 @@ export default function RequestPage() {
     });
   };
 
-  // ================= STYLES (PROGRAM-LIKE BACKGROUND) =================
+  // ================= STYLES (GLASS + CAMIGUIN LIKE PROGRAM PAGE) =================
   const pageStyle = {
     minHeight: "100vh",
     padding: 20,
@@ -194,88 +180,69 @@ export default function RequestPage() {
   };
 
   const formBox = {
-    background: "white",
-    maxWidth: 800,
+    maxWidth: 820,
     margin: "0 auto",
     padding: 30,
-    borderRadius: 18,
-    boxShadow: "0 20px 60px rgba(0,0,0,0.35)",
+    borderRadius: 20,
+
+    // GLASS EFFECT (RESTORED)
+    background: "rgba(255,255,255,0.15)",
+    backdropFilter: "blur(18px)",
+    border: "1px solid rgba(255,255,255,0.25)",
+    boxShadow: "0 25px 60px rgba(0,0,0,0.4)",
   };
 
   const inputStyle = {
     width: "100%",
-    padding: 10,
-    borderRadius: 8,
-    border: "1px solid #CBD5E1",
+    padding: 11,
+    borderRadius: 10,
+    border: "1px solid rgba(255,255,255,0.4)",
     marginBottom: 12,
     fontSize: 14,
     color: "#0F172A",
-    backgroundColor: "white",
+    backgroundColor: "rgba(255,255,255,0.95)",
     outline: "none",
   };
 
   const sectionTitle = {
-    color: "#0B3D91",
-    fontWeight: 800,
-    fontSize: 16,
+    color: "#ffffff",
+    fontWeight: 900,
+    fontSize: 15,
     marginTop: 22,
     marginBottom: 10,
+    textShadow: "0 2px 10px rgba(0,0,0,0.4)",
   };
 
-  const radioLabel = {
-    marginRight: 15,
-    color: "#0F172A",
-    fontSize: 14,
+  const labelStyle = {
+    color: "white",
+    fontSize: 13,
+    fontWeight: 700,
+    marginBottom: 6,
+    display: "block",
   };
 
   return (
     <main style={pageStyle}>
       <div style={formBox}>
         {/* HEADER */}
-        <h1 style={{ color: "#0B3D91", marginBottom: 5 }}>
+        <h1 style={{ color: "white", marginBottom: 5 }}>
           ISLA-Transpo
         </h1>
-        <p style={{ color: "#475569", marginBottom: 20 }}>
+        <p style={{ color: "#E2E8F0", marginBottom: 18 }}>
           Transport Request Form
         </p>
 
         {/* REQUESTER */}
         <div style={sectionTitle}>👤 Requester Information</div>
 
-        <input
-          name="requester_name"
-          placeholder="Name of Requester"
-          value={formData.requester_name}
-          onChange={handleChange}
-          style={inputStyle}
-        />
-
-        <input
-          name="email"
-          placeholder="Email Address"
-          value={formData.email}
-          onChange={handleChange}
-          style={inputStyle}
-        />
-
-        <input
-          name="committee_unit"
-          placeholder="Committee / Unit"
-          value={formData.committee_unit}
-          onChange={handleChange}
-          style={inputStyle}
-        />
+        <input name="requester_name" placeholder="Name" value={formData.requester_name} onChange={handleChange} style={inputStyle} />
+        <input name="email" placeholder="Email" value={formData.email} onChange={handleChange} style={inputStyle} />
+        <input name="committee_unit" placeholder="Committee / Unit" value={formData.committee_unit} onChange={handleChange} style={inputStyle} />
 
         {/* TRANSPORT */}
         <div style={sectionTitle}>🚍 Transport Details</div>
 
-        <input
-          name="passengers"
-          placeholder="Number of Passengers"
-          value={formData.passengers}
-          onChange={handleChange}
-          style={inputStyle}
-        />
+        <input name="passengers" placeholder="Number of Passengers" value={formData.passengers} onChange={handleChange} style={inputStyle} />
 
         <textarea
           name="passenger_names"
@@ -285,120 +252,59 @@ export default function RequestPage() {
           style={{ ...inputStyle, height: 80 }}
         />
 
-        {/* PICKUP SCHEDULE (MOVED HERE) */}
+        {/* PICKUP SCHEDULE */}
         <div style={sectionTitle}>🕒 Pick-up Schedule</div>
 
-        <input
-          type="date"
-          name="pick_up_date"
-          value={formData.pick_up_date}
-          onChange={handleChange}
-          style={inputStyle}
-        />
-
-        <input
-          type="time"
-          name="pick_up_time"
-          value={formData.pick_up_time}
-          onChange={handleChange}
-          style={inputStyle}
-        />
+        <input type="date" name="pick_up_date" value={formData.pick_up_date} onChange={handleChange} style={inputStyle} />
+        <input type="time" name="pick_up_time" value={formData.pick_up_time} onChange={handleChange} style={inputStyle} />
 
         {/* PICKUP + DESTINATION */}
-        <input
-          name="pickup_location"
-          placeholder="Pick-up Location"
-          value={formData.pickup_location}
-          onChange={handleChange}
-          style={inputStyle}
-        />
+        <input name="pickup_location" placeholder="Pick-up Location" value={formData.pickup_location} onChange={handleChange} style={inputStyle} />
+        <input name="destination" placeholder="Destination" value={formData.destination} onChange={handleChange} style={inputStyle} />
 
-        <input
-          name="destination"
-          placeholder="Destination"
-          value={formData.destination}
-          onChange={handleChange}
-          style={inputStyle}
-        />
-
-        {/* FLIGHT */}
+        {/* FLIGHT DETAILS (RESTORED FULL) */}
         <div style={sectionTitle}>✈️ Flight Details</div>
 
-        <input
-          name="flight_no"
-          placeholder="Flight Number"
-          value={formData.flight_no}
-          onChange={handleChange}
-          style={inputStyle}
-        />
+        <input name="flight_no" placeholder="Flight Number" value={formData.flight_no} onChange={handleChange} style={inputStyle} />
 
-        {/* AIRLINE SELECT */}
-        <div style={{ marginBottom: 12 }}>
-          <p style={{ fontWeight: 800, color: "#0B3D91" }}>
-            Airline
-          </p>
+        <div style={{ display: "flex", gap: 10 }}>
+          <div style={{ flex: 1 }}>
+            <span style={labelStyle}>Arrival Date</span>
+            <input type="date" name="flight_arrival_date" value={formData.flight_arrival_date} onChange={handleChange} style={inputStyle} />
+          </div>
 
-          {["Cebu Pacific", "Philippine Airlines (PAL)", "Other"].map(
-            (air) => (
-              <label key={air} style={radioLabel}>
-                <input
-                  type="radio"
-                  name="airline"
-                  value={air}
-                  checked={formData.airline === air}
-                  onChange={handleChange}
-                />{" "}
-                {air}
-              </label>
-            )
-          )}
+          <div style={{ flex: 1 }}>
+            <span style={labelStyle}>Arrival Time</span>
+            <input type="time" name="flight_arrival_time" value={formData.flight_arrival_time} onChange={handleChange} style={inputStyle} />
+          </div>
         </div>
+
+        {/* AIRLINE */}
+        <div style={sectionTitle}>✈️ Airline</div>
+
+        {["Cebu Pacific", "Philippine Airlines (PAL)", "Other"].map((a) => (
+          <label key={a} style={{ color: "white", marginRight: 12 }}>
+            <input
+              type="radio"
+              name="airline"
+              value={a}
+              checked={formData.airline === a}
+              onChange={handleChange}
+            />{" "}
+            {a}
+          </label>
+        ))}
 
         {/* CONTACT */}
         <div style={sectionTitle}>📞 Contact Details</div>
 
-        <input
-          name="contact_person"
-          placeholder="Contact Person"
-          value={formData.contact_person}
-          onChange={handleChange}
-          style={inputStyle}
-        />
-
-        <input
-          name="contact_number"
-          placeholder="Contact Number"
-          value={formData.contact_number}
-          onChange={handleChange}
-          style={inputStyle}
-        />
-
-        <input
-          name="alternate_contact_person"
-          placeholder="Alternate Contact Person"
-          value={formData.alternate_contact_person}
-          onChange={handleChange}
-          style={inputStyle}
-        />
-
-        <input
-          name="alternate_contact_number"
-          placeholder="Alternate Contact Number"
-          value={formData.alternate_contact_number}
-          onChange={handleChange}
-          style={inputStyle}
-        />
+        <input name="contact_person" placeholder="Contact Person" value={formData.contact_person} onChange={handleChange} style={inputStyle} />
+        <input name="contact_number" placeholder="Contact Number" value={formData.contact_number} onChange={handleChange} style={inputStyle} />
 
         {/* NOTES */}
         <div style={sectionTitle}>📝 Notes / Remarks</div>
 
-        <textarea
-          name="notes_remarks"
-          placeholder="Additional Notes"
-          value={formData.notes_remarks}
-          onChange={handleChange}
-          style={{ ...inputStyle, height: 90 }}
-        />
+        <textarea name="notes_remarks" placeholder="Notes" value={formData.notes_remarks} onChange={handleChange} style={{ ...inputStyle, height: 90 }} />
 
         {/* BUTTONS */}
         <div style={{ display: "flex", gap: 10, marginTop: 15 }}>
@@ -406,12 +312,12 @@ export default function RequestPage() {
             onClick={() => router.push("/")}
             style={{
               flex: 1,
-              border: "2px solid #0B3D91",
-              color: "#0B3D91",
               background: "white",
-              padding: 12,
+              color: "#0B3D91",
               borderRadius: 10,
+              padding: 12,
               fontWeight: 800,
+              border: "none",
               cursor: "pointer",
             }}
           >
@@ -422,13 +328,12 @@ export default function RequestPage() {
             onClick={handleSubmit}
             style={{
               flex: 2,
-              background:
-                "linear-gradient(135deg, #0B3D91, #1E40AF)",
+              background: "linear-gradient(135deg, #0B3D91, #1E40AF)",
               color: "white",
-              border: "none",
-              padding: 12,
               borderRadius: 10,
+              padding: 12,
               fontWeight: 800,
+              border: "none",
               cursor: "pointer",
             }}
           >
