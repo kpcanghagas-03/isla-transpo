@@ -52,7 +52,10 @@ export default function RequestPage() {
   const handleSubmit = async () => {
     const cleanEmail = formData.email.trim().toLowerCase();
 
-    const { data: staffList, error: staffError } = await supabase
+    const {
+      data: staffList,
+      error: staffError,
+    } = await supabase
       .from("staff")
       .select("staff_email");
 
@@ -68,11 +71,7 @@ export default function RequestPage() {
         s.staff_email.trim().toLowerCase() === cleanEmail
     );
 
-    console.log("IS STAFF:", isStaff);
-
     const staff_email = isStaff ? cleanEmail : null;
-
-    console.log("STAFF EMAIL:", staff_email);
 
     // ================= VALIDATION =================
 
@@ -108,8 +107,10 @@ export default function RequestPage() {
       pickup_location: formData.pickup_location,
       destination: formData.destination,
       flight_no: formData.flight_no || null,
-      flight_arrival_date: formData.flight_arrival_date || null,
-      flight_arrival_time: formData.flight_arrival_time || null,
+      flight_arrival_date:
+        formData.flight_arrival_date || null,
+      flight_arrival_time:
+        formData.flight_arrival_time || null,
       pick_up_date: formData.pick_up_date || null,
       pick_up_time: formData.pick_up_time || null,
       contact_person: formData.contact_person,
@@ -192,7 +193,7 @@ export default function RequestPage() {
   const inputStyle = {
     padding: "14px 16px",
     borderRadius: 14,
-    border: "1px solid #CBD5E1",
+    border: "1px solid rgba(255,255,255,0.25)",
     width: "100%",
     marginBottom: 14,
     outline: "none",
@@ -200,39 +201,40 @@ export default function RequestPage() {
     color: "#0F172A",
     backgroundColor: "rgba(255,255,255,0.95)",
     boxSizing: "border-box" as const,
-    transition: "0.2s",
   };
 
   const formBox = {
-    background: "rgba(255,255,255,0.15)",
+    background: "rgba(255,255,255,0.12)",
     padding: 35,
     borderRadius: 30,
-    maxWidth: 900,
+    maxWidth: 950,
     width: "100%",
     margin: "0 auto",
-    boxShadow: "0 25px 60px rgba(0,0,0,0.4)",
+    boxShadow: "0 25px 60px rgba(0,0,0,0.45)",
     backdropFilter: "blur(20px)",
-    border: "1px solid rgba(255,255,255,0.2)",
+    border: "1px solid rgba(255,255,255,0.15)",
   };
 
   const sectionTitleStyle = {
     color: "white",
     fontSize: "20px",
     fontWeight: "800" as const,
-    marginTop: 28,
-    marginBottom: 14,
+    marginTop: 0,
+    marginBottom: 18,
     display: "flex",
     alignItems: "center",
     gap: 10,
-    textShadow: "0 2px 10px rgba(0,0,0,0.3)",
+    textShadow: "0 2px 10px rgba(0,0,0,0.25)",
   };
 
   const cardStyle = {
-    background: "rgba(255,255,255,0.95)",
+    background:
+      "linear-gradient(135deg, #0B3D91, #1E40AF)",
     borderRadius: 22,
     padding: 24,
-    marginBottom: 20,
-    boxShadow: "0 10px 35px rgba(0,0,0,0.12)",
+    marginBottom: 22,
+    boxShadow: "0 10px 35px rgba(0,0,0,0.18)",
+    border: "1px solid rgba(255,255,255,0.15)",
   };
 
   return (
@@ -260,7 +262,7 @@ export default function RequestPage() {
           ← Back to Home
         </button>
 
-        {/* MAIN FORM CONTAINER */}
+        {/* MAIN FORM */}
 
         <div style={formBox}>
           {/* HEADER */}
@@ -287,7 +289,7 @@ export default function RequestPage() {
                   fontWeight: 600,
                 }}
               >
-                🚐 Regional Science & Technology Week 2026
+                🚐 RSTW Camiguin 2026
               </span>
             </div>
 
@@ -297,7 +299,8 @@ export default function RequestPage() {
                 marginBottom: 10,
                 fontSize: "clamp(34px, 6vw, 56px)",
                 fontWeight: "900",
-                textShadow: "0 4px 20px rgba(0,0,0,0.35)",
+                textShadow:
+                  "0 4px 20px rgba(0,0,0,0.35)",
                 lineHeight: 1.1,
               }}
             >
@@ -312,12 +315,13 @@ export default function RequestPage() {
                 margin: "0 auto",
               }}
             >
-              Submit your transportation request for airport transfers,
-              ferry pickups, venue transfers, and official RSTW travel.
+              Submit your transportation request for
+              airport pickups, ferry transfers, venue
+              transportation, and official event travel.
             </p>
           </div>
 
-          {/* ================= REQUESTER INFO ================= */}
+          {/* REQUESTER INFO */}
 
           <div style={cardStyle}>
             <div style={sectionTitleStyle}>
@@ -349,7 +353,7 @@ export default function RequestPage() {
             />
           </div>
 
-          {/* ================= TRANSPORT DETAILS ================= */}
+          {/* TRANSPORT DETAILS */}
 
           <div style={cardStyle}>
             <div style={sectionTitleStyle}>
@@ -393,7 +397,7 @@ export default function RequestPage() {
             />
           </div>
 
-          {/* ================= FLIGHT DETAILS ================= */}
+          {/* FLIGHT DETAILS */}
 
           <div style={cardStyle}>
             <div style={sectionTitleStyle}>
@@ -418,7 +422,7 @@ export default function RequestPage() {
               <div style={{ flex: 1, minWidth: 220 }}>
                 <label
                   style={{
-                    color: "#334155",
+                    color: "white",
                     fontSize: 14,
                     fontWeight: "700",
                   }}
@@ -438,7 +442,7 @@ export default function RequestPage() {
               <div style={{ flex: 1, minWidth: 220 }}>
                 <label
                   style={{
-                    color: "#334155",
+                    color: "white",
                     fontSize: 14,
                     fontWeight: "700",
                   }}
@@ -457,7 +461,7 @@ export default function RequestPage() {
             </div>
           </div>
 
-          {/* ================= PICKUP SCHEDULE ================= */}
+          {/* PICKUP SCHEDULE */}
 
           <div style={cardStyle}>
             <div style={sectionTitleStyle}>
@@ -474,7 +478,7 @@ export default function RequestPage() {
               <div style={{ flex: 1, minWidth: 220 }}>
                 <label
                   style={{
-                    color: "#334155",
+                    color: "white",
                     fontSize: 14,
                     fontWeight: "700",
                   }}
@@ -494,7 +498,7 @@ export default function RequestPage() {
               <div style={{ flex: 1, minWidth: 220 }}>
                 <label
                   style={{
-                    color: "#334155",
+                    color: "white",
                     fontSize: 14,
                     fontWeight: "700",
                   }}
@@ -513,7 +517,7 @@ export default function RequestPage() {
             </div>
           </div>
 
-          {/* ================= CONTACT DETAILS ================= */}
+          {/* CONTACT DETAILS */}
 
           <div style={cardStyle}>
             <div style={sectionTitleStyle}>
@@ -553,7 +557,7 @@ export default function RequestPage() {
             />
           </div>
 
-          {/* ================= NOTES ================= */}
+          {/* NOTES */}
 
           <div style={cardStyle}>
             <div style={sectionTitleStyle}>
@@ -573,7 +577,7 @@ export default function RequestPage() {
             />
           </div>
 
-          {/* ================= BUTTONS ================= */}
+          {/* BUTTONS */}
 
           <div
             style={{
@@ -593,8 +597,10 @@ export default function RequestPage() {
                 cursor: "pointer",
                 fontWeight: "800",
                 fontSize: 15,
-                background: "rgba(255,255,255,0.9)",
-                boxShadow: "0 6px 18px rgba(0,0,0,0.15)",
+                background:
+                  "rgba(255,255,255,0.95)",
+                boxShadow:
+                  "0 6px 18px rgba(0,0,0,0.15)",
               }}
             >
               ← Back
@@ -605,7 +611,7 @@ export default function RequestPage() {
               style={{
                 flex: 2,
                 background:
-                  "linear-gradient(135deg, #0B3D91, #2563EB)",
+                  "linear-gradient(135deg, #2563EB, #60A5FA)",
                 color: "white",
                 padding: "14px",
                 border: "none",
@@ -613,7 +619,8 @@ export default function RequestPage() {
                 cursor: "pointer",
                 fontWeight: "800",
                 fontSize: 15,
-                boxShadow: "0 10px 25px rgba(37,99,235,0.35)",
+                boxShadow:
+                  "0 10px 25px rgba(37,99,235,0.35)",
               }}
             >
               🚐 Submit Transport Request
@@ -632,7 +639,8 @@ export default function RequestPage() {
             paddingBottom: 10,
           }}
         >
-          © 2026 Regional Science & Technology Week — Camiguin
+          © 2026 Regional Science & Technology Week —
+          Camiguin
         </p>
       </div>
     </main>
