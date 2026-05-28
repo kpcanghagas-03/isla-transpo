@@ -512,13 +512,13 @@ export default function AdminPage() {
                     }}
                   >
                     <option value="">Unassigned</option>
-                    <option value="Van 1 - ZAM 1023 - Driver 1">🚐 Van 1 - ZAM 1023 - Driver 1</option>
-                    <option value="Van 2 - ZAM 1456 - Driver 2">🚐 Van 2 - ZAM 1456 - Driver 2</option>
-                    <option value="SUV 1 - SUV 8831 - Driver 3">🚗 SUV 1 - SUV 8831 - Driver 3</option>
-                    <option value="SUV 2 - SUV 1942 - Driver 4">🚗 SUV 2 - SUV 1942 - Driver 4</option>
-                    <option value="Mini Bus 1 - BUS 1001 - Driver 5">🚌 Mini Bus 1 - BUS 1001 - Driver 5</option>
-                    <option value="Service Car 1 - CAR 9921 - Driver 6">🚗 Service Car 1 - CAR 9921 - Driver 6</option>
-                    <option value="Van 3 - VAN 5555 - Driver 7">🚐 Van 3 - VAN 5555 - Driver 7</option>
+                    <option value="Van 1 - ZAM 1023 - Driver 1">🚐 Van 1 - ZAM 1023 - Mr. Lino Gorres</option>
+                    <option value="Van 2 - ZAM 1456 - Driver 2">🚐 Van 2 - ZAM 1456 - Mr. Ramil Caneda</option>
+                    <option value="Van 3 - ZAM 8831 - Driver 3">🚐 Van 3  - ZAM 8831 - Mr. Ernie Soliva </option>
+                    <option value="Van 4 - ZAM 1942 - Driver 4">🚐 Van 4  - ZAM 1942 - Mr. Abling Murrilo</option>
+                    <option value="Van 5 - ZAM 1952 - Driver 5">🚐 Van 5  - ZAM 1952 - Mr. Francisco Talle</option>
+                    <option value="Van 6- ZAM 1962 - Driver 6">🚐 Van 6  - ZAM 1962 - Mr. Leonel Quidet</option>
+                    <option value="Van 7 - ZAM 5555 - Driver 7">🚐 Van 7 - ZAM 5555 - Driver 7</option>
                     <option value="Backup Vehicle - BKP 7777 - Driver 8">🚨 Backup Vehicle - BKP 7777 - Driver 8</option>
                   </select>
 
