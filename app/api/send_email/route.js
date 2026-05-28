@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
 // ================= MESSAGE ENGINE =================
-function getStatusMessage(status, name,vehicle,requestDetails = {}) {
+function getStatusMessage(status, name,vehicle,driver_number,requestDetails = {}) {
   const { pickup, destination, schedule } = requestDetails;
 
   // 🌤 Warm greeting intro (NEW)
@@ -13,7 +13,7 @@ function getStatusMessage(status, name,vehicle,requestDetails = {}) {
       Hi <strong>${name}</strong>,
     </p>
     <p style="font-family:Arial; font-size:14px; color:#333;">
-      Welcome to ISLA-Transpo. We’re happy to have you on board — and we’ll make sure your journey is safe, smooth, and comfortable. 🚐💙
+      Welcome to ISLA-Transpo. We’re happy to have you on board and we’ll make sure your journey is safe, smooth, and comfortable. 🚐💙
     </p>
   `;
 
@@ -68,7 +68,16 @@ function getStatusMessage(status, name,vehicle,requestDetails = {}) {
     ${section("Pickup Location", pickup || "Not specified")}
     ${section("Destination", destination || "Not specified")}
     ${section("Schedule", schedule || "Not specified")}
-    ${section("Vehicle", vehicle || "Not yet assigned")}
+    ${section(
+  "Vehicle Assignment",
+  `
+    ${vehicle || "Not yet assigned"}
+    <br/>
+    <span style="color:#555;">
+      Driver Contact: ${driver_number || "Not available"}
+    </span>
+  `
+)}
   
   `;
 
@@ -147,7 +156,7 @@ function getStatusMessage(status, name,vehicle,requestDetails = {}) {
           ${tripInfo}
 
           <p style="font-family:Arial;">
-            Please take a moment to prepare — your driver will arrive shortly.
+            Please take a moment to prepare. Your driver will arrive shortly.
           </p>
 
           <p style="font-family:Arial; color:#555;">
@@ -261,6 +270,7 @@ export async function POST(request) {
       name,
       status,
       vehicle,
+      driver_number,
       pickup,
       destination,
       schedule,
@@ -274,7 +284,7 @@ export async function POST(request) {
       );
     }
 
-    const { subject, html } = getStatusMessage(status, name, vehicle, {
+    const { subject, html } = getStatusMessage(status, name, vehicle, driver_number, {
       pickup,
       destination,
       schedule,
