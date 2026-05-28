@@ -5,32 +5,53 @@ import { useRouter } from "next/navigation";
 export default function AttendeePage() {
   const router = useRouter();
 
-  const trips = [
-    {
-      route: "Balingoan → Benoni",
-      departure: "5:00 AM",
-      arrival: "7:00 AM",
-      fare: "₱270",
-    },
-    {
-      route: "Balingoan → Benoni",
-      departure: "9:00 AM",
-      arrival: "11:00 AM",
-      fare: "₱270",
-    },
-    {
-      route: "Benoni → Balingoan",
-      departure: "1:00 PM",
-      arrival: "3:00 PM",
-      fare: "₱270",
-    },
-    {
-      route: "Benoni → Balingoan",
-      departure: "5:00 PM",
-      arrival: "7:00 PM",
-      fare: "₱270",
-    },
+  // Benoni → Balingoan trips
+  const benoniToBalingoan = [
+    { time: "3:00 AM", vessel: "FRANCISCA 7", arrival: "4:00 AM" },
+    { time: "4:30 AM", vessel: "FRANCISCA 3", arrival: "5:45 AM" },
+    { time: "7:40 AM", vessel: "FRANCISCA 5", arrival: "8:25 AM" },
+    { time: "8:30 AM", vessel: "FRANCISCA 3", arrival: "9:45 AM" },
+    { time: "10:25 AM", vessel: "FRANCISCA 7", arrival: "11:25 AM" },
+    { time: "12:25 PM", vessel: "FRANCISCA 5", arrival: "1:40 PM" },
+    { time: "12:55 PM", vessel: "FRANCISCA 3", arrival: "1:40 PM" },
+    { time: "2:40 PM", vessel: "FRANCISCA 7", arrival: "3:40 PM" },
+    { time: "4:40 PM", vessel: "FRANCISCA 5", arrival: "5:25 PM" },
   ];
+
+  // Balingoan → Benoni trips
+  const balingoanToBenoni = [
+    { time: "4:00 AM", vessel: "FRANCISCA 5", arrival: "4:45 AM" },
+    { time: "6:25 AM", vessel: "FRANCISCA 3", arrival: "7:40 AM" },
+    { time: "8:10 AM", vessel: "FRANCISCA 7", arrival: "9:10 AM" },
+    { time: "10:10 AM", vessel: "FRANCISCA 5", arrival: "10:55 AM" },
+    { time: "10:40 AM", vessel: "FRANCISCA 3", arrival: "12:10 PM" },
+    { time: "12:00 NN", vessel: "FRANCISCA 7", arrival: "1:00 PM" },
+    { time: "2:10 PM", vessel: "FRANCISCA 5", arrival: "3:25 PM" },
+    { time: "3:10 PM", vessel: "FRANCISCA 3", arrival: "3:55 PM" },
+    { time: "4:40 PM", vessel: "FRANCISCA 7", arrival: "5:40 PM" },
+  ];
+
+  // Balingoan → Guinsiliban trips
+  const balingoanToGuinsiliban = [
+    { time: "5:30 AM", vessel: "FRANCISCA 9", arrival: "6:15 AM" },
+    { time: "8:30 AM", vessel: "FRANCISCA 9", arrival: "9:15 AM" },
+    { time: "1:30 PM", vessel: "FRANCISCA 9", arrival: "2:45 PM" },
+  ];
+
+  // Guinsiliban → Balingoan trips
+  const guinsilibanToBalingoan = [
+    { time: "7:00 AM", vessel: "FRANCISCA 9", arrival: "7:45 AM" },
+    { time: "12:00 NN", vessel: "FRANCISCA 9", arrival: "12:45 PM" },
+    { time: "4:15 PM", vessel: "FRANCISCA 9", arrival: "5:00 PM" },
+  ];
+
+  // Fare rates
+  const fareRates = {
+    regular: "₱330.00",
+    seniorPWD: "₱266.00",
+    seniorCitizen: "₱235.00",
+    children: "₱165.00",
+  };
 
   const program = [
     {
@@ -59,6 +80,98 @@ export default function AttendeePage() {
       time: "9:00 AM - 12:00 NN",
     },
   ];
+
+  const TripCard = ({
+    route,
+    trips,
+    bgColor = "#0B3D91",
+  }: {
+    route: string;
+    trips: { time: string; vessel: string; arrival: string }[];
+    bgColor?: string;
+  }) => (
+    <div
+      style={{
+        background: "white",
+        borderRadius: 18,
+        padding: 20,
+        boxShadow: "0 10px 25px rgba(0,0,0,0.15)",
+        marginBottom: 16,
+      }}
+    >
+      <h2
+        style={{
+          color: bgColor,
+          fontSize: 18,
+          fontWeight: "bold",
+          marginBottom: 15,
+          borderBottom: `3px solid ${bgColor}`,
+          paddingBottom: 10,
+        }}
+      >
+        {route}
+      </h2>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gap: 8,
+          fontSize: 12,
+          fontWeight: 700,
+          color: "#64748B",
+          marginBottom: 10,
+          textTransform: "uppercase",
+        }}
+      >
+        <span>Departure</span>
+        <span>Vessel</span>
+        <span>Arrival</span>
+      </div>
+
+      {trips.map((trip, index) => (
+        <div
+          key={index}
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3, 1fr)",
+            gap: 8,
+            padding: "10px 0",
+            borderBottom:
+              index < trips.length - 1 ? "1px solid #E2E8F0" : "none",
+          }}
+        >
+          <p
+            style={{
+              color: "#0F172A",
+              fontSize: 14,
+              fontWeight: "700",
+            }}
+          >
+            {trip.time}
+          </p>
+          <p
+            style={{
+              color: "#334155",
+              fontSize: 14,
+              fontWeight: "600",
+            }}
+          >
+            {trip.vessel}
+          </p>
+          <p
+            style={{
+              color: "#0F172A",
+              fontSize: 14,
+              fontWeight: "700",
+            }}
+          >
+            {trip.arrival}
+          </p>
+        </div>
+      ))}
+    </div>
+  );
 
   return (
     <main
@@ -117,11 +230,22 @@ export default function AttendeePage() {
             style={{
               textAlign: "center",
               color: "#E2E8F0",
-              marginBottom: 25,
+              marginBottom: 10,
               fontSize: 15,
             }}
           >
-            Camiguin Ferry Timetable for RSTW Participants
+            St. Benedict Ocean Shipping Lines Corporation
+          </p>
+
+          <p
+            style={{
+              textAlign: "center",
+              color: "#CBD5E1",
+              marginBottom: 25,
+              fontSize: 13,
+            }}
+          >
+            Contact: 0956 638 7141 | Benoni, Mahinog, Camiguin
           </p>
 
           {/* PROGRAM OF ACTIVITIES */}
@@ -187,82 +311,119 @@ export default function AttendeePage() {
             </div>
           </div>
 
-          {/* TRIP LIST */}
-          <div style={{ display: "grid", gap: 16 }}>
-            {trips.map((trip, index) => (
+          {/* FARE RATES */}
+          <div
+            style={{
+              background: "rgba(255,255,255,0.92)",
+              borderRadius: 18,
+              padding: 20,
+              marginBottom: 25,
+            }}
+          >
+            <h2
+              style={{
+                color: "#0B3D91",
+                fontSize: 20,
+                fontWeight: "800",
+                marginBottom: 15,
+              }}
+            >
+              Passenger Fare Rates (Benoni ↔ Balingoan)
+            </h2>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
+                gap: 12,
+              }}
+            >
               <div
-                key={index}
                 style={{
-                  background: "white",
-                  borderRadius: 18,
-                  padding: 20,
-                  boxShadow: "0 10px 25px rgba(0,0,0,0.15)",
+                  background: "#0B3D91",
+                  borderRadius: 12,
+                  padding: 15,
+                  textAlign: "center",
                 }}
               >
-                <h2
-                  style={{
-                    color: "#0B3D91",
-                    fontSize: 18,
-                    fontWeight: "bold",
-                    marginBottom: 12,
-                  }}
-                >
-                  {trip.route}
-                </h2>
-
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
-                    gap: 12,
-                  }}
-                >
-                  <div>
-                    <p style={{ color: "#64748B", fontSize: 13 }}>
-                      Departure
-                    </p>
-                    <p
-                      style={{
-                        color: "#0F172A",
-                        fontSize: 16,
-                        fontWeight: "700",
-                      }}
-                    >
-                      {trip.departure}
-                    </p>
-                  </div>
-
-                  <div>
-                    <p style={{ color: "#64748B", fontSize: 13 }}>
-                      Arrival
-                    </p>
-                    <p
-                      style={{
-                        color: "#0F172A",
-                        fontSize: 16,
-                        fontWeight: "700",
-                      }}
-                    >
-                      {trip.arrival}
-                    </p>
-                  </div>
-
-                  <div>
-                    <p style={{ color: "#64748B", fontSize: 13 }}>Fare</p>
-                    <p
-                      style={{
-                        color: "#0B3D91",
-                        fontSize: 18,
-                        fontWeight: "800",
-                      }}
-                    >
-                      {trip.fare}
-                    </p>
-                  </div>
-                </div>
+                <p style={{ color: "#CBD5E1", fontSize: 12, marginBottom: 4 }}>
+                  Regular
+                </p>
+                <p style={{ color: "white", fontSize: 20, fontWeight: 800 }}>
+                  {fareRates.regular}
+                </p>
               </div>
-            ))}
+
+              <div
+                style={{
+                  background: "#1E40AF",
+                  borderRadius: 12,
+                  padding: 15,
+                  textAlign: "center",
+                }}
+              >
+                <p style={{ color: "#CBD5E1", fontSize: 12, marginBottom: 4 }}>
+                  SP / PWD
+                </p>
+                <p style={{ color: "white", fontSize: 20, fontWeight: 800 }}>
+                  {fareRates.seniorPWD}
+                </p>
+              </div>
+
+              <div
+                style={{
+                  background: "#3B82F6",
+                  borderRadius: 12,
+                  padding: 15,
+                  textAlign: "center",
+                }}
+              >
+                <p style={{ color: "#E0E7FF", fontSize: 12, marginBottom: 4 }}>
+                  Senior Citizen
+                </p>
+                <p style={{ color: "white", fontSize: 20, fontWeight: 800 }}>
+                  {fareRates.seniorCitizen}
+                </p>
+              </div>
+
+              <div
+                style={{
+                  background: "#60A5FA",
+                  borderRadius: 12,
+                  padding: 15,
+                  textAlign: "center",
+                }}
+              >
+                <p style={{ color: "#1E3A8A", fontSize: 12, marginBottom: 4 }}>
+                  Children (3-11 yrs)
+                </p>
+                <p style={{ color: "#1E3A8A", fontSize: 20, fontWeight: 800 }}>
+                  {fareRates.children}
+                </p>
+              </div>
+            </div>
           </div>
+
+          {/* TRIP SCHEDULES */}
+          <TripCard route="Benoni → Balingoan" trips={benoniToBalingoan} />
+
+          <TripCard
+            route="Balingoan → Benoni"
+            trips={balingoanToBenoni}
+            bgColor="#1E40AF"
+          />
+
+          <TripCard
+            route="Balingoan → Guinsiliban"
+            trips={balingoanToGuinsiliban}
+            bgColor="#059669"
+          />
+
+          <TripCard
+            route="Guinsiliban → Balingoan"
+            trips={guinsilibanToBalingoan}
+            bgColor="#047857"
+          />
 
           {/* FOOTNOTE */}
           <p
@@ -274,6 +435,9 @@ export default function AttendeePage() {
             }}
           >
             Schedule may change depending on weather and ferry operations.
+            <br />
+            Daily trips available. Contact St. Benedict Ocean Shipping Lines for
+            updates.
           </p>
         </div>
       </div>
