@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
 // ================= MESSAGE ENGINE =================
-function getStatusMessage(status, name, vehicle, requestDetails = {}) {
+function getStatusMessage(status, name,vehicle,driverName,driverNumber,requestDetails = {}) {
   const { pickup, destination, schedule } = requestDetails;
 
   // 🌤 Warm greeting intro (NEW)
@@ -69,6 +69,8 @@ function getStatusMessage(status, name, vehicle, requestDetails = {}) {
     ${section("Destination", destination || "Not specified")}
     ${section("Schedule", schedule || "Not specified")}
     ${section("Vehicle", vehicle || "Not yet assigned")}
+    ${section("Driver Name", driverName || "Not yet assigned")}
+    ${section("Driver Number", driverNumber || "Not yet assigned")}
   `;
 
   switch (status) {
@@ -273,7 +275,7 @@ export async function POST(request) {
       );
     }
 
-    const { subject, html } = getStatusMessage(status, name, vehicle, {
+    const { subject, html } = getStatusMessage(status, name, vehicle, driver_name, driver_number, {
       pickup,
       destination,
       schedule,
