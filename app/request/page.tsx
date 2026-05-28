@@ -47,12 +47,10 @@ export default function RequestPage() {
         s.staff_email?.trim().toLowerCase() === cleanEmail
     );
 
-    const staff_email = isStaff ? cleanEmail : null;
-
     const payload = {
       ...formData,
       email: cleanEmail,
-      staff_email,
+      staff_email: isStaff ? cleanEmail : null,
       status: "Pending",
       priority: "Attendee",
     };
@@ -63,10 +61,11 @@ export default function RequestPage() {
 
     if (error) {
       alert("Something went wrong.");
+      console.log(error);
       return;
     }
 
-    alert("Request submitted successfully!");
+    alert("Transport request submitted successfully!");
 
     setFormData({
       requester_name: "",
@@ -91,18 +90,21 @@ export default function RequestPage() {
 
   const inputStyle = {
     width: "100%",
-    padding: "10px",
+    padding: "11px",
     borderRadius: 10,
-    border: "1px solid #E2E8F0",
+    border: "1px solid #CBD5E1",
     fontSize: 14,
     outline: "none",
+    backgroundColor: "white",
+    color: "#0F172A",
   };
 
   const sectionTitle = {
     color: "#0B3D91",
     fontSize: 18,
-    fontWeight: 800,
-    margin: "20px 0 10px",
+    fontWeight: 900,
+    margin: "22px 0 10px",
+    textShadow: "0 1px 2px rgba(255,255,255,0.6)",
   };
 
   return (
@@ -111,11 +113,16 @@ export default function RequestPage() {
         minHeight: "100vh",
         padding: 20,
         fontFamily: "Segoe UI, sans-serif",
+
+        // CAMIGUIN BACKGROUND + DARK OVERLAY FOR READABILITY
         backgroundImage:
-          "linear-gradient(135deg, #0B3D91 0%, #1E40AF 50%, #3B82F6 100%)",
+          "linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.65)), url('/camiguin.jpg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundAttachment: "fixed",
       }}
     >
-      <div style={{ maxWidth: 800, margin: "0 auto" }}>
+      <div style={{ maxWidth: 850, margin: "0 auto" }}>
         {/* BACK BUTTON */}
         <button
           onClick={() => router.push("/")}
@@ -126,23 +133,24 @@ export default function RequestPage() {
             border: "none",
             background: "white",
             color: "#0B3D91",
-            fontWeight: 700,
+            fontWeight: 800,
             cursor: "pointer",
-            boxShadow: "0 4px 15px rgba(0,0,0,0.2)",
+            boxShadow: "0 6px 20px rgba(0,0,0,0.3)",
           }}
         >
           ← Back
         </button>
 
-        {/* HEADER (same style as Program page) */}
+        {/* HEADER (glass like program page) */}
         <div
           style={{
             textAlign: "center",
-            marginBottom: 25,
+            marginBottom: 20,
             padding: "25px 20px",
-            background: "rgba(255,255,255,0.1)",
+            background: "rgba(255,255,255,0.12)",
             borderRadius: 24,
-            backdropFilter: "blur(10px)",
+            backdropFilter: "blur(12px)",
+            border: "1px solid rgba(255,255,255,0.2)",
           }}
         >
           <div
@@ -154,7 +162,7 @@ export default function RequestPage() {
               marginBottom: 10,
             }}
           >
-            <span style={{ color: "white", fontSize: 13, fontWeight: 600 }}>
+            <span style={{ color: "white", fontWeight: 600, fontSize: 13 }}>
               🚍 ISLA-Transpo System
             </span>
           </div>
@@ -165,23 +173,24 @@ export default function RequestPage() {
               fontSize: "clamp(28px, 6vw, 46px)",
               fontWeight: 900,
               margin: 0,
+              textShadow: "0 4px 20px rgba(0,0,0,0.5)",
             }}
           >
             Transport Request Form
           </h1>
 
-          <p style={{ color: "rgba(255,255,255,0.85)", marginTop: 8 }}>
-            Fill out your transportation details
+          <p style={{ color: "#E2E8F0", marginTop: 8, fontSize: 14 }}>
+            Fill out your transportation request details
           </p>
         </div>
 
-        {/* FORM CARD */}
+        {/* FORM CARD (glass white for readability) */}
         <div
           style={{
-            background: "white",
+            background: "rgba(255,255,255,0.96)",
             borderRadius: 24,
-            padding: 25,
-            boxShadow: "0 15px 40px rgba(0,0,0,0.2)",
+            padding: 26,
+            boxShadow: "0 20px 60px rgba(0,0,0,0.35)",
           }}
         >
           {/* REQUESTER */}
@@ -197,7 +206,7 @@ export default function RequestPage() {
 
           <input
             name="email"
-            placeholder="Email"
+            placeholder="Email Address"
             value={formData.email}
             onChange={handleChange}
             style={{ ...inputStyle, marginTop: 10 }}
@@ -227,7 +236,7 @@ export default function RequestPage() {
             placeholder="Passenger Names"
             value={formData.passenger_names}
             onChange={handleChange}
-            style={{ ...inputStyle, marginTop: 10, height: 80 }}
+            style={{ ...inputStyle, marginTop: 10, height: 85 }}
           />
 
           {/* PICKUP SCHEDULE (MOVED HERE) */}
@@ -334,14 +343,14 @@ export default function RequestPage() {
 
           <textarea
             name="notes_remarks"
-            placeholder="Additional Notes"
+            placeholder="Additional Notes / Remarks"
             value={formData.notes_remarks}
             onChange={handleChange}
             style={{ ...inputStyle, height: 90 }}
           />
 
           {/* BUTTONS */}
-          <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
+          <div style={{ display: "flex", gap: 10, marginTop: 18 }}>
             <button
               onClick={() => router.push("/")}
               style={{
@@ -351,7 +360,7 @@ export default function RequestPage() {
                 border: "2px solid #0B3D91",
                 color: "#0B3D91",
                 background: "white",
-                fontWeight: 700,
+                fontWeight: 800,
               }}
             >
               Back
@@ -365,8 +374,9 @@ export default function RequestPage() {
                 borderRadius: 12,
                 border: "none",
                 color: "white",
-                fontWeight: 700,
+                fontWeight: 800,
                 background: "linear-gradient(135deg,#0B3D91,#1E40AF)",
+                boxShadow: "0 8px 20px rgba(0,0,0,0.25)",
               }}
             >
               Submit Request
