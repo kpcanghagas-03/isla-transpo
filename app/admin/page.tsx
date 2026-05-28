@@ -8,6 +8,7 @@ const LiveMap = dynamic(() => import("@/components/LiveMap"), {
   ssr: false,
 });
 import { Users, Clock, CheckCircle, Truck, AlertTriangle, XCircle } from "lucide-react";
+import { request } from "https";
 
 // Shape from DB (allow nulls to match reality)
 type Request = {
@@ -193,22 +194,20 @@ export default function AdminPage() {
         const res = await fetch("/api/send_email", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-                email: request.email || undefined,
-                name: request.requester_name,
-                status: value,
-                pickup: request.pickup_location || "",
-                destination: request.destination || "",
-                schedule: `${toPHDate(request.pick_up_date) || ""}${
-                  request.pick_up_time
-                    ? `, ${toPHTime(request.pick_up_time) || ""}`
-                    : ""
-                }`,
-                vehicle: request.assigned_vehicle || "",
-                driver_number: request.driver_number ?? "",
-                request_id: request.id,
-              }),
-                });
+         body: JSON.stringify({
+              email: request.email || undefined,
+              name: request.requester_name,
+              status: value,
+              pickup: request.pickup_location || "",
+              destination: request.destination || "",
+              schedule: `${toPHDate(request.pick_up_date) || ""}${
+                request.pick_up_time ? `, ${toPHTime(request.pick_up_time) || ""}` : ""
+              }`,
+              vehicle: request.assigned_vehicle || "",
+              driver_name: vehicleInfo.driver,        // ✅ ADD THIS
+              driver_number: vehicleInfo.phone,       // already good
+              request_id: request.id,
+            }),
 
         let data = null;
 
@@ -256,31 +255,31 @@ console.log("EMAIL RESPONSE:", data);
 
    // ================= DRIVER NUMBERS =================
   const vehicleMap: Record<string, { driver: string; phone: string }> = {
-  "Van 1 - ZAM 1023 - Mr. Lino Gorres": {
+  "Van 1 - ZAM 1023": {
     driver: "Mr. Lino Gorres",
     phone: "09171234567",
   },
-  "Van 2 - ZAM 1456 - Mr. Ramil Caneda": {
+  "Van 2 - ZAM 1456": {
     driver: "Mr. Ramil Caneda",
     phone: "09181234567",
   },
-  "Van 3 - ZAM 8831 - Mr. Ernie Soliva": {
+  "Van 3 - ZAM 8831": {
     driver: "Mr. Ernie Soliva",
     phone: "09191234567",
   },
-  "Van 4 - ZAM 1942 - Mr. Abling Murillo": {
+  "Van 4 - ZAM 1942": {
     driver: "Mr. Abling Murillo",
     phone: "09201234567",
   },
-  "Van 5 - ZAM 1952 - Mr. Francisco Talle": {
+  "Van 5 - ZAM 1952": {
     driver: "Mr. Francisco Talle",
     phone: "09211234567",
   },
-  "Van 6 - ZAM 1962 - Mr. Leonel Quidet": {
+  "Van 6 - ZAM 1962": {
     driver: "Mr. Leonel Quidet",
     phone: "09221234567",
   },
-  "Van 7 - ZAM 5555 - Mr. Driver 7": {
+  "Van 7 - ZAM 5555": {
     driver: "Driver 7",
     phone: "09231234567",
   },
@@ -553,7 +552,10 @@ console.log("EMAIL RESPONSE:", data);
                     onChange={async (e) => {
                       const vehicle = e.target.value;
 
-                      const vehicleInfo = vehicleMap[vehicle] || { driver: "", phone: "" };
+                      const vehicleInfo = vehicleMap[request.assigned_vehicle || ""] || {
+                                  driver: "",
+                                  phone: "",
+                                };
 
                       // UPDATE VEHICLE
                       await updateField(req.id, "assigned_vehicle", vehicle);
