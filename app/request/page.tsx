@@ -331,6 +331,22 @@ export default function RequestPage() {
           style={inputStyle}
         />
 
+        <input
+          name="alternate_contact_person"
+          placeholder="Alternate Contact Person"
+          value={formData.alternate_contact_person}
+          onChange={handleChange}
+          style={inputStyle}
+        />
+
+        <input
+          name="alternate_contact_number"
+          placeholder="Alternate Contact Number"
+          value={formData.alternate_contact_number}
+          onChange={handleChange}
+          style={inputStyle}
+        />
+
         {/* REMARKS */}
         <div style={sectionTitle}>📝 Notes / Remarks</div>
 
