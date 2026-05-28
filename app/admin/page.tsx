@@ -205,7 +205,7 @@ export default function AdminPage() {
                     : ""
                 }`,
                 vehicle: request.assigned_vehicle || "",
-                driver_number: request.driver_number || "",
+                driver_number: request.driver_number ?? "",
                 request_id: request.id,
               }),
                 });
@@ -522,13 +522,18 @@ export default function AdminPage() {
                     onChange={async (e) => {
                       const vehicle = e.target.value;
 
-                      await updateField(req.id, "assigned_vehicle", vehicle);
-
-                      // AUTO SAVE DRIVER NUMBER
                       const driverNumber = driverNumbers[vehicle] || "";
 
+                      // UPDATE VEHICLE
+                      await updateField(req.id, "assigned_vehicle", vehicle);
+
+                      // UPDATE DRIVER NUMBER
                       await updateField(req.id, "driver_number", driverNumber);
 
+                      // SMALL DELAY TO ENSURE DB UPDATE
+                      await new Promise((resolve) => setTimeout(resolve, 300));
+
+                      // UPDATE STATUS LAST
                       if (vehicle) {
                         await updateField(req.id, "status", "Approved");
                       } else {
