@@ -153,7 +153,7 @@ export default function RequestPage() {
   };
 
   const sectionTitle: React.CSSProperties = {
-    color: "#1E40AF",
+    color: "rgba(255,255,255,0.95)",
     fontWeight: 800,
     fontSize: 16,
     marginTop: 18,
