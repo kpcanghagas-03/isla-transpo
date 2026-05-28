@@ -11,46 +11,106 @@ export default function RequestPage() {
     requester_name: "",
     email: "",
     committee_unit: "",
+
     passengers: "",
     passenger_names: "",
+
+    // NEW: Airline selection
+    airline: "",
+
     pickup_location: "",
     destination: "",
+
     flight_no: "",
     flight_arrival_date: "",
     flight_arrival_time: "",
+
     pick_up_date: "",
     pick_up_time: "",
+
     contact_person: "",
     contact_number: "",
+
     alternate_contact_person: "",
     alternate_contact_number: "",
+
     notes_remarks: "",
   });
 
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
   };
 
+  // ================= HANDLE SUBMIT =================
   const handleSubmit = async () => {
     const cleanEmail = formData.email.trim().toLowerCase();
 
-    const { data: staffList } = await supabase
+    const { data: staffList, error: staffError } = await supabase
       .from("staff")
       .select("staff_email");
 
     const isStaff = staffList?.some(
       (s: any) =>
-        s.staff_email?.trim().toLowerCase() === cleanEmail
+        s.staff_email &&
+        s.staff_email.trim().toLowerCase() === cleanEmail
     );
 
+    const staff_email = isStaff ? cleanEmail : null;
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (
+      !formData.requester_name ||
+      !formData.email ||
+      !formData.pickup_location ||
+      !formData.destination ||
+      !formData.pick_up_date ||
+      !formData.pick_up_time ||
+      !formData.contact_number
+    ) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+
+    if (!emailRegex.test(cleanEmail)) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+
     const payload = {
-      ...formData,
+      requester_name: formData.requester_name,
       email: cleanEmail,
-      staff_email: isStaff ? cleanEmail : null,
+      staff_email,
+      committee_unit: formData.committee_unit,
+
+      passengers: formData.passengers,
+      passenger_names: formData.passenger_names,
+
+      airline: formData.airline, // NEW
+
+      pickup_location: formData.pickup_location,
+      destination: formData.destination,
+
+      flight_no: formData.flight_no || null,
+      flight_arrival_date: formData.flight_arrival_date || null,
+      flight_arrival_time: formData.flight_arrival_time || null,
+
+      pick_up_date: formData.pick_up_date || null,
+      pick_up_time: formData.pick_up_time || null,
+
+      contact_person: formData.contact_person,
+      contact_number: formData.contact_number,
+
+      alternate_contact_person: formData.alternate_contact_person || null,
+      alternate_contact_number: formData.alternate_contact_number || null,
+
+      notes_remarks: formData.notes_remarks || null,
+
       status: "Pending",
       priority: "Attendee",
     };
@@ -60,12 +120,12 @@ export default function RequestPage() {
       .insert([payload]);
 
     if (error) {
-      alert("Something went wrong.");
-      console.log(error);
+      console.log("INSERT ERROR:", error);
+      alert("Something went wrong submitting your request.");
       return;
     }
 
-    alert("Transport request submitted successfully!");
+    alert("Transport Request Submitted Successfully!");
 
     setFormData({
       requester_name: "",
@@ -73,6 +133,7 @@ export default function RequestPage() {
       committee_unit: "",
       passengers: "",
       passenger_names: "",
+      airline: "",
       pickup_location: "",
       destination: "",
       flight_no: "",
@@ -88,300 +149,232 @@ export default function RequestPage() {
     });
   };
 
+  // ================= STYLES =================
+  const pageStyle = {
+    minHeight: "100vh",
+    padding: 20,
+    fontFamily: "Segoe UI, sans-serif",
+    backgroundImage: "linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.65)), url('/camiguin.jpg')",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundAttachment: "fixed",
+  };
+
+  const formBox = {
+    background: "white",
+    maxWidth: 780,
+    margin: "0 auto",
+    padding: 30,
+    borderRadius: 18,
+    boxShadow: "0 20px 60px rgba(0,0,0,0.35)",
+  };
+
   const inputStyle = {
     width: "100%",
-    padding: "11px",
-    borderRadius: 10,
+    padding: 10,
+    borderRadius: 8,
     border: "1px solid #CBD5E1",
+    marginBottom: 12,
     fontSize: 14,
-    outline: "none",
-    backgroundColor: "white",
     color: "#0F172A",
+    backgroundColor: "white",
   };
 
   const sectionTitle = {
     color: "#0B3D91",
-    fontSize: 18,
-    fontWeight: 900,
-    margin: "22px 0 10px",
-    textShadow: "0 1px 2px rgba(255,255,255,0.6)",
+    fontWeight: 800,
+    fontSize: 16,
+    marginTop: 22,
+    marginBottom: 10,
   };
 
   return (
-    <main
-      style={{
-        minHeight: "100vh",
-        padding: 20,
-        fontFamily: "Segoe UI, sans-serif",
+    <main style={pageStyle}>
+      <div style={formBox}>
+        {/* HEADER */}
+        <h1 style={{ color: "#0B3D91", marginBottom: 5 }}>
+          ISLA-Transpo
+        </h1>
+        <p style={{ color: "#475569", marginBottom: 20 }}>
+          Transport Request Form
+        </p>
 
-        // CAMIGUIN BACKGROUND + DARK OVERLAY FOR READABILITY
-        backgroundImage:
-          "linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.65)), url('/camiguin.jpg')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundAttachment: "fixed",
-      }}
-    >
-      <div style={{ maxWidth: 850, margin: "0 auto" }}>
-        {/* BACK BUTTON */}
-        <button
-          onClick={() => router.push("/")}
-          style={{
-            marginBottom: 15,
-            padding: "10px 16px",
-            borderRadius: 12,
-            border: "none",
-            background: "white",
-            color: "#0B3D91",
-            fontWeight: 800,
-            cursor: "pointer",
-            boxShadow: "0 6px 20px rgba(0,0,0,0.3)",
-          }}
-        >
-          ← Back
-        </button>
+        {/* REQUESTER */}
+        <div style={sectionTitle}>👤 Requester Information</div>
 
-        {/* HEADER (glass like program page) */}
-        <div
-          style={{
-            textAlign: "center",
-            marginBottom: 20,
-            padding: "25px 20px",
-            background: "rgba(255,255,255,0.12)",
-            borderRadius: 24,
-            backdropFilter: "blur(12px)",
-            border: "1px solid rgba(255,255,255,0.2)",
-          }}
-        >
-          <div
-            style={{
-              display: "inline-block",
-              background: "rgba(255,255,255,0.2)",
-              padding: "6px 18px",
-              borderRadius: 50,
-              marginBottom: 10,
-            }}
-          >
-            <span style={{ color: "white", fontWeight: 600, fontSize: 13 }}>
-              🚍 ISLA-Transpo System
-            </span>
-          </div>
+        <input
+          name="requester_name"
+          placeholder="Name of Requester"
+          value={formData.requester_name}
+          onChange={handleChange}
+          style={inputStyle}
+        />
 
-          <h1
-            style={{
-              color: "white",
-              fontSize: "clamp(28px, 6vw, 46px)",
-              fontWeight: 900,
-              margin: 0,
-              textShadow: "0 4px 20px rgba(0,0,0,0.5)",
-            }}
-          >
-            Transport Request Form
-          </h1>
+        <input
+          name="email"
+          placeholder="Email Address"
+          value={formData.email}
+          onChange={handleChange}
+          style={inputStyle}
+        />
 
-          <p style={{ color: "#E2E8F0", marginTop: 8, fontSize: 14 }}>
-            Fill out your transportation request details
+        <input
+          name="committee_unit"
+          placeholder="Committee / Unit"
+          value={formData.committee_unit}
+          onChange={handleChange}
+          style={inputStyle}
+        />
+
+        {/* PASSENGERS */}
+        <div style={sectionTitle}>🚍 Transport Details</div>
+
+        <input
+          name="passengers"
+          placeholder="Number of Passengers"
+          value={formData.passengers}
+          onChange={handleChange}
+          style={inputStyle}
+        />
+
+        <textarea
+          name="passenger_names"
+          placeholder="Passenger Names"
+          value={formData.passenger_names}
+          onChange={handleChange}
+          style={{ ...inputStyle, height: 80 }}
+        />
+
+        {/* PICKUP SCHEDULE (MOVED HERE) */}
+        <div style={sectionTitle}>🕒 Pick-up Schedule</div>
+
+        <input
+          type="date"
+          name="pick_up_date"
+          value={formData.pick_up_date}
+          onChange={handleChange}
+          style={inputStyle}
+        />
+
+        <input
+          type="time"
+          name="pick_up_time"
+          value={formData.pick_up_time}
+          onChange={handleChange}
+          style={inputStyle}
+        />
+
+        {/* PICKUP & DESTINATION */}
+        <input
+          name="pickup_location"
+          placeholder="Pick-up Location"
+          value={formData.pickup_location}
+          onChange={handleChange}
+          style={inputStyle}
+        />
+
+        <input
+          name="destination"
+          placeholder="Destination"
+          value={formData.destination}
+          onChange={handleChange}
+          style={inputStyle}
+        />
+
+        {/* FLIGHT DETAILS */}
+        <div style={sectionTitle}>✈️ Flight Details</div>
+
+        <input
+          name="flight_no"
+          placeholder="Flight Number"
+          value={formData.flight_no}
+          onChange={handleChange}
+          style={inputStyle}
+        />
+
+        {/* NEW AIRLINE SELECT */}
+        <div style={{ marginBottom: 12 }}>
+          <p style={{ fontWeight: 700, color: "#334155" }}>
+            Airline
           </p>
+
+          {["Cebu Pacific", "Philippine Airlines (PAL)", "Other"].map((air) => (
+            <label key={air} style={{ marginRight: 15, color: "#0F172A" }}>
+              <input
+                type="radio"
+                name="airline"
+                value={air}
+                checked={formData.airline === air}
+                onChange={handleChange}
+              />{" "}
+              {air}
+            </label>
+          ))}
         </div>
 
-        {/* FORM CARD (glass white for readability) */}
-        <div
-          style={{
-            background: "rgba(255,255,255,0.96)",
-            borderRadius: 24,
-            padding: 26,
-            boxShadow: "0 20px 60px rgba(0,0,0,0.35)",
-          }}
-        >
-          {/* REQUESTER */}
-          <div style={sectionTitle}>👤 Requester Information</div>
+        {/* CONTACT */}
+        <div style={sectionTitle}>📞 Contact Details</div>
 
-          <input
-            name="requester_name"
-            placeholder="Requester Name"
-            value={formData.requester_name}
-            onChange={handleChange}
-            style={inputStyle}
-          />
+        <input
+          name="contact_person"
+          placeholder="Contact Person"
+          value={formData.contact_person}
+          onChange={handleChange}
+          style={inputStyle}
+        />
 
-          <input
-            name="email"
-            placeholder="Email Address"
-            value={formData.email}
-            onChange={handleChange}
-            style={{ ...inputStyle, marginTop: 10 }}
-          />
+        <input
+          name="contact_number"
+          placeholder="Contact Number"
+          value={formData.contact_number}
+          onChange={handleChange}
+          style={inputStyle}
+        />
 
-          <input
-            name="committee_unit"
-            placeholder="Committee / Unit"
-            value={formData.committee_unit}
-            onChange={handleChange}
-            style={{ ...inputStyle, marginTop: 10 }}
-          />
+        {/* NOTES */}
+        <div style={sectionTitle}>📝 Notes / Remarks</div>
 
-          {/* TRANSPORT */}
-          <div style={sectionTitle}>🚍 Transport Details</div>
+        <textarea
+          name="notes_remarks"
+          placeholder="Additional Notes"
+          value={formData.notes_remarks}
+          onChange={handleChange}
+          style={{ ...inputStyle, height: 90 }}
+        />
 
-          <input
-            name="passengers"
-            placeholder="Number of Passengers"
-            value={formData.passengers}
-            onChange={handleChange}
-            style={inputStyle}
-          />
+        {/* BUTTONS */}
+        <div style={{ display: "flex", gap: 10, marginTop: 15 }}>
+          <button
+            onClick={() => router.push("/")}
+            style={{
+              flex: 1,
+              border: "2px solid #0B3D91",
+              color: "#0B3D91",
+              background: "white",
+              padding: 12,
+              borderRadius: 10,
+              fontWeight: 700,
+              cursor: "pointer",
+            }}
+          >
+            Back
+          </button>
 
-          <textarea
-            name="passenger_names"
-            placeholder="Passenger Names"
-            value={formData.passenger_names}
-            onChange={handleChange}
-            style={{ ...inputStyle, marginTop: 10, height: 85 }}
-          />
-
-          {/* PICKUP SCHEDULE (MOVED HERE) */}
-          <div style={sectionTitle}>🕒 Pickup Schedule</div>
-
-          <div style={{ display: "flex", gap: 10 }}>
-            <input
-              type="date"
-              name="pick_up_date"
-              value={formData.pick_up_date}
-              onChange={handleChange}
-              style={inputStyle}
-            />
-            <input
-              type="time"
-              name="pick_up_time"
-              value={formData.pick_up_time}
-              onChange={handleChange}
-              style={inputStyle}
-            />
-          </div>
-
-          <input
-            name="pickup_location"
-            placeholder="Pickup Location"
-            value={formData.pickup_location}
-            onChange={handleChange}
-            style={{ ...inputStyle, marginTop: 10 }}
-          />
-
-          <input
-            name="destination"
-            placeholder="Destination"
-            value={formData.destination}
-            onChange={handleChange}
-            style={{ ...inputStyle, marginTop: 10 }}
-          />
-
-          {/* FLIGHT */}
-          <div style={sectionTitle}>✈️ Flight Details</div>
-
-          <input
-            name="flight_no"
-            placeholder="Flight Number"
-            value={formData.flight_no}
-            onChange={handleChange}
-            style={inputStyle}
-          />
-
-          <div style={{ display: "flex", gap: 10 }}>
-            <input
-              type="date"
-              name="flight_arrival_date"
-              value={formData.flight_arrival_date}
-              onChange={handleChange}
-              style={inputStyle}
-            />
-            <input
-              type="time"
-              name="flight_arrival_time"
-              value={formData.flight_arrival_time}
-              onChange={handleChange}
-              style={inputStyle}
-            />
-          </div>
-
-          {/* CONTACT */}
-          <div style={sectionTitle}>📞 Contact Details</div>
-
-          <input
-            name="contact_person"
-            placeholder="Contact Person"
-            value={formData.contact_person}
-            onChange={handleChange}
-            style={inputStyle}
-          />
-
-          <input
-            name="contact_number"
-            placeholder="Contact Number"
-            value={formData.contact_number}
-            onChange={handleChange}
-            style={{ ...inputStyle, marginTop: 10 }}
-          />
-
-          <input
-            name="alternate_contact_person"
-            placeholder="Alternate Contact Person"
-            value={formData.alternate_contact_person}
-            onChange={handleChange}
-            style={{ ...inputStyle, marginTop: 10 }}
-          />
-
-          <input
-            name="alternate_contact_number"
-            placeholder="Alternate Contact Number"
-            value={formData.alternate_contact_number}
-            onChange={handleChange}
-            style={{ ...inputStyle, marginTop: 10 }}
-          />
-
-          {/* NOTES */}
-          <div style={sectionTitle}>📝 Notes / Remarks</div>
-
-          <textarea
-            name="notes_remarks"
-            placeholder="Additional Notes / Remarks"
-            value={formData.notes_remarks}
-            onChange={handleChange}
-            style={{ ...inputStyle, height: 90 }}
-          />
-
-          {/* BUTTONS */}
-          <div style={{ display: "flex", gap: 10, marginTop: 18 }}>
-            <button
-              onClick={() => router.push("/")}
-              style={{
-                flex: 1,
-                padding: 12,
-                borderRadius: 12,
-                border: "2px solid #0B3D91",
-                color: "#0B3D91",
-                background: "white",
-                fontWeight: 800,
-              }}
-            >
-              Back
-            </button>
-
-            <button
-              onClick={handleSubmit}
-              style={{
-                flex: 2,
-                padding: 12,
-                borderRadius: 12,
-                border: "none",
-                color: "white",
-                fontWeight: 800,
-                background: "linear-gradient(135deg,#0B3D91,#1E40AF)",
-                boxShadow: "0 8px 20px rgba(0,0,0,0.25)",
-              }}
-            >
-              Submit Request
-            </button>
-          </div>
+          <button
+            onClick={handleSubmit}
+            style={{
+              flex: 2,
+              background: "linear-gradient(135deg, #0B3D91, #1E40AF)",
+              color: "white",
+              border: "none",
+              padding: 12,
+              borderRadius: 10,
+              fontWeight: 700,
+              cursor: "pointer",
+            }}
+          >
+            Submit Request
+          </button>
         </div>
       </div>
     </main>
