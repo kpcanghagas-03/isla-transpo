@@ -4,192 +4,204 @@ import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
 // ================= MESSAGE ENGINE =================
-function getStatusMessage(status, name, vehicle = "", driver_number = "") {
-  const base = `Hi ${name},`;
+function getStatusMessage(status, name, vehicle = "", driver = "") {
+  const header = `
+    <div style="text-align:center; padding:10px 0 20px;">
+      <h1 style="margin:0; color:#1a73e8; font-family:Arial;">ISLA-TRANSPO</h1>
+      <p style="margin:4px 0; color:#666;">Safe & Reliable Transport Service</p>
+    </div>
+  `;
+
+  const progress = (step) => {
+    const steps = ["Pending", "Approved", "On the way", "Completed"];
+    return `
+      <div style="display:flex; gap:6px; margin:10px 0;">
+        ${steps
+          .map((s) => {
+            const active = steps.indexOf(s) <= steps.indexOf(step);
+            return `
+              <div style="
+                flex:1;
+                height:6px;
+                border-radius:10px;
+                background:${active ? "#1a73e8" : "#e5e7eb"};
+              "></div>
+            `;
+          })
+          .join("")}
+      </div>
+    `;
+  };
+
+  const card = (title, content, color) => `
+    <div style="
+      margin:12px 0;
+      padding:14px;
+      border-radius:10px;
+      border-left:5px solid ${color};
+      background:#f9fafb;
+    ">
+      <strong>${title}</strong><br/>
+      ${content}
+    </div>
+  `;
+
+  const footer = `
+    <div style="margin-top:25px; font-size:13px; color:#555; text-align:center;">
+      <p><strong>ISLA-Transpo Team</strong></p>
+      <p style="font-style:italic;">“Your journey, our commitment to safety and care.”</p>
+      <p style="margin-top:10px;">🚐 Safe travels always</p>
+    </div>
+  `;
+
+  const base = `<p style="font-family:Arial;">Hi ${name},</p>`;
 
   switch (status) {
     case "Pending":
       return {
-        subject: "We received your transportation request 🚐",
+        subject: "We’ve received your request 🚐",
         html: `
-          <div style="font-family: Arial, sans-serif; line-height:1.6;">
-            <h2 style="color:#333;">ISLA-Transpo Update</h2>
-            <p>${base}</p>
+          ${header}
+          ${base}
 
-            <div style="padding:15px;border-radius:8px;background:#fff7e6;border-left:5px solid #f5a623;">
-              <strong>Status:</strong> Pending Review
-            </div>
+          ${progress("Pending")}
 
-            <p>Thanks for reaching out. Your request has been received and is now being reviewed by our team.</p>
-            <p>We’ll notify you once there’s progress.</p>
+          <p>Your transportation request has been received successfully.</p>
+          <p>Our team is carefully reviewing the details to prepare your trip.</p>
 
-            <br/>
-            <p>Thank you for your patience.</p>
-          </div>
+          ${card("Status", "Pending Review", "#f59e0b")}
+
+          <p>We’ll notify you once your ride is scheduled.</p>
+
+          ${footer}
         `,
       };
 
     case "Approved":
       return {
-        subject: "Your transportation request has been approved ✅",
+        subject: "Your trip is confirmed ✅",
         html: `
-          <div style="font-family: Arial, sans-serif; line-height:1.6;">
-            <h2 style="color:#1a73e8;">ISLA-Transpo Update</h2>
-            <p>${base}</p>
+          ${header}
+          ${base}
 
-            <div style="padding:15px;border-radius:8px;background:#e6f4ea;border-left:5px solid #34a853;">
-              <strong>Status:</strong> Approved
-            </div>
+          ${progress("Approved")}
 
-            <h3>Trip Details</h3>
-            <ul>
-              <li><strong>Vehicle:</strong> ${vehicle || "To be assigned"}</li>
-              <li><strong>Driver Contact:</strong> ${driver_number || "Will be shared soon"}</li>
-            </ul>
+          <p>Good news — your trip has been approved and is now being prepared.</p>
 
-            <p>Our team is preparing your trip. Please keep your phone available for coordination.</p>
+          ${card(
+            "Assigned Vehicle",
+            vehicle || "To be assigned",
+            "#22c55e"
+          )}
 
-            <br/>
-            <p>Thank you for choosing ISLA-Transpo.</p>
-          </div>
+          ${card(
+            "Driver Information",
+            driver || "Will be shared soon",
+            "#3b82f6"
+          )}
+
+          <p>Please keep your phone available for coordination.</p>
+          <p>We’re preparing everything to ensure a smooth trip for you.</p>
+
+          ${footer}
         `,
       };
 
     case "On the way":
       return {
-        subject: "Your assigned vehicle is on the way 🚐",
+        subject: "Your ride is on the way 🚐",
         html: `
-          <div style="font-family: Arial, sans-serif; line-height:1.6;">
-            <h2 style="color:#1a73e8;">ISLA-Transpo Update</h2>
-            <p>${base}</p>
+          ${header}
+          ${base}
 
-            <div style="padding:15px;border-radius:8px;background:#e8f0fe;border-left:5px solid #1a73e8;">
-              <strong>Status:</strong> On the Way
-            </div>
+          ${progress("On the way")}
 
-            <ul>
-              <li><strong>Vehicle:</strong> ${vehicle || "Assigned Vehicle"}</li>
-              <li><strong>Driver Contact:</strong> ${driver_number || "Unavailable"}</li>
-            </ul>
+          <p>Your vehicle is now heading to your pickup location.</p>
 
-            <p>Please be ready at your pickup location.</p>
+          ${card("Vehicle", vehicle || "Assigned Vehicle", "#1a73e8")}
+          ${card("Driver Contact", driver || "Unavailable", "#1a73e8")}
 
-            <br/>
-            <p>See you soon.</p>
-          </div>
+          <p>Please be ready at your pickup point.</p>
+          <p>We’ll get you safely to your destination.</p>
+
+          ${footer}
         `,
       };
 
     case "Completed":
       return {
-        subject: "Trip completed — thank you 💙",
+        subject: "Thank you for riding with us 💙",
         html: `
-          <div style="font-family: Arial, sans-serif; line-height:1.6;">
-            <h2 style="color:#333;">ISLA-Transpo</h2>
-            <p>${base}</p>
+          ${header}
+          ${base}
 
-            <div style="padding:15px;border-radius:8px;background:#e6f4ea;border-left:5px solid #34a853;">
-              <strong>Status:</strong> Completed
-            </div>
+          ${progress("Completed")}
 
-            <p>We appreciate your trust in us.</p>
-            <p>We hope to serve you again soon.</p>
-          </div>
+          <p>Your trip has been completed successfully.</p>
+
+          <p>
+            Thank you for trusting ISLA-Transpo. It’s always our goal to make your journey
+            safe, smooth, and comfortable.
+          </p>
+
+          ${footer}
         `,
       };
 
     case "Disapproved":
       return {
-        subject: "Update regarding your transportation request",
+        subject: "Update on your request",
         html: `
-          <div style="font-family: Arial, sans-serif; line-height:1.6;">
-            <h2>ISLA-Transpo</h2>
-            <p>${base}</p>
+          ${header}
+          ${base}
 
-            <div style="padding:15px;border-radius:8px;background:#fce8e6;border-left:5px solid #ea4335;">
-              <strong>Status:</strong> Not Approved
-            </div>
+          <p>We carefully reviewed your request.</p>
 
-            <p>We’re unable to approve your request due to scheduling or operational limitations.</p>
-            <p>We hope to assist you in the future.</p>
-          </div>
+          ${card(
+            "Status",
+            "Not approved due to scheduling or operational constraints",
+            "#ef4444"
+          )}
+
+          <p>
+            We truly appreciate your understanding and hope to serve you in the future.
+          </p>
+
+          ${footer}
+        `,
+      };
+
+    case "Emergency":
+      return {
+        subject: "Urgent transport update 🚨",
+        html: `
+          ${header}
+          ${base}
+
+          ${progress("On the way")}
+
+          <p><strong>Emergency support is now active.</strong></p>
+          <p>We are prioritizing your request and dispatching assistance immediately.</p>
+
+          ${card("Vehicle", vehicle || "Being assigned", "#dc2626")}
+          ${card("Driver", driver || "Will be updated shortly", "#dc2626")}
+
+          <p>Please keep your phone reachable at all times.</p>
+          <p>Help is on the way.</p>
+
+          ${footer}
         `,
       };
 
     default:
       return {
-        subject: "Transportation request update",
+        subject: "Transportation update",
         html: `
-          <div style="font-family: Arial, sans-serif;">
-            <p>${base}</p>
-            <p>Your request has been updated.</p>
-          </div>
+          ${header}
+          ${base}
+          <p>Your request has been updated.</p>
+          ${footer}
         `,
       };
-  }
-}
-
-// ================= API ROUTE =================
-export async function POST(request) {
-  try {
-    const {
-      email,
-      name,
-      status,
-      pickup,
-      destination,
-      schedule,
-      vehicle,
-      driver_number,
-      request_id,
-    } = await request.json();
-
-    if (!email) {
-      return NextResponse.json(
-        { success: false, error: "Email is required" },
-        { status: 400 }
-      );
-    }
-
-    const { subject, html } = getStatusMessage(
-      status,
-      name,
-      vehicle,
-      driver_number
-    );
-
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT),
-      secure: false,
-      auth: {
-        user: process.env.SMTP_EMAIL,
-        pass: process.env.SMTP_PASSWORD,
-      },
-    });
-
-    await transporter.sendMail({
-      from: `"ISLA-Transpo" <${process.env.SMTP_EMAIL}>`,
-      to: email,
-      subject,
-      html, // 👈 THIS is what makes Gmail look clean
-    });
-
-    console.log("EMAIL SENT TO:", email);
-
-    return NextResponse.json({
-      success: true,
-      message: "Email sent successfully",
-    });
-  } catch (error) {
-    console.error("EMAIL ERROR:", error);
-
-    return NextResponse.json(
-      {
-        success: false,
-        error: error?.message,
-      },
-      { status: 500 }
-    );
   }
 }
