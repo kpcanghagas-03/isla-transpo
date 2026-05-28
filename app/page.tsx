@@ -40,7 +40,7 @@ export default function HomePage() {
               borderRadius: 28,
               maxWidth: 550,
               width: "100%",
-              padding: 35,
+              padding: 30,
               boxShadow: "0 20px 60px rgba(0,0,0,0.35)",
               animation: "fadeIn 0.3s ease",
             }}
@@ -48,7 +48,7 @@ export default function HomePage() {
             <h1
               style={{
                 color: "#0B3D91",
-                fontSize: 34,
+                fontSize: 30,
                 marginBottom: 12,
                 fontWeight: "bold",
                 textAlign: "center",
@@ -60,36 +60,36 @@ export default function HomePage() {
             <p
               style={{
                 color: "#334155",
-                fontSize: 15,
-                lineHeight: 1.8,
-                marginTop: 15,
+                fontSize: 14,
+                lineHeight: 1.7,
+                marginTop: 10,
                 textAlign: "justify",
               }}
             >
-              Welcome to the official transportation management system of
-              the Regional Science, Technology, and Innovation Week
-              (RSTW) in Camiguin.
+              Welcome to the official transportation management system of the
+              Regional Science, Technology, and Innovation Week (RSTW) in
+              Camiguin.
               <br />
               <br />
-              This platform helps manage transportation requests,
-              attendee coordination, and mobility services to ensure a
-              smooth and organized event experience for everyone.
+              This platform helps manage transportation requests, attendee
+              coordination, and mobility services to ensure a smooth and
+              organized event experience for everyone.
             </p>
 
             <div
               style={{
-                marginTop: 22,
+                marginTop: 20,
                 background: "#EFF6FF",
-                padding: 18,
-                borderRadius: 16,
+                padding: 16,
+                borderRadius: 14,
                 border: "1px solid #BFDBFE",
               }}
             >
               <h3
                 style={{
-                  marginBottom: 10,
+                  marginBottom: 8,
                   color: "#1D4ED8",
-                  fontSize: 18,
+                  fontSize: 16,
                 }}
               >
                 Data Privacy Notice
@@ -97,21 +97,19 @@ export default function HomePage() {
 
               <p
                 style={{
-                  fontSize: 14,
+                  fontSize: 13,
                   color: "#475569",
-                  lineHeight: 1.7,
+                  lineHeight: 1.6,
                   textAlign: "justify",
                 }}
               >
-                Your personal information will be collected and processed
-                solely for transportation coordination, attendance
-                management, and official event-related purposes in
-                accordance with the Data Privacy Act of 2012.
+                Your personal information will be collected and processed solely
+                for transportation coordination, attendance management, and
+                official event-related purposes in accordance with the Data
+                Privacy Act of 2012.
                 <br />
                 <br />
-                All submitted information will be treated with strict
-                confidentiality and protected through appropriate
-                security measures.
+                All information will be kept confidential and protected.
               </p>
             </div>
 
@@ -120,8 +118,8 @@ export default function HomePage() {
                 display: "flex",
                 alignItems: "flex-start",
                 gap: 10,
-                marginTop: 22,
-                fontSize: 14,
+                marginTop: 18,
+                fontSize: 13,
                 color: "#334155",
                 cursor: "pointer",
                 lineHeight: 1.5,
@@ -131,15 +129,9 @@ export default function HomePage() {
                 type="checkbox"
                 checked={agreed}
                 onChange={(e) => setAgreed(e.target.checked)}
-                style={{
-                  marginTop: 4,
-                  transform: "scale(1.1)",
-                }}
+                style={{ marginTop: 3 }}
               />
-
-              I have read and understood the Data Privacy Notice and
-              voluntarily consent to the collection and processing of my
-              information.
+              I agree to the Data Privacy Notice and consent to data collection.
             </label>
 
             <button
@@ -150,21 +142,17 @@ export default function HomePage() {
               }}
               style={{
                 width: "100%",
-                marginTop: 28,
-                padding: 15,
-                borderRadius: 14,
+                marginTop: 22,
+                padding: 14,
+                borderRadius: 12,
                 border: "none",
                 background: agreed
                   ? "linear-gradient(135deg, #0B3D91, #2563EB)"
                   : "#94A3B8",
                 color: "white",
-                fontSize: 16,
+                fontSize: 15,
                 fontWeight: "bold",
                 cursor: agreed ? "pointer" : "not-allowed",
-                transition: "0.25s ease",
-                boxShadow: agreed
-                  ? "0 10px 25px rgba(37,99,235,0.35)"
-                  : "none",
               }}
             >
               Continue
@@ -178,37 +166,35 @@ export default function HomePage() {
         style={{
           minHeight: "100vh",
           backgroundImage:
-            "linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.55)), url('/camiguin.jpg')",
+            "linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.65)), url('/camiguin.jpg')",
           backgroundSize: "cover",
           backgroundPosition: "center",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          padding: 20,
+          padding: 16,
           fontFamily: "Segoe UI, sans-serif",
         }}
       >
         <div
           style={{
-            background: "rgba(255,255,255,0.18)",
-            backdropFilter: "blur(16px)",
-            border: "1px solid rgba(255,255,255,0.25)",
-            padding: 40,
-            borderRadius: 28,
-            maxWidth: 520,
             width: "100%",
+            maxWidth: 520,
+            background: "rgba(255,255,255,0.14)",
+            backdropFilter: "blur(18px)",
+            border: "1px solid rgba(255,255,255,0.25)",
+            borderRadius: 24,
+            padding: "28px 18px",
             textAlign: "center",
             boxShadow: "0 20px 50px rgba(0,0,0,0.35)",
-            animation: "fadeIn 0.5s ease",
           }}
         >
           <h1
             style={{
-              fontSize: "clamp(36px, 8vw, 64px)",
+              fontSize: "clamp(28px, 7vw, 54px)",
               color: "white",
               marginBottom: 10,
-              fontWeight: "800",
-              letterSpacing: 1,
+              fontWeight: 800,
               lineHeight: 1.1,
             }}
           >
@@ -218,35 +204,45 @@ export default function HomePage() {
           <p
             style={{
               color: "#E2E8F0",
-              marginBottom: 35,
-              fontSize: 16,
-              lineHeight: 1.6,
+              marginBottom: 25,
+              fontSize: 14,
+              lineHeight: 1.5,
             }}
           >
-            Regional Science, Technology, and Innovation Week
-            Transportation Management System
+            RSTW Transportation Management System
           </p>
 
-          <button
-            style={buttonStyle}
-            onClick={() => router.push("/request")}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 12,
+            }}
           >
-            Request for Trasportation
-          </button>
+            <button
+              style={buttonStyle}
+              onClick={() => router.push("/request")}
+            >
+              Request Transportation
+            </button>
 
-          <button
-            style={buttonStyle}
-            onClick={() => router.push("/attendee")}
-          >
-            Barge Schedule & Trips
-          </button>
+            <button
+              style={buttonStyle}
+              onClick={() => router.push("/attendee")}
+            >
+              Barge Schedule & Trips
+            </button>
 
-          <button
-            style={buttonStyle}
-            onClick={() => router.push("/feedback")}
-          >
-            Feedback & Suggestions
-          </button>
+            <button
+              style={{
+                ...buttonStyle,
+                background: "linear-gradient(135deg, #1D4ED8, #3B82F6)",
+              }}
+              onClick={() => router.push("/feedback")}
+            >
+              Feedback & Suggestions
+            </button>
+          </div>
         </div>
       </main>
     </>
@@ -255,15 +251,14 @@ export default function HomePage() {
 
 const buttonStyle = {
   width: "100%",
-  padding: "15px",
-  marginTop: 16,
+  padding: "14px",
   borderRadius: 14,
   border: "none",
   background: "linear-gradient(135deg, #0B3D91, #2563EB)",
   color: "white",
-  fontSize: 16,
+  fontSize: 15,
   fontWeight: "bold",
   cursor: "pointer",
-  transition: "0.25s ease",
-  boxShadow: "0 10px 25px rgba(37,99,235,0.35)",
+  minHeight: 48,
+  boxShadow: "0 8px 20px rgba(37,99,235,0.35)",
 };
