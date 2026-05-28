@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
 // ================= MESSAGE ENGINE =================
-function getStatusMessage(status, name, vehicle,driver_number) {
+function getStatusMessage(status, name, vehicle, driverNumber) {
   const header = `
     <div style="text-align:center; padding:10px 0 20px;">
       <h1 style="margin:0; color:#1a73e8; font-family:Arial;">ISLA-TRANSPO</h1>
@@ -14,11 +14,13 @@ function getStatusMessage(status, name, vehicle,driver_number) {
 
   const progress = (step) => {
     const steps = ["Pending", "Approved", "On the way", "Completed"];
+
     return `
       <div style="display:flex; gap:6px; margin:10px 0;">
         ${steps
           .map((s) => {
             const active = steps.indexOf(s) <= steps.indexOf(step);
+
             return `
               <div style="
                 flex:1;
@@ -33,7 +35,6 @@ function getStatusMessage(status, name, vehicle,driver_number) {
     `;
   };
 
-  
   const card = (title, content, color) => `
     <div style="
       margin:12px 0;
@@ -50,7 +51,9 @@ function getStatusMessage(status, name, vehicle,driver_number) {
   const footer = `
     <div style="margin-top:25px; font-size:13px; color:#555; text-align:center;">
       <p><strong>ISLA-Transpo Team</strong></p>
-      <p style="font-style:italic;">“Your journey, our commitment to safety and care.”</p>
+      <p style="font-style:italic;">
+        “Your journey, our commitment to safety and care.”
+      </p>
       <p style="margin-top:10px;">🚐 Safe travels always</p>
     </div>
   `;
@@ -64,11 +67,10 @@ function getStatusMessage(status, name, vehicle,driver_number) {
         html: `
           ${header}
           ${base}
-
           ${progress("Pending")}
 
           <p>Your transportation request has been received successfully.</p>
-          <p>Our team is carefully reviewing the details to prepare your trip.</p>
+          <p>Our team is carefully reviewing your trip details.</p>
 
           ${card("Status", "Pending Review", "#f59e0b")}
 
@@ -84,25 +86,19 @@ function getStatusMessage(status, name, vehicle,driver_number) {
         html: `
           ${header}
           ${base}
-
           ${progress("Approved")}
 
-          <p>Good news — your trip has been approved and is now being prepared.</p>
+          <p>Good news — your trip has been approved.</p>
+
+          ${card("Assigned Vehicle", vehicle || "To be assigned", "#22c55e")}
 
           ${card(
-            "Assigned Vehicle",
-            vehicle || "To be assigned",
-            "#22c55e"
-          )}
-
-          ${card(
-            "Driver Information",
-            driver || "Will be shared soon",
+            "Driver Contact",
+            driverNumber || "Will be shared soon",
             "#3b82f6"
           )}
 
           <p>Please keep your phone available for coordination.</p>
-          <p>We’re preparing everything to ensure a smooth trip for you.</p>
 
           ${footer}
         `,
@@ -114,16 +110,14 @@ function getStatusMessage(status, name, vehicle,driver_number) {
         html: `
           ${header}
           ${base}
-
           ${progress("On the way")}
 
-          <p>Your vehicle is now heading to your pickup location.</p>
+          <p>Your vehicle is now heading to your location.</p>
 
           ${card("Vehicle", vehicle || "Assigned Vehicle", "#1a73e8")}
-          ${card("Driver Contact", driver || "Unavailable", "#1a73e8")}
+          ${card("Driver Contact", driverNumber || "Unavailable", "#1a73e8")}
 
           <p>Please be ready at your pickup point.</p>
-          <p>We’ll get you safely to your destination.</p>
 
           ${footer}
         `,
@@ -135,14 +129,12 @@ function getStatusMessage(status, name, vehicle,driver_number) {
         html: `
           ${header}
           ${base}
-
           ${progress("Completed")}
 
           <p>Your trip has been completed successfully.</p>
 
           <p>
-            Thank you for trusting ISLA-Transpo. It’s always our goal to make your journey
-            safe, smooth, and comfortable.
+            Thank you for trusting ISLA-Transpo. Safe travels always.
           </p>
 
           ${footer}
@@ -164,9 +156,7 @@ function getStatusMessage(status, name, vehicle,driver_number) {
             "#ef4444"
           )}
 
-          <p>
-            We truly appreciate your understanding and hope to serve you in the future.
-          </p>
+          <p>We appreciate your understanding.</p>
 
           ${footer}
         `,
@@ -178,17 +168,14 @@ function getStatusMessage(status, name, vehicle,driver_number) {
         html: `
           ${header}
           ${base}
-
           ${progress("On the way")}
 
-          <p><strong>Emergency support is now active.</strong></p>
-          <p>We are prioritizing your request and dispatching assistance immediately.</p>
+          <p><strong>Emergency support activated.</strong></p>
 
           ${card("Vehicle", vehicle || "Being assigned", "#dc2626")}
-          ${card("Driver", driver || "Will be updated shortly", "#dc2626")}
+          ${card("Driver Contact", driverNumber || "Will be updated", "#dc2626")}
 
-          <p>Please keep your phone reachable at all times.</p>
-          <p>Help is on the way.</p>
+          <p>Please stay reachable. Help is on the way.</p>
 
           ${footer}
         `,
@@ -207,6 +194,7 @@ function getStatusMessage(status, name, vehicle,driver_number) {
   }
 }
 
+// ================= API ROUTE =================
 export async function POST(request) {
   try {
     const {
