@@ -53,6 +53,7 @@ export default function AttendeePage() {
             padding: "10px 16px",
             borderRadius: 10,
             border: "none",
+            color: "#0B3D91",
             background: "white",
             fontWeight: "bold",
             cursor: "pointer",

@@ -238,7 +238,7 @@ export default function HomePage() {
             style={buttonStyle}
             onClick={() => router.push("/attendee")}
           >
-            Attendee Transport
+            Barge Schedule & Trips
           </button>
 
           <button
