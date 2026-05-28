@@ -157,105 +157,7 @@ export default function AdminPage() {
     });
   };
 
-  // ================= UPDATE FIELD =================
-  const updateField = async (id: number, field: keyof Request | string, value: string) => {
-    const request = requests.find((r) => r.id === id);
-    if (!request) return;
-
-    // prevent unnecessary updates
-    if ((request as any)[field] === value) return;
-
-    // instant UI update
-    setRequests((prev) =>
-      prev.map((r) => (r.id === id ? ({ ...r, [field]: value } as Request) : r))
-    );
-
-    // update database
-    const { error } = await supabase
-      .from("transport_requests")
-      .update({ [field]: value })
-      .eq("id", id);
-
-    if (error) {
-      alert(error.message);
-      fetchRequests();
-      return;
-    }
-    console.log("UPDATED SUCCESSFULLY");
-
-    // ================= AUTO EMAIL =================
-    const shouldEmail =
-      field === "status" &&
-      request.status !== value &&
-      ["Pending", "Approved", "On the way", "Disapproved", "Completed", "Emergency"].includes(value);
-
-    if (shouldEmail) {
-      try {
-        const res = await fetch("/api/send_email", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-         body: JSON.stringify({
-          email: request.email || undefined,
-          name: request.requester_name,
-          status: value,
-          pickup: request.pickup_location || "",
-          destination: request.destination || "",
-          schedule: `${toPHDate(request.pick_up_date) || ""}${
-            request.pick_up_time
-              ? `, ${toPHTime(request.pick_up_time) || ""}`
-              : ""
-          }`,
-          vehicle: request.assigned_vehicle || "",
-          driver_number:
-            vehicleMap[request.assigned_vehicle || ""]?.phone || "",
-          request_id: request.id,
-        }),
-
-        let data = null;
-
-        try {
-          data = await res.json();
-        } catch (err) {
-          console.log("⚠️ Response is not valid JSON:", err);
-        }
-
-console.log("EMAIL RESPONSE:", data);
-      } catch (err) {
-        console.log("EMAIL ERROR:", err);
-      }
-    }
-  };
-
-  // ================= FILTERED + SORTED =================
-  const sortedRequests = requests
-    .filter((r) => {
-      if (statusFilter !== "All" && r.status !== statusFilter) return false;
-      const s = searchTerm.toLowerCase();
-      return (
-        (r.requester_name || "").toLowerCase().includes(s) ||
-        (r.pickup_location || "").toLowerCase().includes(s) ||
-        (r.destination || "").toLowerCase().includes(s)
-      );
-    })
-    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-
-  const activeRequests = sortedRequests.filter((r) =>
-    ["Pending", "Approved", "On the way", "Emergency"].includes(r.status)
-  );
-
-  const completedRequests = sortedRequests.filter((r) =>
-    ["Completed", "Disapproved"].includes(r.status)
-  );
-
-  // ================= COUNTS =================
-  const pendingCount = requests.filter((r) => r.status === "Pending").length;
-  const approvedCount = requests.filter((r) => r.status === "Approved").length;
-  const onTheWayCount = requests.filter((r) => r.status === "On the way").length;
-  const emergencyCount = requests.filter((r) => r.status === "Emergency").length;
-  const disapprovedCount = requests.filter((r) => r.status === "Disapproved").length;
-  const totalCount = requests.length;
-
-   // ================= DRIVER NUMBERS =================
+  // ================= DRIVER NUMBERS =================
   const vehicleMap: Record<string, { driver: string; phone: string }> = {
   "Van 1 - ZAM 1023": {
     driver: "Mr. Lino Gorres",
@@ -290,6 +192,115 @@ console.log("EMAIL RESPONSE:", data);
     phone: "09999999999",
   },
 };
+
+  // ================= UPDATE FIELD =================
+  const updateField = async (id: number, field: keyof Request | string, value: string) => {
+    const request = requests.find((r) => r.id === id);
+    if (!request) return;
+
+    // prevent unnecessary updates
+    if ((request as any)[field] === value) return;
+
+    // instant UI update
+    setRequests((prev) =>
+      prev.map((r) => (r.id === id ? ({ ...r, [field]: value } as Request) : r))
+    );
+
+    // update database
+    const { error } = await supabase
+      .from("transport_requests")
+      .update({ [field]: value })
+      .eq("id", id);
+
+    if (error) {
+      alert(error.message);
+      fetchRequests();
+      return;
+    }
+    console.log("UPDATED SUCCESSFULLY");
+
+    // ================= AUTO EMAIL =================
+    const shouldEmail =
+      field === "status" &&
+      request.status !== value &&
+      ["Pending", "Approved", "On the way", "Disapproved", "Completed", "Emergency"].includes(value);
+
+   if (shouldEmail) {
+  try {
+    const vehicleInfo =
+      vehicleMap[request.assigned_vehicle || ""] || {
+        driver: "",
+        phone: "",
+      };
+
+    const res = await fetch("/api/send_email", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+
+      body: JSON.stringify({
+        email: request.email || undefined,
+        name: request.requester_name,
+        status: value,
+
+        pickup: request.pickup_location || "",
+        destination: request.destination || "",
+
+        schedule: `${toPHDate(request.pick_up_date) || ""}${
+          request.pick_up_time
+            ? `, ${toPHTime(request.pick_up_time) || ""}`
+            : ""
+        }`,
+
+        vehicle: request.assigned_vehicle
+          ? `🚐 ${request.assigned_vehicle} - ${vehicleInfo.driver}`
+          : "",
+
+        driver_number: vehicleInfo.phone,
+
+        request_id: request.id,
+      }),
+    });
+
+    const data = await res.json();
+
+    console.log("EMAIL RESPONSE:", data);
+  } catch (err) {
+    console.log("EMAIL ERROR:", err);
+  }
+};
+
+  // ================= FILTERED + SORTED =================
+  const sortedRequests = requests
+    .filter((r) => {
+      if (statusFilter !== "All" && r.status !== statusFilter) return false;
+      const s = searchTerm.toLowerCase();
+      return (
+        (r.requester_name || "").toLowerCase().includes(s) ||
+        (r.pickup_location || "").toLowerCase().includes(s) ||
+        (r.destination || "").toLowerCase().includes(s)
+      );
+    })
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+  const activeRequests = sortedRequests.filter((r) =>
+    ["Pending", "Approved", "On the way", "Emergency"].includes(r.status)
+  );
+
+  const completedRequests = sortedRequests.filter((r) =>
+    ["Completed", "Disapproved"].includes(r.status)
+  );
+
+  // ================= COUNTS =================
+  const pendingCount = requests.filter((r) => r.status === "Pending").length;
+  const approvedCount = requests.filter((r) => r.status === "Approved").length;
+  const onTheWayCount = requests.filter((r) => r.status === "On the way").length;
+  const emergencyCount = requests.filter((r) => r.status === "Emergency").length;
+  const disapprovedCount = requests.filter((r) => r.status === "Disapproved").length;
+  const totalCount = requests.length;
+
+   
 
   // Normalize shape for LiveMap (no nulls, no extra keys)
   const liveMapRequests: LiveMapRequest[] = requests.map((req) => ({
@@ -698,4 +709,5 @@ console.log("EMAIL RESPONSE:", data);
       `}</style>
     </main>
   );
+}
 }
