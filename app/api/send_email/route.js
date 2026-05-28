@@ -163,14 +163,16 @@ export async function POST(request) {
       message: "Email sent successfully",
     });
   } catch (error) {
-    console.error("EMAIL ERROR:", error);
+  console.error("EMAIL ERROR FULL:", error);
+  console.error("STACK:", error?.stack);
 
-    return NextResponse.json(
-      {
-        success: false,
-        error: error.message || "Something went wrong",
-      },
-      { status: 500 }
-    );
+  return NextResponse.json(
+    {
+      success: false,
+      error: error?.message,
+      stack: error?.stack,
+    },
+    { status: 500 }
+   );
   }
 }
