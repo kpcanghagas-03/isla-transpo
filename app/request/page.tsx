@@ -15,9 +15,6 @@ export default function RequestPage() {
     passengers: "",
     passenger_names: "",
 
-    // NEW: Airline selection
-    airline: "",
-
     pickup_location: "",
     destination: "",
 
@@ -28,6 +25,8 @@ export default function RequestPage() {
     pick_up_date: "",
     pick_up_time: "",
 
+    airline: "", // NEW FIELD
+
     contact_person: "",
     contact_number: "",
 
@@ -37,8 +36,11 @@ export default function RequestPage() {
     notes_remarks: "",
   });
 
+  // ================= HANDLE CHANGE =================
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => {
     setFormData({
       ...formData,
@@ -53,6 +55,10 @@ export default function RequestPage() {
     const { data: staffList, error: staffError } = await supabase
       .from("staff")
       .select("staff_email");
+
+    if (staffError) {
+      console.log("STAFF ERROR:", staffError);
+    }
 
     const isStaff = staffList?.some(
       (s: any) =>
@@ -82,16 +88,16 @@ export default function RequestPage() {
       return;
     }
 
+    // ================= PAYLOAD =================
     const payload = {
       requester_name: formData.requester_name,
       email: cleanEmail,
       staff_email,
+
       committee_unit: formData.committee_unit,
 
       passengers: formData.passengers,
       passenger_names: formData.passenger_names,
-
-      airline: formData.airline, // NEW
 
       pickup_location: formData.pickup_location,
       destination: formData.destination,
@@ -103,11 +109,15 @@ export default function RequestPage() {
       pick_up_date: formData.pick_up_date || null,
       pick_up_time: formData.pick_up_time || null,
 
+      airline: formData.airline || null, // NEW
+
       contact_person: formData.contact_person,
       contact_number: formData.contact_number,
 
-      alternate_contact_person: formData.alternate_contact_person || null,
-      alternate_contact_number: formData.alternate_contact_number || null,
+      alternate_contact_person:
+        formData.alternate_contact_person || null,
+      alternate_contact_number:
+        formData.alternate_contact_number || null,
 
       notes_remarks: formData.notes_remarks || null,
 
@@ -125,15 +135,36 @@ export default function RequestPage() {
       return;
     }
 
+    // EMAIL (kept from your original)
+    try {
+      await fetch("/api/send_email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: cleanEmail,
+          name: formData.requester_name,
+          status: "Pending",
+          pickup: formData.pickup_location,
+          destination: formData.destination,
+          schedule: `${formData.pick_up_date}, ${formData.pick_up_time}`,
+          vehicle: "",
+        }),
+      });
+    } catch (err) {
+      console.log("EMAIL ERROR:", err);
+    }
+
     alert("Transport Request Submitted Successfully!");
 
+    // RESET FORM
     setFormData({
       requester_name: "",
       email: "",
       committee_unit: "",
       passengers: "",
       passenger_names: "",
-      airline: "",
       pickup_location: "",
       destination: "",
       flight_no: "",
@@ -141,6 +172,7 @@ export default function RequestPage() {
       flight_arrival_time: "",
       pick_up_date: "",
       pick_up_time: "",
+      airline: "",
       contact_person: "",
       contact_number: "",
       alternate_contact_person: "",
@@ -149,20 +181,21 @@ export default function RequestPage() {
     });
   };
 
-  // ================= STYLES =================
+  // ================= STYLES (PROGRAM-LIKE BACKGROUND) =================
   const pageStyle = {
     minHeight: "100vh",
     padding: 20,
     fontFamily: "Segoe UI, sans-serif",
-    backgroundImage: "linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.65)), url('/camiguin.jpg')",
+    backgroundImage:
+      "linear-gradient(135deg, #0B3D91 0%, #1E40AF 50%, #3B82F6 100%), url('/camiguin.jpg')",
+    backgroundBlendMode: "overlay",
     backgroundSize: "cover",
     backgroundPosition: "center",
-    backgroundAttachment: "fixed",
   };
 
   const formBox = {
     background: "white",
-    maxWidth: 780,
+    maxWidth: 800,
     margin: "0 auto",
     padding: 30,
     borderRadius: 18,
@@ -178,6 +211,7 @@ export default function RequestPage() {
     fontSize: 14,
     color: "#0F172A",
     backgroundColor: "white",
+    outline: "none",
   };
 
   const sectionTitle = {
@@ -186,6 +220,12 @@ export default function RequestPage() {
     fontSize: 16,
     marginTop: 22,
     marginBottom: 10,
+  };
+
+  const radioLabel = {
+    marginRight: 15,
+    color: "#0F172A",
+    fontSize: 14,
   };
 
   return (
@@ -226,7 +266,7 @@ export default function RequestPage() {
           style={inputStyle}
         />
 
-        {/* PASSENGERS */}
+        {/* TRANSPORT */}
         <div style={sectionTitle}>🚍 Transport Details</div>
 
         <input
@@ -264,7 +304,7 @@ export default function RequestPage() {
           style={inputStyle}
         />
 
-        {/* PICKUP & DESTINATION */}
+        {/* PICKUP + DESTINATION */}
         <input
           name="pickup_location"
           placeholder="Pick-up Location"
@@ -281,7 +321,7 @@ export default function RequestPage() {
           style={inputStyle}
         />
 
-        {/* FLIGHT DETAILS */}
+        {/* FLIGHT */}
         <div style={sectionTitle}>✈️ Flight Details</div>
 
         <input
@@ -292,24 +332,26 @@ export default function RequestPage() {
           style={inputStyle}
         />
 
-        {/* NEW AIRLINE SELECT */}
+        {/* AIRLINE SELECT */}
         <div style={{ marginBottom: 12 }}>
-          <p style={{ fontWeight: 700, color: "#334155" }}>
+          <p style={{ fontWeight: 800, color: "#0B3D91" }}>
             Airline
           </p>
 
-          {["Cebu Pacific", "Philippine Airlines (PAL)", "Other"].map((air) => (
-            <label key={air} style={{ marginRight: 15, color: "#0F172A" }}>
-              <input
-                type="radio"
-                name="airline"
-                value={air}
-                checked={formData.airline === air}
-                onChange={handleChange}
-              />{" "}
-              {air}
-            </label>
-          ))}
+          {["Cebu Pacific", "Philippine Airlines (PAL)", "Other"].map(
+            (air) => (
+              <label key={air} style={radioLabel}>
+                <input
+                  type="radio"
+                  name="airline"
+                  value={air}
+                  checked={formData.airline === air}
+                  onChange={handleChange}
+                />{" "}
+                {air}
+              </label>
+            )
+          )}
         </div>
 
         {/* CONTACT */}
@@ -327,6 +369,22 @@ export default function RequestPage() {
           name="contact_number"
           placeholder="Contact Number"
           value={formData.contact_number}
+          onChange={handleChange}
+          style={inputStyle}
+        />
+
+        <input
+          name="alternate_contact_person"
+          placeholder="Alternate Contact Person"
+          value={formData.alternate_contact_person}
+          onChange={handleChange}
+          style={inputStyle}
+        />
+
+        <input
+          name="alternate_contact_number"
+          placeholder="Alternate Contact Number"
+          value={formData.alternate_contact_number}
           onChange={handleChange}
           style={inputStyle}
         />
@@ -353,7 +411,7 @@ export default function RequestPage() {
               background: "white",
               padding: 12,
               borderRadius: 10,
-              fontWeight: 700,
+              fontWeight: 800,
               cursor: "pointer",
             }}
           >
@@ -364,12 +422,13 @@ export default function RequestPage() {
             onClick={handleSubmit}
             style={{
               flex: 2,
-              background: "linear-gradient(135deg, #0B3D91, #1E40AF)",
+              background:
+                "linear-gradient(135deg, #0B3D91, #1E40AF)",
               color: "white",
               border: "none",
               padding: 12,
               borderRadius: 10,
-              fontWeight: 700,
+              fontWeight: 800,
               cursor: "pointer",
             }}
           >
