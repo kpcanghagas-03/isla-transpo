@@ -573,12 +573,12 @@ console.log("EMAIL RESPONSE:", data);
                     }}
                   >
                     <option value="">Unassigned</option>
-                    <option value="Van 1 - ZAM 1023 Mr. Lino Gorres">🚐 Van 1 - ZAM 1023 - Mr. Lino Gorres</option>
-                    <option value="Van 2 - ZAM 1456 Mr. Ramil Caneda">🚐 Van 2 - ZAM 1456 - Mr. Ramil Caneda</option>
-                    <option value="Van 3 - ZAM 8831 Mr. Ernie Soliva ">🚐 Van 3  - ZAM 8831 - Mr. Ernie Soliva </option>
-                    <option value="Van 4 - ZAM 1942 Mr. Abling Murrilo">🚐 Van 4  - ZAM 1942 - Mr. Abling Murrilo</option>
-                    <option value="Van 5 - ZAM 1952 Mr. Francisco Talle">🚐 Van 5  - ZAM 1952 - Mr. Francisco Talle</option>
-                    <option value="Van 6 - ZAM 1962 Mr. Leonel Quidet">🚐 Van 6  - ZAM 1962 - Mr. Leonel Quidet</option>
+                    <option value="Van 1 - ZAM 1023">🚐 Van 1 - ZAM 1023 - Mr. Lino Gorres</option>
+                    <option value="Van 2 - ZAM 1456">🚐 Van 2 - ZAM 1456 - Mr. Ramil Caneda</option>
+                    <option value="Van 3 - ZAM 8831">🚐 Van 3  - ZAM 8831 - Mr. Ernie Soliva </option>
+                    <option value="Van 4 - ZAM 1942">🚐 Van 4  - ZAM 1942 - Mr. Abling Murrilo</option>
+                    <option value="Van 5 - ZAM 1952">🚐 Van 5  - ZAM 1952 - Mr. Francisco Talle</option>
+                    <option value="Van 6 - ZAM 1962">🚐 Van 6  - ZAM 1962 - Mr. Leonel Quidet</option>
                     <option value="Van 7 - ZAM 5555">🚐 Van 7 - ZAM 5555 - Driver 7</option>
                     <option value="Backup Vehicle - BKP 7777">🚨 Backup Vehicle - BKP 7777 - Driver 8</option>
                   </select>

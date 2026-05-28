@@ -4,9 +4,21 @@ import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
 // ================= MESSAGE ENGINE =================
-function getStatusMessage(status, name, vehicle, driverNumber, driverName) {
+function getStatusMessage(status, name, vehicle, requestDetails = {}) {
+  const { pickup, destination, schedule } = requestDetails;
+
+  // 🌤 Warm greeting intro (NEW)
+  const greeting = `
+    <p style="font-family:Arial; font-size:14px;">
+      Hi <strong>${name}</strong>,
+    </p>
+    <p style="font-family:Arial; font-size:14px; color:#333;">
+      Welcome to ISLA-Transpo. We’re happy to have you on board — and we’ll make sure your journey is safe, smooth, and comfortable. 🚐💙
+    </p>
+  `;
+
   const header = `
-    <div style="padding:10px 0 15px; border-bottom:1px solid #eee;">
+    <div style="padding:12px 0 16px; border-bottom:1px solid #eee;">
       <h2 style="margin:0; color:#1a73e8; font-family:Arial;">
         ISLA-TRANSPO
       </h2>
@@ -18,7 +30,7 @@ function getStatusMessage(status, name, vehicle, driverNumber, driverName) {
 
   const section = (title, content) => `
     <div style="margin:12px 0;">
-      <div style="font-weight:bold; font-size:13px; color:#444; margin-bottom:4px;">
+      <div style="font-weight:bold; font-size:13px; color:#444;">
         ${title}
       </div>
       <div style="font-size:14px; color:#111;">
@@ -29,146 +41,199 @@ function getStatusMessage(status, name, vehicle, driverNumber, driverName) {
 
   const statusBox = (color, text) => `
     <div style="
-      padding:10px;
-      border-radius:6px;
+      padding:10px 12px;
+      border-radius:8px;
       background:${color};
       color:white;
       font-weight:bold;
       font-size:13px;
       display:inline-block;
-      margin:8px 0;
+      margin:10px 0;
     ">
       ${text}
     </div>
   `;
 
   const footer = `
-    <div style="margin-top:20px; padding-top:10px; border-top:1px solid #eee; font-size:12px; color:#666;">
+    <div style="margin-top:22px; padding-top:12px; border-top:1px solid #eee; font-size:12px; color:#666;">
       <p style="margin:4px 0;"><strong>ISLA-Transpo Team</strong></p>
-      <p style="margin:4px 0;">“Safe journeys, every ride matters.”</p>
+      <p style="margin:4px 0; font-style:italic;">
+        “Every journey is important to us — travel safely and confidently.”
+      </p>
       <p style="margin:4px 0;">🚐 Have a safe trip</p>
     </div>
   `;
 
-  const base = `<p style="font-family:Arial; font-size:14px;">Hi ${name},</p>`;
+  const tripInfo = `
+    ${section("Pickup Location", pickup || "Not specified")}
+    ${section("Destination", destination || "Not specified")}
+    ${section("Schedule", schedule || "Not specified")}
+    ${section("Vehicle", vehicle || "Not yet assigned")}
+  `;
 
   switch (status) {
 
+    // 🌱 Pending
     case "Pending":
       return {
-        subject: "We received your request",
+        subject: "We’ve received your request 🚐",
         html: `
           ${header}
-          ${base}
+          ${greeting}
 
           ${statusBox("#f59e0b", "STATUS: PENDING REVIEW")}
 
-          ${section("Message",
-            "Your transportation request has been received and is currently being reviewed by our dispatch team."
-          )}
+          <p style="font-family:Arial;">
+            Thank you for trusting us with your transportation request. We’ve received it safely.
+          </p>
+
+          <p style="font-family:Arial;">
+            Our team is carefully reviewing your trip details to ensure everything is prepared properly.
+          </p>
+
+          ${tripInfo}
+
+          <p style="font-family:Arial; color:#555;">
+            We’ll update you as soon as your trip is confirmed.
+          </p>
 
           ${footer}
         `,
       };
 
+    // 🌿 Approved
     case "Approved":
       return {
-        subject: "Your trip is approved",
+        subject: "Your trip is confirmed ✅",
         html: `
           ${header}
-          ${base}
+          ${greeting}
 
           ${statusBox("#22c55e", "STATUS: APPROVED")}
 
-          ${section("Vehicle", vehicle || "Not yet assigned")}
+          <p style="font-family:Arial;">
+            Great news! Your trip is confirmed and we’re preparing everything for your journey.
+          </p>
 
-          ${section("Driver Name", driverName || "Not yet assigned")}
+          ${tripInfo}
 
-          ${section("Driver Contact", driverNumber || "Not available")}
+          <p style="font-family:Arial;">
+            We’re getting everything ready so your ride will be smooth and comfortable.
+          </p>
 
-          ${section("Next Step",
-            "Your trip is being prepared. Please keep your phone available for coordination."
-          )}
+          <p style="font-family:Arial; color:#555;">
+            Please keep your phone available in case we need to coordinate with you.
+          </p>
 
           ${footer}
         `,
       };
 
+    // 🚐 On the way
     case "On the way":
       return {
-        subject: "Your ride is on the way",
+        subject: "Your ride is on the way 🚐",
         html: `
           ${header}
-          ${base}
+          ${greeting}
 
           ${statusBox("#1a73e8", "STATUS: ON THE WAY")}
 
-          ${section("Vehicle", vehicle || "Assigned vehicle")}
+          <p style="font-family:Arial;">
+            Your vehicle is now heading toward your pickup location.
+          </p>
 
-          ${section("Driver Name", driverName || "Driver assigned")}
+          ${tripInfo}
 
-          ${section("Driver Contact", driverNumber || "Unavailable")}
+          <p style="font-family:Arial;">
+            Please take a moment to prepare — your driver will arrive shortly.
+          </p>
 
-          ${section("Instruction",
-            "Please proceed to your pickup location. Your driver is en route."
-          )}
+          <p style="font-family:Arial; color:#555;">
+            We’re almost there. Thank you for your patience. 💙
+          </p>
 
           ${footer}
         `,
       };
 
+    // 💙 Completed
     case "Completed":
       return {
-        subject: "Trip completed",
+        subject: "Trip completed 💙",
         html: `
           ${header}
-          ${base}
+          ${greeting}
 
           ${statusBox("#6b7280", "STATUS: COMPLETED")}
 
-          ${section("Message",
-            "Your trip has been completed successfully. Thank you for riding with ISLA-Transpo."
-          )}
+          <p style="font-family:Arial;">
+            Your journey has been completed successfully.
+          </p>
+
+          <p style="font-family:Arial;">
+            We’re truly grateful to have been part of your trip today.
+          </p>
+
+          <p style="font-family:Arial;">
+            Safe travels always — and we hope to serve you again soon. 🚐💙
+          </p>
 
           ${footer}
         `,
       };
 
+    // ❌ Disapproved
     case "Disapproved":
       return {
         subject: "Request update",
         html: `
           ${header}
-          ${base}
+          ${greeting}
 
           ${statusBox("#ef4444", "STATUS: NOT APPROVED")}
 
-          ${section("Message",
-            "We’re unable to approve your request due to scheduling or operational limitations."
-          )}
+          <p style="font-family:Arial;">
+            Thank you for your request and for giving us the opportunity to assist you.
+          </p>
+
+          <p style="font-family:Arial;">
+            Unfortunately, we’re unable to approve this trip due to current scheduling or operational limitations.
+          </p>
+
+          ${tripInfo}
+
+          <p style="font-family:Arial;">
+            We truly appreciate your understanding and hope to serve you in the future.
+          </p>
 
           ${footer}
         `,
       };
 
+    // 🚨 Emergency
     case "Emergency":
       return {
-        subject: "Emergency transport activated",
+        subject: "Emergency transport activated 🚨",
         html: `
           ${header}
-          ${base}
+          ${greeting}
 
           ${statusBox("#dc2626", "EMERGENCY MODE ACTIVE")}
 
-          ${section("Vehicle", vehicle || "Being assigned")}
+          <p style="font-family:Arial;">
+            We’ve received your emergency request and are prioritizing it immediately.
+          </p>
 
-          ${section("Driver Name", driverName || "Assigned shortly")}
+          ${tripInfo}
 
-          ${section("Driver Contact", driverNumber || "Immediate update coming")}
+          <p style="font-family:Arial;">
+            Help is already being dispatched. Please stay reachable at your contact number.
+          </p>
 
-          ${section("Message",
-            "We are prioritizing your request. Assistance is on the way."
-          )}
+          <p style="font-family:Arial; font-weight:bold;">
+            You are not alone — assistance is on the way. 🚐
+          </p>
 
           ${footer}
         `,
@@ -179,7 +244,7 @@ function getStatusMessage(status, name, vehicle, driverNumber, driverName) {
         subject: "Transport update",
         html: `
           ${header}
-          ${base}
+          ${greeting}
           <p>Your request has been updated.</p>
           ${footer}
         `,
@@ -195,8 +260,9 @@ export async function POST(request) {
       name,
       status,
       vehicle,
-      driver_number,
-      driver_name,
+      pickup,
+      destination,
+      schedule,
       request_id,
     } = await request.json();
 
@@ -207,13 +273,11 @@ export async function POST(request) {
       );
     }
 
-    const { subject, html } = getStatusMessage(
-      status,
-      name,
-      vehicle,
-      driver_number,
-      driver_name
-    );
+    const { subject, html } = getStatusMessage(status, name, vehicle, {
+      pickup,
+      destination,
+      schedule,
+    });
 
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
