@@ -195,19 +195,21 @@ export default function AdminPage() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
          body: JSON.stringify({
-              email: request.email || undefined,
-              name: request.requester_name,
-              status: value,
-              pickup: request.pickup_location || "",
-              destination: request.destination || "",
-              schedule: `${toPHDate(request.pick_up_date) || ""}${
-                request.pick_up_time ? `, ${toPHTime(request.pick_up_time) || ""}` : ""
-              }`,
-              vehicle: request.assigned_vehicle || "",
-              driver_name: vehicleInfo.driver,        // ✅ ADD THIS
-              driver_number: vehicleInfo.phone,       // already good
-              request_id: request.id,
-            }),
+          email: request.email || undefined,
+          name: request.requester_name,
+          status: value,
+          pickup: request.pickup_location || "",
+          destination: request.destination || "",
+          schedule: `${toPHDate(request.pick_up_date) || ""}${
+            request.pick_up_time
+              ? `, ${toPHTime(request.pick_up_time) || ""}`
+              : ""
+          }`,
+          vehicle: request.assigned_vehicle || "",
+          driver_number:
+            vehicleMap[request.assigned_vehicle || ""]?.phone || "",
+          request_id: request.id,
+        }),
 
         let data = null;
 
@@ -549,30 +551,31 @@ console.log("EMAIL RESPONSE:", data);
                   <label className="label">Assigned Vehicle</label>
                   <select
                     value={req.assigned_vehicle || ""}
-                    onChange={async (e) => {
-                      const vehicle = e.target.value;
+                   onChange={async (e) => {
+                                const vehicle = e.target.value;
 
-                      const vehicleInfo = vehicleMap[request.assigned_vehicle || ""] || {
+                                // ✅ GET DRIVER INFO FROM VEHICLE MAP
+                                const vehicleInfo = vehicleMap[vehicle] || {
                                   driver: "",
                                   phone: "",
                                 };
 
-                      // UPDATE VEHICLE
-                      await updateField(req.id, "assigned_vehicle", vehicle);
+                                // ✅ UPDATE VEHICLE
+                                await updateField(req.id, "assigned_vehicle", vehicle);
 
-                      // UPDATE DRIVER NUMBER
-                      await updateField(req.id, "driver_number", vehicleInfo.phone);
+                                // ✅ UPDATE DRIVER NUMBER
+                                await updateField(req.id, "driver_number", vehicleInfo.phone);
 
-                      // SMALL DELAY TO ENSURE DB UPDATE
-                      await new Promise((resolve) => setTimeout(resolve, 300));
+                                // SMALL DELAY
+                                await new Promise((resolve) => setTimeout(resolve, 300));
 
-                      // UPDATE STATUS LAST
-                      if (vehicle) {
-                        await updateField(req.id, "status", "Approved");
-                      } else {
-                        await updateField(req.id, "status", "Pending");
-                      }
-                    }}
+                                // ✅ AUTO STATUS
+                                if (vehicle) {
+                                  await updateField(req.id, "status", "Approved");
+                                } else {
+                                  await updateField(req.id, "status", "Pending");
+                                }
+                              }}
                   >
                     <option value="">Unassigned</option>
                     <option value="Van 1 - ZAM 1023">🚐 Van 1 - ZAM 1023 - Mr. Lino Gorres</option>
