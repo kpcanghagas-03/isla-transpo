@@ -240,7 +240,7 @@ export default function HomePage() {
               }}
               onClick={() => router.push("/feedback")}
             >
-              Feedback & Suggestions
+              Program of Activities
             </button>
           </div>
         </div>

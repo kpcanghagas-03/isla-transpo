@@ -1,239 +1,600 @@
 "use client";
 
-import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-export default function FeedbackPage() {
-  const [driverRating, setDriverRating] = useState(0);
-  const [serviceRating, setServiceRating] = useState(0);
-  const [emojiRating, setEmojiRating] = useState("");
-  const [feedback, setFeedback] = useState("");
+export default function ProgramPage() {
+  const router = useRouter();
 
-  const submitFeedback = () => {
-    alert("Thank you for your feedback!");
-    setDriverRating(0);
-    setServiceRating(0);
-    setEmojiRating("");
-    setFeedback("");
-  };
-
-  const pageStyle = {
-    minHeight: "100vh",
-    backgroundImage: "url('/camiguin.jpg')",
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-    fontFamily: "Segoe UI, sans-serif",
-  };
-
-  const cardStyle = {
-    background: "rgba(255,255,255,0.94)",
-    backdropFilter: "blur(8px)",
-    padding: 35,
-    borderRadius: 24,
-    maxWidth: 700,
-    width: "100%",
-    boxShadow: "0 10px 30px rgba(0,0,0,0.25)",
-  };
-
-  const sectionTitle = {
-    color: "#0B3D91",
-    marginBottom: 10,
-    marginTop: 25,
-    fontSize: 18,
-    fontWeight: "bold",
-  };
-
-  const starStyle = (active: boolean) => ({
-    fontSize: 38,
-    cursor: "pointer",
-    marginRight: 5,
-    transition: "0.2s",
-    color: active ? "#FACC15" : "#CBD5E1",
-  });
-
-  const emojiStyle = (selected: boolean) => ({
-    fontSize: 38,
-    cursor: "pointer",
-    padding: 10,
-    borderRadius: "50%",
-    background: selected ? "#DBEAFE" : "transparent",
-    transition: "0.2s",
-  });
+  const programDays = [
+    {
+      day: "Day 1",
+      date: "June 2, 2025",
+      theme: "Opening & Exhibits",
+      color: "#0B3D91",
+      events: [
+        {
+          time: "7:00 AM - 8:00 AM",
+          title: "Registration & Welcome Kits",
+          location: "Main Lobby",
+          icon: "📝",
+        },
+        {
+          time: "8:00 AM - 9:30 AM",
+          title: "Opening Ceremony",
+          location: "Main Auditorium",
+          icon: "🎉",
+          highlight: true,
+        },
+        {
+          time: "9:30 AM - 10:00 AM",
+          title: "Ribbon Cutting & Photo Op",
+          location: "Exhibit Hall Entrance",
+          icon: "✂️",
+        },
+        {
+          time: "10:00 AM - 12:00 NN",
+          title: "Exhibits & Innovation Showcase Tour",
+          location: "Exhibit Hall A & B",
+          icon: "🔬",
+        },
+        {
+          time: "12:00 NN - 1:00 PM",
+          title: "Lunch Break",
+          location: "Dining Area",
+          icon: "🍽️",
+        },
+        {
+          time: "1:00 PM - 5:00 PM",
+          title: "Science Fair & Interactive Demos",
+          location: "Exhibit Hall",
+          icon: "🧪",
+        },
+        {
+          time: "5:00 PM - 6:00 PM",
+          title: "Networking Session",
+          location: "Garden Pavilion",
+          icon: "🤝",
+        },
+      ],
+    },
+    {
+      day: "Day 2",
+      date: "June 3, 2025",
+      theme: "Technical Sessions",
+      color: "#1E40AF",
+      events: [
+        {
+          time: "8:00 AM - 8:30 AM",
+          title: "Morning Assembly",
+          location: "Main Auditorium",
+          icon: "☀️",
+        },
+        {
+          time: "8:30 AM - 10:00 AM",
+          title: "Plenary Session: Future of Science in Region X",
+          location: "Main Auditorium",
+          icon: "🎤",
+          highlight: true,
+        },
+        {
+          time: "10:00 AM - 10:30 AM",
+          title: "Coffee Break",
+          location: "Lobby",
+          icon: "☕",
+        },
+        {
+          time: "10:30 AM - 12:00 NN",
+          title: "Parallel Technical Sessions",
+          location: "Breakout Rooms 1-4",
+          icon: "📊",
+        },
+        {
+          time: "12:00 NN - 1:00 PM",
+          title: "Lunch Break",
+          location: "Dining Area",
+          icon: "🍽️",
+        },
+        {
+          time: "1:00 PM - 3:00 PM",
+          title: "Workshop: Research Methodology",
+          location: "Workshop Room A",
+          icon: "📚",
+        },
+        {
+          time: "3:00 PM - 5:00 PM",
+          title: "Workshop: Data Visualization & Analysis",
+          location: "Computer Lab",
+          icon: "💻",
+        },
+      ],
+    },
+    {
+      day: "Day 3",
+      date: "June 4, 2025",
+      theme: "Competitions & Judging",
+      color: "#059669",
+      events: [
+        {
+          time: "7:30 AM - 8:00 AM",
+          title: "Participants Assembly",
+          location: "Competition Venue",
+          icon: "📋",
+        },
+        {
+          time: "8:00 AM - 12:00 NN",
+          title: "Science Quiz Bee - Elimination Round",
+          location: "Main Auditorium",
+          icon: "🧠",
+          highlight: true,
+        },
+        {
+          time: "8:00 AM - 12:00 NN",
+          title: "Research Paper Presentation",
+          location: "Breakout Rooms 1-3",
+          icon: "📄",
+        },
+        {
+          time: "12:00 NN - 1:00 PM",
+          title: "Lunch Break",
+          location: "Dining Area",
+          icon: "🍽️",
+        },
+        {
+          time: "1:00 PM - 3:00 PM",
+          title: "Science Quiz Bee - Finals",
+          location: "Main Auditorium",
+          icon: "🏆",
+          highlight: true,
+        },
+        {
+          time: "1:00 PM - 4:00 PM",
+          title: "Poster Judging",
+          location: "Exhibit Hall",
+          icon: "🖼️",
+        },
+        {
+          time: "4:00 PM - 5:00 PM",
+          title: "Judges Deliberation",
+          location: "Conference Room",
+          icon: "⚖️",
+        },
+      ],
+    },
+    {
+      day: "Day 4",
+      date: "June 5, 2025",
+      theme: "Awarding & Closing",
+      color: "#DC2626",
+      events: [
+        {
+          time: "8:00 AM - 9:00 AM",
+          title: "Assembly & Preparation",
+          location: "Main Auditorium",
+          icon: "👔",
+        },
+        {
+          time: "9:00 AM - 11:30 AM",
+          title: "Awarding Ceremony",
+          location: "Main Auditorium",
+          icon: "🏅",
+          highlight: true,
+        },
+        {
+          time: "11:30 AM - 12:00 NN",
+          title: "Closing Ceremony & Remarks",
+          location: "Main Auditorium",
+          icon: "🎊",
+          highlight: true,
+        },
+        {
+          time: "12:00 NN - 1:00 PM",
+          title: "Fellowship Lunch",
+          location: "Dining Area",
+          icon: "🥳",
+        },
+        {
+          time: "1:00 PM onwards",
+          title: "Departure / City Tour (Optional)",
+          location: "Main Entrance",
+          icon: "🚌",
+        },
+      ],
+    },
+  ];
 
   return (
-    <main style={pageStyle}>
-      <div style={cardStyle}>
-        <h1
+    <main
+      style={{
+        minHeight: "100vh",
+        backgroundImage:
+          "linear-gradient(135deg, #0B3D91 0%, #1E40AF 50%, #3B82F6 100%)",
+        padding: 20,
+        fontFamily: "Segoe UI, sans-serif",
+      }}
+    >
+      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+        {/* Back Button */}
+        <button
+          onClick={() => router.push("/")}
           style={{
+            marginBottom: 20,
+            padding: "12px 20px",
+            borderRadius: 12,
+            border: "none",
             color: "#0B3D91",
-            textAlign: "center",
-            fontSize: 36,
-            marginBottom: 10,
+            background: "white",
+            fontWeight: "bold",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            boxShadow: "0 4px 15px rgba(0,0,0,0.2)",
           }}
         >
-          Feedback & Suggestions
-        </h1>
+          ← Back to Home
+        </button>
 
-        <p
+        {/* Header */}
+        <div
           style={{
             textAlign: "center",
-            color: "#475569",
-            marginBottom: 25,
+            marginBottom: 40,
+            padding: "30px 20px",
+            background: "rgba(255,255,255,0.1)",
+            borderRadius: 24,
+            backdropFilter: "blur(10px)",
           }}
         >
-          Help us improve the RSTW Transportation Management System
-          by sharing your experience.
-        </p>
-
-        {/* DRIVER RATING */}
-        <div>
-          <div style={sectionTitle}>
-            Driver Performance Rating
+          <div
+            style={{
+              display: "inline-block",
+              background: "rgba(255,255,255,0.2)",
+              borderRadius: 50,
+              padding: "8px 24px",
+              marginBottom: 15,
+            }}
+          >
+            <span style={{ fontSize: 14, color: "white", fontWeight: 600 }}>
+              📅 June 2-5, 2025 | Camiguin Island
+            </span>
           </div>
 
-          {[1, 2, 3, 4, 5].map((star) => (
-            <span
-              key={star}
-              onClick={() => setDriverRating(star)}
-              style={starStyle(star <= driverRating)}
+          <h1
+            style={{
+              color: "white",
+              fontSize: "clamp(32px, 7vw, 56px)",
+              fontWeight: "900",
+              marginBottom: 12,
+              textShadow: "0 4px 20px rgba(0,0,0,0.3)",
+              lineHeight: 1.1,
+            }}
+          >
+            Program of Activities
+          </h1>
+
+          <p
+            style={{
+              color: "rgba(255,255,255,0.9)",
+              fontSize: 18,
+              maxWidth: 600,
+              margin: "0 auto",
+            }}
+          >
+            Regional Science & Technology Week 2025
+          </p>
+        </div>
+
+        {/* Day Navigation Pills */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            flexWrap: "wrap",
+            gap: 12,
+            marginBottom: 35,
+          }}
+        >
+          {programDays.map((day, index) => (
+            <a
+              key={index}
+              href={`#${day.day.toLowerCase().replace(" ", "-")}`}
+              style={{
+                background: day.color,
+                color: "white",
+                padding: "12px 24px",
+                borderRadius: 50,
+                fontWeight: 700,
+                fontSize: 14,
+                textDecoration: "none",
+                boxShadow: "0 4px 15px rgba(0,0,0,0.2)",
+                transition: "transform 0.2s",
+              }}
             >
-              ★
-            </span>
+              {day.day}: {day.theme}
+            </a>
           ))}
         </div>
 
-        {/* SERVICE RATING */}
-        <div>
-          <div style={sectionTitle}>
-            Transportation Management Rating
-          </div>
-
-          {[1, 2, 3, 4, 5].map((star) => (
-            <span
-              key={star}
-              onClick={() => setServiceRating(star)}
-              style={starStyle(star <= serviceRating)}
+        {/* Program Days */}
+        {programDays.map((dayData, dayIndex) => (
+          <div
+            key={dayIndex}
+            id={dayData.day.toLowerCase().replace(" ", "-")}
+            style={{
+              marginBottom: 35,
+              scrollMarginTop: 20,
+            }}
+          >
+            {/* Day Header */}
+            <div
+              style={{
+                background: `linear-gradient(135deg, ${dayData.color}, ${dayData.color}cc)`,
+                borderRadius: "24px 24px 0 0",
+                padding: "25px 30px",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                flexWrap: "wrap",
+                gap: 15,
+              }}
             >
-              ★
-            </span>
-          ))}
-        </div>
+              <div>
+                <h2
+                  style={{
+                    color: "white",
+                    fontSize: 28,
+                    fontWeight: 900,
+                    margin: 0,
+                    marginBottom: 5,
+                  }}
+                >
+                  {dayData.day}
+                </h2>
+                <p
+                  style={{
+                    color: "rgba(255,255,255,0.85)",
+                    fontSize: 16,
+                    margin: 0,
+                    fontWeight: 600,
+                  }}
+                >
+                  {dayData.date}
+                </p>
+              </div>
+              <div
+                style={{
+                  background: "rgba(255,255,255,0.2)",
+                  padding: "10px 20px",
+                  borderRadius: 50,
+                }}
+              >
+                <span
+                  style={{ color: "white", fontWeight: 700, fontSize: 14 }}
+                >
+                  🎯 {dayData.theme}
+                </span>
+              </div>
+            </div>
 
-        {/* EXPERIENCE EMOJI */}
-        <div>
-          <div style={sectionTitle}>
-            Overall Experience
+            {/* Events List */}
+            <div
+              style={{
+                background: "white",
+                borderRadius: "0 0 24px 24px",
+                padding: "10px 0",
+                boxShadow: "0 15px 40px rgba(0,0,0,0.15)",
+              }}
+            >
+              {dayData.events.map((event, eventIndex) => (
+                <div
+                  key={eventIndex}
+                  style={{
+                    display: "flex",
+                    alignItems: "flex-start",
+                    padding: "18px 25px",
+                    borderBottom:
+                      eventIndex < dayData.events.length - 1
+                        ? "1px solid #F1F5F9"
+                        : "none",
+                    background: event.highlight
+                      ? `${dayData.color}08`
+                      : "transparent",
+                    borderLeft: event.highlight
+                      ? `4px solid ${dayData.color}`
+                      : "4px solid transparent",
+                    transition: "background 0.2s",
+                  }}
+                >
+                  {/* Icon */}
+                  <div
+                    style={{
+                      width: 50,
+                      height: 50,
+                      borderRadius: 14,
+                      background: event.highlight
+                        ? dayData.color
+                        : "#F1F5F9",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: 24,
+                      marginRight: 18,
+                      flexShrink: 0,
+                    }}
+                  >
+                    {event.icon}
+                  </div>
+
+                  {/* Content */}
+                  <div style={{ flex: 1 }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        flexWrap: "wrap",
+                        gap: 10,
+                        marginBottom: 6,
+                      }}
+                    >
+                      <span
+                        style={{
+                          background: "#F1F5F9",
+                          color: "#475569",
+                          padding: "4px 12px",
+                          borderRadius: 20,
+                          fontSize: 13,
+                          fontWeight: 700,
+                        }}
+                      >
+                        🕐 {event.time}
+                      </span>
+
+                      {event.highlight && (
+                        <span
+                          style={{
+                            background: dayData.color,
+                            color: "white",
+                            padding: "4px 10px",
+                            borderRadius: 20,
+                            fontSize: 11,
+                            fontWeight: 700,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          ⭐ Highlight
+                        </span>
+                      )}
+                    </div>
+
+                    <h3
+                      style={{
+                        color: "#0F172A",
+                        fontSize: 17,
+                        fontWeight: 700,
+                        margin: "8px 0 4px 0",
+                      }}
+                    >
+                      {event.title}
+                    </h3>
+
+                    <p
+                      style={{
+                        color: "#64748B",
+                        fontSize: 14,
+                        margin: 0,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 6,
+                      }}
+                    >
+                      📍 {event.location}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
+        ))}
+
+        {/* Important Notes */}
+        <div
+          style={{
+            background: "rgba(255,255,255,0.95)",
+            borderRadius: 20,
+            padding: 28,
+            marginBottom: 30,
+            boxShadow: "0 10px 40px rgba(0,0,0,0.15)",
+          }}
+        >
+          <h3
+            style={{
+              color: "#0B3D91",
+              fontSize: 20,
+              fontWeight: 800,
+              marginBottom: 18,
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+            }}
+          >
+            📌 Important Reminders
+          </h3>
 
           <div
             style={{
-              display: "flex",
-              gap: 10,
-              marginTop: 10,
-              flexWrap: "wrap",
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+              gap: 16,
             }}
           >
             {[
-              { emoji: "😡", label: "Very Bad" },
-              { emoji: "😕", label: "Bad" },
-              { emoji: "😐", label: "Okay" },
-              { emoji: "😊", label: "Good" },
-              { emoji: "😍", label: "Excellent" },
-            ].map((item) => (
+              {
+                icon: "👔",
+                title: "Dress Code",
+                text: "Smart casual for regular sessions; formal attire for ceremonies",
+              },
+              {
+                icon: "🪪",
+                title: "ID Required",
+                text: "Always wear your event ID badge inside the venue",
+              },
+              {
+                icon: "⏰",
+                title: "Be Punctual",
+                text: "Please arrive 15 minutes before each session",
+              },
+              {
+                icon: "📱",
+                title: "Silent Mode",
+                text: "Keep phones on silent during presentations",
+              },
+            ].map((item, index) => (
               <div
-                key={item.label}
-                onClick={() => setEmojiRating(item.label)}
+                key={index}
                 style={{
-                  textAlign: "center",
+                  display: "flex",
+                  alignItems: "flex-start",
+                  gap: 14,
+                  padding: 16,
+                  background: "#F8FAFC",
+                  borderRadius: 14,
+                  border: "1px solid #E2E8F0",
                 }}
               >
-                <div
-                  style={emojiStyle(
-                    emojiRating === item.label
-                  )}
-                >
-                  {item.emoji}
-                </div>
-
-                <div
-                  style={{
-                    fontSize: 12,
-                    color: "#475569",
-                    marginTop: 5,
-                  }}
-                >
-                  {item.label}
+                <span style={{ fontSize: 28 }}>{item.icon}</span>
+                <div>
+                  <p
+                    style={{
+                      fontWeight: 700,
+                      color: "#0F172A",
+                      margin: "0 0 4px 0",
+                      fontSize: 15,
+                    }}
+                  >
+                    {item.title}
+                  </p>
+                  <p style={{ color: "#64748B", margin: 0, fontSize: 14 }}>
+                    {item.text}
+                  </p>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* COMMENTS */}
-        <div>
-          <div style={sectionTitle}>
-            Comments & Suggestions
-          </div>
-
-          <textarea
-            value={feedback}
-            onChange={(e) => setFeedback(e.target.value)}
-            placeholder="Share your experience, suggestions, or concerns..."
-            style={{
-              width: "100%",
-              height: 140,
-              padding: 15,
-              borderRadius: 14,
-              border: "1px solid #000000",
-              marginTop: 10,
-              resize: "none",
-              fontSize: 15,
-              outline: "none",
-              color: "#0F172A",
-            }}
-          />
-        </div>
-
-        {/* SUBMIT BUTTON */}
-        <button
-          onClick={submitFeedback}
+        {/* Footer */}
+        <p
           style={{
-            width: "100%",
-            padding: 15,
-            marginTop: 30,
-            borderRadius: 14,
-            border: "none",
-            background: "linear-gradient(135deg, #0B3D91, #2563EB)",
-            color: "white",
-            fontSize: 16,
-            fontWeight: "bold",
-            cursor: "pointer",
-            boxShadow: "0 5px 15px rgba(37,99,235,0.4)",
+            textAlign: "center",
+            color: "rgba(255,255,255,0.7)",
+            fontSize: 13,
+            marginTop: 20,
+            paddingBottom: 20,
           }}
         >
-          Submit Feedback
-        </button>
-
-        <button
-          onClick={() => window.location.href = "/"}
-          style={{
-            width: "100%",
-            padding: 15,
-            marginTop: 15,
-            borderRadius: 14,
-            border: "1px solid #CBD5E1",
-            background: "rgba(255,255,255,0.9)",
-            color: "#0B3D91",
-            fontSize: 16,
-            fontWeight: "bold",
-            cursor: "pointer",
-          }}
-        >
-          ← Back to Homepage
-        </button>
+          © 2025 Regional Science & Technology Week — Camiguin | Program
+          schedule subject to change
+        </p>
       </div>
     </main>
   );
