@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import {useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function HomePage() {
   const router = useRouter();
@@ -17,100 +17,71 @@ export default function HomePage() {
     }
   }, []);
 
-  const pageStyle = {
-    minHeight: "100vh",
-    backgroundImage: "url('/camiguin.jpg')",
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-    fontFamily: "Segoe UI, sans-serif",
-  };
-
-  const cardStyle = {
-    background: "rgba(255,255,255,0.94)",
-    padding: 40,
-    borderRadius: 20,
-    maxWidth: 500,
-    width: "100%",
-    textAlign: "center" as const,
-    boxShadow: "0 10px 30px rgba(0,0,0,0.25)",
-  };
-
-  const buttonStyle = {
-    width: "100%",
-    padding: "14px",
-    marginTop: 15,
-    borderRadius: 10,
-    border: "none",
-    background: "linear-gradient(135deg, #0B3D91, #2563EB)",
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
-    cursor: "pointer",
-  };
-
   return (
     <>
-      {/* WELCOME MODAL */}
+      {/* PRIVACY MODAL */}
       {showModal && (
         <div
           style={{
             position: "fixed",
             inset: 0,
-            background: "rgba(0,0,0,0.55)",
+            background: "rgba(0,0,0,0.65)",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
             zIndex: 999,
             padding: 20,
+            backdropFilter: "blur(6px)",
           }}
         >
           <div
             style={{
               background: "rgba(255,255,255,0.96)",
-              backdropFilter: "blur(10px)",
-              borderRadius: 24,
-              maxWidth: 520,
+              borderRadius: 28,
+              maxWidth: 550,
               width: "100%",
               padding: 35,
-              boxShadow: "0 10px 40px rgba(0,0,0,0.35)",
+              boxShadow: "0 20px 60px rgba(0,0,0,0.35)",
               animation: "fadeIn 0.3s ease",
             }}
           >
             <h1
               style={{
                 color: "#0B3D91",
-                fontSize: 32,
-                marginBottom: 10,
+                fontSize: 34,
+                marginBottom: 12,
                 fontWeight: "bold",
                 textAlign: "center",
               }}
             >
-              Welcome to RSTW
+              Welcome to ISLA-TRANSPO
             </h1>
 
             <p
               style={{
                 color: "#334155",
                 fontSize: 15,
-                lineHeight: 1.7,
+                lineHeight: 1.8,
                 marginTop: 15,
+                textAlign: "justify",
               }}
             >
-              Welcome to the ISLA-TRANSPO Transportation Management
-              System of the Regional Science, Technology, and Innovation
-              Week (RSTW). 
+              Welcome to the official transportation management system of
+              the Regional Science, Technology, and Innovation Week
+              (RSTW) in Camiguin.
+              <br />
+              <br />
+              This platform helps manage transportation requests,
+              attendee coordination, and mobility services to ensure a
+              smooth and organized event experience for everyone.
             </p>
 
             <div
               style={{
-                marginTop: 20,
+                marginTop: 22,
                 background: "#EFF6FF",
                 padding: 18,
-                borderRadius: 14,
+                borderRadius: 16,
                 border: "1px solid #BFDBFE",
               }}
             >
@@ -118,6 +89,7 @@ export default function HomePage() {
                 style={{
                   marginBottom: 10,
                   color: "#1D4ED8",
+                  fontSize: 18,
                 }}
               >
                 Data Privacy Notice
@@ -127,7 +99,8 @@ export default function HomePage() {
                 style={{
                   fontSize: 14,
                   color: "#475569",
-                  lineHeight: 1.6,
+                  lineHeight: 1.7,
+                  textAlign: "justify",
                 }}
               >
                 Your personal information will be collected and processed
@@ -136,7 +109,7 @@ export default function HomePage() {
                 accordance with the Data Privacy Act of 2012.
                 <br />
                 <br />
-                All information submitted will be treated with
+                All submitted information will be treated with strict
                 confidentiality and protected through appropriate
                 security measures.
               </p>
@@ -147,10 +120,11 @@ export default function HomePage() {
                 display: "flex",
                 alignItems: "flex-start",
                 gap: 10,
-                marginTop: 20,
+                marginTop: 22,
                 fontSize: 14,
                 color: "#334155",
                 cursor: "pointer",
+                lineHeight: 1.5,
               }}
             >
               <input
@@ -159,6 +133,7 @@ export default function HomePage() {
                 onChange={(e) => setAgreed(e.target.checked)}
                 style={{
                   marginTop: 4,
+                  transform: "scale(1.1)",
                 }}
               />
 
@@ -172,12 +147,12 @@ export default function HomePage() {
               onClick={() => {
                 sessionStorage.setItem("privacyAccepted", "true");
                 setShowModal(false);
-              }}  
+              }}
               style={{
                 width: "100%",
-                marginTop: 25,
-                padding: 14,
-                borderRadius: 12,
+                marginTop: 28,
+                padding: 15,
+                borderRadius: 14,
                 border: "none",
                 background: agreed
                   ? "linear-gradient(135deg, #0B3D91, #2563EB)"
@@ -186,7 +161,10 @@ export default function HomePage() {
                 fontSize: 16,
                 fontWeight: "bold",
                 cursor: agreed ? "pointer" : "not-allowed",
-                transition: "0.2s",
+                transition: "0.25s ease",
+                boxShadow: agreed
+                  ? "0 10px 25px rgba(37,99,235,0.35)"
+                  : "none",
               }}
             >
               Continue
@@ -196,14 +174,42 @@ export default function HomePage() {
       )}
 
       {/* MAIN PAGE */}
-      <main style={pageStyle}>
-        <div style={cardStyle}>
+      <main
+        style={{
+          minHeight: "100vh",
+          backgroundImage:
+            "linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.55)), url('/camiguin.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          padding: 20,
+          fontFamily: "Segoe UI, sans-serif",
+        }}
+      >
+        <div
+          style={{
+            background: "rgba(255,255,255,0.18)",
+            backdropFilter: "blur(16px)",
+            border: "1px solid rgba(255,255,255,0.25)",
+            padding: 40,
+            borderRadius: 28,
+            maxWidth: 520,
+            width: "100%",
+            textAlign: "center",
+            boxShadow: "0 20px 50px rgba(0,0,0,0.35)",
+            animation: "fadeIn 0.5s ease",
+          }}
+        >
           <h1
             style={{
-              fontSize: "clamp(30px, 6vw, 60px)",
-              color: "#0B3D91",
+              fontSize: "clamp(36px, 8vw, 64px)",
+              color: "white",
               marginBottom: 10,
-              whiteSpace: "nowrap",
+              fontWeight: "800",
+              letterSpacing: 1,
+              lineHeight: 1.1,
             }}
           >
             ISLA-TRANSPO
@@ -211,12 +217,14 @@ export default function HomePage() {
 
           <p
             style={{
-              color: "#475569",
-              marginBottom: 30,
+              color: "#E2E8F0",
+              marginBottom: 35,
               fontSize: 16,
+              lineHeight: 1.6,
             }}
           >
-            RSTW Transportation Management System
+            Regional Science, Technology, and Innovation Week
+            Transportation Management System
           </p>
 
           <button
@@ -244,3 +252,18 @@ export default function HomePage() {
     </>
   );
 }
+
+const buttonStyle = {
+  width: "100%",
+  padding: "15px",
+  marginTop: 16,
+  borderRadius: 14,
+  border: "none",
+  background: "linear-gradient(135deg, #0B3D91, #2563EB)",
+  color: "white",
+  fontSize: 16,
+  fontWeight: "bold",
+  cursor: "pointer",
+  transition: "0.25s ease",
+  boxShadow: "0 10px 25px rgba(37,99,235,0.35)",
+};
