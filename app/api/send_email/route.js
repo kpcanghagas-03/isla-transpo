@@ -232,7 +232,7 @@ export async function POST(request) {
       status,
       name,
       vehicle,
-      driver
+      driver_number
     );
 
     const transporter = nodemailer.createTransport({
