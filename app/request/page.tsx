@@ -153,7 +153,7 @@ export default function RequestPage() {
   };
 
   const sectionTitle: React.CSSProperties = {
-    color: "#60A5FA",
+    color: "#1E40AF",
     fontWeight: 800,
     fontSize: 16,
     marginTop: 18,
@@ -177,10 +177,10 @@ export default function RequestPage() {
     <main style={pageStyle}>
       <div style={glassCard}>
         {/* HEADER */}
-        <h1 style={{ color: "white", fontSize: 34, fontWeight: 900 }}>
+        <h1 style={{ color: "white", fontSize: 34, fontWeight: 900, justifyContent: "center", display: "flex", marginBottom: 5 }}>
           ISLA-Transpo Request
         </h1>
-        <p style={{ color: "#E2E8F0", marginBottom: 20 }}>
+        <p style={{ color: "#E2E8F0", marginBottom: 20, justifyContent: "center", display: "flex"}}>
           Fill out your transportation details
         </p>
 
@@ -280,8 +280,8 @@ export default function RequestPage() {
         />
 
         {/* AIRLINE SELECT */}
-        <div style={{ marginBottom: 10 }}>
-          {["Cebu Pacific", "PAL", "AirAsia"].map((air) => (
+        <div style={{ marginBottom: 20 }}>
+          {["Cebu Pacific", "PAL", "AirAsia", "Others"].map((air) => (
             <span
               key={air}
               onClick={() =>
