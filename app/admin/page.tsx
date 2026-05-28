@@ -248,16 +248,40 @@ export default function AdminPage() {
   const totalCount = requests.length;
 
    // ================= DRIVER NUMBERS =================
-  const driverNumbers: Record<string, string> = {
-    "Van 1 - ZAM 1023 - Driver 1": "09171234567",
-    "Van 2 - ZAM 1456 - Driver 2": "09181234567",
-    "Van 3 - ZAM 8831 - Driver 3": "09191234567",
-    "Van 4 - ZAM 1942 - Driver 4": "09201234567",
-    "Van 5 - ZAM 1952 - Driver 5": "09211234567",
-    "Van 6- ZAM 1962 - Driver 6": "09221234567",
-    "Van 7 - ZAM 5555 - Driver 7": "09231234567",
-    "Backup Vehicle - BKP 7777 - Driver 8": "09999999999",
-  };
+  const vehicleMap: Record<string, { driver: string; phone: string }> = {
+  "Van 1 - ZAM 1023": {
+    driver: "Mr. Lino Gorres",
+    phone: "09171234567",
+  },
+  "Van 2 - ZAM 1456": {
+    driver: "Mr. Ramil Caneda",
+    phone: "09181234567",
+  },
+  "Van 3 - ZAM 8831": {
+    driver: "Mr. Ernie Soliva",
+    phone: "09191234567",
+  },
+  "Van 4 - ZAM 1942": {
+    driver: "Mr. Abling Murillo",
+    phone: "09201234567",
+  },
+  "Van 5 - ZAM 1952": {
+    driver: "Mr. Francisco Talle",
+    phone: "09211234567",
+  },
+  "Van 6 - ZAM 1962": {
+    driver: "Mr. Leonel Quidet",
+    phone: "09221234567",
+  },
+  "Van 7 - ZAM 5555": {
+    driver: "Driver 7",
+    phone: "09231234567",
+  },
+  "Backup Vehicle - BKP 7777": {
+    driver: "Driver 8",
+    phone: "09999999999",
+  },
+};
 
   // Normalize shape for LiveMap (no nulls, no extra keys)
   const liveMapRequests: LiveMapRequest[] = requests.map((req) => ({
@@ -283,7 +307,7 @@ export default function AdminPage() {
     status: req.status,
     priority: req.priority || "Attendee",
     assigned_vehicle: req.assigned_vehicle || "",
-    driver_number: driverNumbers[req.assigned_vehicle || ""] || "",
+    driver_number: vehicleMap[req.assigned_vehicle || ""]?.phone || "",
     created_at: req.created_at,
     driver_lat: req.driver_lat ?? null,
     driver_lng: req.driver_lng ?? null,
@@ -522,13 +546,13 @@ export default function AdminPage() {
                     onChange={async (e) => {
                       const vehicle = e.target.value;
 
-                      const driverNumber = driverNumbers[vehicle] || "";
+                      const vehicleInfo = vehicleMap[vehicle] || { driver: "", phone: "" };
 
                       // UPDATE VEHICLE
                       await updateField(req.id, "assigned_vehicle", vehicle);
 
                       // UPDATE DRIVER NUMBER
-                      await updateField(req.id, "driver_number", driverNumber);
+                      await updateField(req.id, "driver_number", vehicleInfo.phone);
 
                       // SMALL DELAY TO ENSURE DB UPDATE
                       await new Promise((resolve) => setTimeout(resolve, 300));
@@ -542,14 +566,14 @@ export default function AdminPage() {
                     }}
                   >
                     <option value="">Unassigned</option>
-                    <option value="Van 1 - ZAM 1023 - Driver 1">🚐 Van 1 - ZAM 1023 - Mr. Lino Gorres</option>
-                    <option value="Van 2 - ZAM 1456 - Driver 2">🚐 Van 2 - ZAM 1456 - Mr. Ramil Caneda</option>
-                    <option value="Van 3 - ZAM 8831 - Driver 3">🚐 Van 3  - ZAM 8831 - Mr. Ernie Soliva </option>
-                    <option value="Van 4 - ZAM 1942 - Driver 4">🚐 Van 4  - ZAM 1942 - Mr. Abling Murrilo</option>
-                    <option value="Van 5 - ZAM 1952 - Driver 5">🚐 Van 5  - ZAM 1952 - Mr. Francisco Talle</option>
-                    <option value="Van 6- ZAM 1962 - Driver 6">🚐 Van 6  - ZAM 1962 - Mr. Leonel Quidet</option>
-                    <option value="Van 7 - ZAM 5555 - Driver 7">🚐 Van 7 - ZAM 5555 - Driver 7</option>
-                    <option value="Backup Vehicle - BKP 7777 - Driver 8">🚨 Backup Vehicle - BKP 7777 - Driver 8</option>
+                    <option value="Van 1 - ZAM 1023">🚐 Van 1 - ZAM 1023 - Mr. Lino Gorres</option>
+                    <option value="Van 2 - ZAM 1456">🚐 Van 2 - ZAM 1456 - Mr. Ramil Caneda</option>
+                    <option value="Van 3 - ZAM 8831">🚐 Van 3  - ZAM 8831 - Mr. Ernie Soliva </option>
+                    <option value="Van 4 - ZAM 1942">🚐 Van 4  - ZAM 1942 - Mr. Abling Murrilo</option>
+                    <option value="Van 5 - ZAM 1952">🚐 Van 5  - ZAM 1952 - Mr. Francisco Talle</option>
+                    <option value="Van 6 - ZAM 1962">🚐 Van 6  - ZAM 1962 - Mr. Leonel Quidet</option>
+                    <option value="Van 7 - ZAM 5555">🚐 Van 7 - ZAM 5555 - Driver 7</option>
+                    <option value="Backup Vehicle - BKP 7777">🚨 Backup Vehicle - BKP 7777 - Driver 8</option>
                   </select>
 
                   <div className="vehicle">
