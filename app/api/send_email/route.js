@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
 // ================= MESSAGE ENGINE =================
-function getStatusMessage(status, name, vehicle = "", driver = "") {
+function getStatusMessage(status, name, vehicle,driver_number) {
   const header = `
     <div style="text-align:center; padding:10px 0 20px;">
       <h1 style="margin:0; color:#1a73e8; font-family:Arial;">ISLA-TRANSPO</h1>
@@ -33,6 +33,7 @@ function getStatusMessage(status, name, vehicle = "", driver = "") {
     `;
   };
 
+  
   const card = (title, content, color) => `
     <div style="
       margin:12px 0;
@@ -203,5 +204,68 @@ function getStatusMessage(status, name, vehicle = "", driver = "") {
           ${footer}
         `,
       };
+  }
+}
+
+export async function POST(request) {
+  try {
+    const {
+      email,
+      name,
+      status,
+      pickup,
+      destination,
+      schedule,
+      vehicle,
+      driver_number,
+      request_id,
+    } = await request.json();
+
+    if (!email) {
+      return NextResponse.json(
+        { success: false, error: "Email is required" },
+        { status: 400 }
+      );
+    }
+
+    const { subject, html } = getStatusMessage(
+      status,
+      name,
+      vehicle,
+      driver
+    );
+
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: Number(process.env.SMTP_PORT),
+      secure: false,
+      auth: {
+        user: process.env.SMTP_EMAIL,
+        pass: process.env.SMTP_PASSWORD,
+      },
+    });
+
+    await transporter.sendMail({
+      from: `"ISLA-Transpo" <${process.env.SMTP_EMAIL}>`,
+      to: email,
+      subject,
+      html,
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: "Email sent successfully",
+    });
+
+  } catch (error) {
+    console.error("EMAIL ERROR:", error);
+
+    return NextResponse.json(
+      {
+        success: false,
+        error: error?.message || "Unknown error",
+      },
+      { status: 500 }
+    );
   }
 }
