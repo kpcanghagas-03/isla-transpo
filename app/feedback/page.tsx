@@ -8,7 +8,7 @@ export default function ProgramPage() {
   const programDays = [
     {
       day: "Day 1",
-      date: "June 2, 2025",
+      date: "June 2, 2026",
       theme: "Opening & Exhibits",
       color: "#0B3D91",
       events: [
@@ -23,7 +23,7 @@ export default function ProgramPage() {
     },
     {
       day: "Day 2",
-      date: "June 3, 2025",
+      date: "June 3, 2026",
       theme: "Technical Sessions",
       color: "#1E40AF",
       events: [
@@ -38,7 +38,7 @@ export default function ProgramPage() {
     },
     {
       day: "Day 3",
-      date: "June 4, 2025",
+      date: "June 4, 2026",
       theme: "Competitions & Judging",
       color: "#059669",
       events: [
@@ -53,7 +53,7 @@ export default function ProgramPage() {
     },
     {
       day: "Day 4",
-      date: "June 5, 2025",
+      date: "June 5, 2026",
       theme: "Awarding & Closing",
       color: "#DC2626",
       events: [
@@ -118,7 +118,7 @@ export default function ProgramPage() {
           </h1>
 
           <p style={{ color: "#E2E8F0", fontSize: 16 }}>
-            Regional Science & Technology Week 2025 • Camiguin Island
+            Regional Science & Technology Week 2026 • Camiguin Island
           </p>
         </div>
 
