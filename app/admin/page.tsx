@@ -42,6 +42,7 @@ type Request = {
   status: "Pending" | "Approved" | "On the way" | "Completed" | "Disapproved" | "Emergency";
   priority: "Attendee" | "Staff" | "VIP" | null;
   assigned_vehicle: string | null;
+  driver_number: string | null;
 
   created_at: string; // ISO timestamp
 
@@ -204,6 +205,7 @@ export default function AdminPage() {
                     : ""
                 }`,
                 vehicle: request.assigned_vehicle || "",
+                driver_number: request.driver_number || "",
                 request_id: request.id,
               }),
                 });
@@ -245,6 +247,18 @@ export default function AdminPage() {
   const disapprovedCount = requests.filter((r) => r.status === "Disapproved").length;
   const totalCount = requests.length;
 
+   // ================= DRIVER NUMBERS =================
+  const driverNumbers: Record<string, string> = {
+    "Van 1 - ZAM 1023 - Driver 1": "09171234567",
+    "Van 2 - ZAM 1456 - Driver 2": "09181234567",
+    "Van 3 - ZAM 8831 - Driver 3": "09191234567",
+    "Van 4 - ZAM 1942 - Driver 4": "09201234567",
+    "Van 5 - ZAM 1952 - Driver 5": "09211234567",
+    "Van 6- ZAM 1962 - Driver 6": "09221234567",
+    "Van 7 - ZAM 5555 - Driver 7": "09231234567",
+    "Backup Vehicle - BKP 7777 - Driver 8": "09999999999",
+  };
+
   // Normalize shape for LiveMap (no nulls, no extra keys)
   const liveMapRequests: LiveMapRequest[] = requests.map((req) => ({
     id: req.id,
@@ -269,6 +283,7 @@ export default function AdminPage() {
     status: req.status,
     priority: req.priority || "Attendee",
     assigned_vehicle: req.assigned_vehicle || "",
+    driver_number: driverNumbers[req.assigned_vehicle || ""] || "",
     created_at: req.created_at,
     driver_lat: req.driver_lat ?? null,
     driver_lng: req.driver_lng ?? null,
@@ -506,9 +521,19 @@ export default function AdminPage() {
                     value={req.assigned_vehicle || ""}
                     onChange={async (e) => {
                       const vehicle = e.target.value;
+
                       await updateField(req.id, "assigned_vehicle", vehicle);
-                      if (vehicle) await updateField(req.id, "status", "Approved");
-                      else await updateField(req.id, "status", "Pending");
+
+                      // AUTO SAVE DRIVER NUMBER
+                      const driverNumber = driverNumbers[vehicle] || "";
+
+                      await updateField(req.id, "driver_number", driverNumber);
+
+                      if (vehicle) {
+                        await updateField(req.id, "status", "Approved");
+                      } else {
+                        await updateField(req.id, "status", "Pending");
+                      }
                     }}
                   >
                     <option value="">Unassigned</option>
@@ -525,6 +550,13 @@ export default function AdminPage() {
                   <div className="vehicle">
                     {req.assigned_vehicle ? `✅ ${req.assigned_vehicle}` : "🚨 No Vehicle Assigned"}
                   </div>
+                  {req.driver_number && (
+                    <div className="info">
+                      📱 Driver Contact:
+                      <br />
+                      {req.driver_number}
+                    </div>
+                  )}
                 </div>
               );
             })}
