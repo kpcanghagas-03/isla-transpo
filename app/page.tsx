@@ -189,23 +189,6 @@ export default function HomePage() {
             boxShadow: "0 20px 50px rgba(0,0,0,0.35)",
           }}
         >
-          {/* DOST LOGO */}
-
-          <div style={{ display: "flex", justifyContent: "center", marginBottom: 20,
-
-           }}>
-
-            <img
-              src="/dost-logo.png"
-              alt="DOST Northern Mindanao"
-              style={{ width: 110, height: 110, objectFit: "contain",
-                borderRadius: "50%", background: "rgba(255,255,255,0.9)",
-                padding: 12, boxShadow: "0 8px 25px rgba(0,0,0,0.25)"
-               }}
-            />
-          </div>
-
-
           <h1
             style={{
               fontSize: "clamp(28px, 7vw, 54px)",
