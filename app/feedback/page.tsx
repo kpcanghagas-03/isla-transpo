@@ -8,7 +8,7 @@ export default function ProgramPage() {
   const programDays = [
     {
       day: "Day 1",
-      date: "June 2, 2026",
+      date: "July 22, 2026",
       theme: "Opening & Exhibits",
       color: "#0B3D91",
       events: [
@@ -59,7 +59,7 @@ export default function ProgramPage() {
     },
     {
       day: "Day 2",
-      date: "June 3, 2026",
+      date: "July 23, 2026",
       theme: "Technical Sessions",
       color: "#1E40AF",
       events: [
@@ -110,7 +110,7 @@ export default function ProgramPage() {
     },
     {
       day: "Day 3",
-      date: "June 4, 2026",
+      date: "July 23, 2026",
       theme: "Competitions & Judging",
       color: "#059669",
       events: [
@@ -162,7 +162,7 @@ export default function ProgramPage() {
     },
     {
       day: "Day 4",
-      date: "June 5, 2026",
+      date: "July 24, 2026",
       theme: "Awarding & Closing",
       color: "#DC2626",
       events: [
@@ -266,7 +266,7 @@ export default function ProgramPage() {
               }}
             >
               <span style={{ fontSize: 14, color: "white", fontWeight: 700 }}>
-                📅 June 2–5, 2026 | Camiguin Island
+                📅 July 23–24, 2026 | Camiguin Island
               </span>
             </div>
 
