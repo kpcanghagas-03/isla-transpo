@@ -189,38 +189,54 @@ export default function HomePage() {
         />
 
         {/* HEADER */}
-        <header
-          style={{
-            background: "#fff",
-            borderBottom: "5px solid #F27A35",
-            boxShadow: "0 3px 20px rgba(0,0,0,.08)",
-            position: "relative",
-            overflow: "hidden",
-          }}
-        >
-          <div
-            style={{
-              position: "absolute",
-              right: -80,
-              top: -80,
-              width: 220,
-              height: 220,
-              borderRadius: "50%",
-              background:
-                "conic-gradient(#F27A35,#A61E22,#1F5AA6,#F27A35)",
-              opacity: 0.08,
-            }}
-          />
+       <header
+  style={{
+    background: "#fff",
+    borderBottom: "4px solid #F27A35",
+    padding: "12px 30px",
+  }}
+>
+  <div
+    style={{
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      flexWrap: "wrap",
+    }}
+  >
+    <div>
+      <h2
+        style={{
+          margin: 0,
+          color: "#1F5AA6",
+          fontSize: 24,
+          fontWeight: 800,
+        }}
+      >
+        ISLA-TRANSPO
+      </h2>
 
-          <img
-            src="/rstw_2026.jpg"
-            alt="RSTW 2026"
-            style={{
-              width: "80%",
-              display: "block",
-            }}
-          />
-        </header>
+      <p
+        style={{
+          margin: 0,
+          color: "#64748B",
+          fontSize: 13,
+        }}
+      >
+        RSTW 2026 Transportation Management System
+      </p>
+    </div>
+
+    <img
+      src="/rstw_2026.jpg"
+      alt="RSTW"
+      style={{
+        height: 60,
+        width: "auto",
+      }}
+    />
+  </div>
+</header>
 
             {/* RSTW BACKGROUND DESIGN */}
 <div
@@ -368,8 +384,7 @@ export default function HomePage() {
               fontSize: 18,
             }}
           >
-            Transportation Management System for Regional Science,
-            Technology and Innovation Week 2026
+            Transportation Management System for Regional Science,Technology and Innovation Week 2026
           </p>
         </section>
             <div
