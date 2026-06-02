@@ -233,8 +233,7 @@ export default function AttendeePage() {
     <main
       style={{
         minHeight: "100vh",
-        backgroundImage:
-          "linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.65)), url('/camiguin.jpg')",
+        background: "linear-gradient(180deg,#ffffff 0%,#f8fafc 50%,#ffffff 100%)",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundAttachment: "fixed",
@@ -268,8 +267,8 @@ export default function AttendeePage() {
         {/* MAIN CARD */}
         <div
           style={{
-            background: "rgba(255,255,255,0.15)",
-            backdropFilter: "blur(20px)",
+            background: "#ffffff",
+            
             borderRadius: 30,
             padding: "40px 35px",
             border: "1px solid rgba(255,255,255,0.25)",
