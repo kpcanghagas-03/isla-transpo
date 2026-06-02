@@ -293,21 +293,94 @@ export default function HomePage() {
   </div>
 )}
 
-      {/* MAIN PAGE */}
-      <main
+            {/* MAIN PAGE */}
+          <main
         style={{
           minHeight: "100vh",
-          backgroundImage:
-            "linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.65)), url('/cam_background.png')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
+          background:
+            "linear-gradient(135deg, #0B3D91 0%, #1E40AF 45%, #0284C7 100%)",
+          position: "relative",
+          overflow: "hidden",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
           padding: 16,
           fontFamily: "Segoe UI, sans-serif",
         }}
-      >
+> 
+{/* TOP LIGHT GLOW */}
+<div
+  style={{
+    position: "absolute",
+    top: "-150px",
+    right: "-150px",
+    width: 500,
+    height: 500,
+    borderRadius: "50%",
+    background: "rgba(255,255,255,0.08)",
+    filter: "blur(80px)",
+    pointerEvents: "none",
+  }}
+/>
+
+{/* CAMIGUIN SEA HORIZON */}
+<div
+  style={{
+    position: "absolute",
+    bottom: 180,
+    left: 0,
+    width: "100%",
+    height: 2,
+    background: "rgba(255,255,255,0.15)",
+    pointerEvents: "none",
+  }}
+/>
+
+{/* MT. HIBOK-HIBOK SILHOUETTE */}
+<div
+  style={{
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    width: "100%",
+    height: 260,
+    background:
+      "linear-gradient(to top, rgba(0,0,0,0.25), rgba(0,0,0,0.05))",
+    clipPath:
+      "polygon(0 100%, 0 70%, 15% 55%, 30% 65%, 45% 30%, 60% 60%, 75% 45%, 100% 65%, 100% 100%)",
+    pointerEvents: "none",
+  }}
+/>
+
+{/* SEA WAVES */}
+<div
+  style={{
+    position: "absolute",
+    bottom: 70,
+    width: "100%",
+    textAlign: "center",
+    color: "rgba(255,255,255,0.12)",
+    fontSize: 40,
+    letterSpacing: 20,
+    pointerEvents: "none",
+  }}
+>
+  ∿ ∿ ∿ ∿ ∿ ∿ ∿
+</div>
+
+{/* TECH DOTS */}
+<div
+  style={{
+    position: "absolute",
+    inset: 0,
+    backgroundImage:
+      "radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px)",
+    backgroundSize: "40px 40px",
+    opacity: 0.35,
+    pointerEvents: "none",
+  }}
+/>
+
         <div
           style={{
             width: "100%",
@@ -319,6 +392,7 @@ export default function HomePage() {
             padding: "28px 18px",
             textAlign: "center",
             boxShadow: "0 20px 50px rgba(0,0,0,0.35)",
+            zIndex: 2,
           }}
         >
           <h1
