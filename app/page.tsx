@@ -308,78 +308,90 @@ export default function HomePage() {
           fontFamily: "Segoe UI, sans-serif",
         }}
 > 
-{/* TOP LIGHT GLOW */}
+{/* CAMIGUIN OUTLINE */}
 <div
   style={{
     position: "absolute",
-    top: "-150px",
-    right: "-150px",
+    right: "-100px",
+    top: "50%",
+    transform: "translateY(-50%)",
     width: 500,
     height: 500,
-    borderRadius: "50%",
-    background: "rgba(255,255,255,0.08)",
-    filter: "blur(80px)",
+    opacity: 0.08,
+    backgroundImage: "url('/camiguin-outline.svg')",
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "contain",
     pointerEvents: "none",
   }}
+
 />
 
-{/* CAMIGUIN SEA HORIZON */}
+{/* FERRY ROUTE */}
 <div
   style={{
     position: "absolute",
-    bottom: 180,
-    left: 0,
+    bottom: 120,
     width: "100%",
-    height: 2,
-    background: "rgba(255,255,255,0.15)",
-    pointerEvents: "none",
-  }}
-/>
-
-{/* MT. HIBOK-HIBOK SILHOUETTE */}
-<div
-  style={{
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    width: "100%",
-    height: 260,
-    background:
-      "linear-gradient(to top, rgba(0,0,0,0.25), rgba(0,0,0,0.05))",
-    clipPath:
-      "polygon(0 100%, 0 70%, 15% 55%, 30% 65%, 45% 30%, 60% 60%, 75% 45%, 100% 65%, 100% 100%)",
-    pointerEvents: "none",
-  }}
-/>
-
-{/* SEA WAVES */}
-<div
-  style={{
-    position: "absolute",
-    bottom: 70,
-    width: "100%",
-    textAlign: "center",
-    color: "rgba(255,255,255,0.12)",
-    fontSize: 40,
-    letterSpacing: 20,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 25,
+    opacity: 0.18,
     pointerEvents: "none",
   }}
 >
-  ∿ ∿ ∿ ∿ ∿ ∿ ∿
+  {Array.from({ length: 5 }).map((_, i) => (
+    <div
+      key={i}
+      style={{
+        width: 10,
+        height: 10,
+        borderRadius: "50%",
+        background: "white",
+      }}
+    />
+  ))}
 </div>
 
-{/* TECH DOTS */}
 <div
   style={{
     position: "absolute",
-    inset: 0,
-    backgroundImage:
-      "radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px)",
-    backgroundSize: "40px 40px",
-    opacity: 0.35,
+    bottom: 124,
+    left: "50%",
+    transform: "translateX(-50%)",
+    width: 240,
+    height: 2,
+    background: "rgba(255,255,255,0.2)",
     pointerEvents: "none",
   }}
 />
+<div
+  style={{
+    position: "absolute",
+    bottom: 80,
+    right: "12%",
+    fontSize: 40,
+    opacity: 0.15,
+    pointerEvents: "none",
+  }}
+>
+  ⛴️
+</div>
+
+<div
+  style={{
+    position: "absolute",
+    top: 30,
+    width: "100%",
+    textAlign: "center",
+    color: "rgba(255,255,255,0.8)",
+    letterSpacing: 2,
+    fontSize: 13,
+    fontWeight: 600,
+  }}
+>
+  REGIONAL SCIENCE, TECHNOLOGY AND INNOVATION WEEK 2026
+</div>
 
         <div
           style={{
