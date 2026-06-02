@@ -177,13 +177,17 @@ const handleSubmit = async () => {
     // ================= STYLES =================
 
   const pageStyle = {
-    padding: "20px",
-    fontFamily: "Segoe UI, sans-serif",
-    minHeight: "100vh",
-    color: "#FF4500",
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-  };
+  minHeight: "100vh",
+  padding: "20px",
+  fontFamily: "Segoe UI, sans-serif",
+  color: "#FF4500",
+
+  background:
+    "linear-gradient(180deg,#FFF7ED 0%,#FFE7D1 40%,#FFFFFF 100%)",
+
+  position: "relative" as const,
+  overflow: "hidden",
+};
 
   const inputStyle = {
     padding: 10,
@@ -221,7 +225,38 @@ const handleSubmit = async () => {
   };
 
   return (
-    <main style={pageStyle}>
+  <main style={pageStyle}>
+    {/* LEFT DECORATION */}
+    <div
+      style={{
+        position: "fixed",
+        left: 0,
+        top: 0,
+        width: 120,
+        height: "100%",
+        background:
+          "linear-gradient(180deg,#F27A35,#A61E22,#1F5AA6)",
+        opacity: 0.08,
+        clipPath:
+          "polygon(0 0,100% 0,70% 50%,100% 100%,0 100%)",
+      }}
+    />
+
+    {/* RIGHT DECORATION */}
+    <div
+      style={{
+        position: "fixed",
+        right: 0,
+        top: 0,
+        width: 120,
+        height: "100%",
+        background:
+          "linear-gradient(180deg,#1F5AA6,#F27A35,#A61E22)",
+        opacity: 0.08,
+        clipPath:
+          "polygon(30% 0,100% 0,100% 100%,0 100%,30% 50%)",
+      }}
+    />
       <div style={formBox}>
         {/* HEADER */}
 
