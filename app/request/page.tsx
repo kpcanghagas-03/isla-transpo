@@ -180,7 +180,7 @@ const handleSubmit = async () => {
     padding: "20px",
     fontFamily: "Segoe UI, sans-serif",
     minHeight: "100vh",
-    backgroundImage: "url('/camiguin.jpg')",
+    color: "#FF4500",
     backgroundSize: "cover",
     backgroundPosition: "center",
   };
