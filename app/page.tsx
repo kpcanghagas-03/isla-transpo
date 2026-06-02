@@ -20,148 +20,135 @@ export default function HomePage() {
 
   return (
     <>
-      {/* PRIVACY MODAL */}
-      {showModal && (
-        <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,0.65)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 999,
-            padding: 20,
-            backdropFilter: "blur(6px)",
-          }}
-        >
-          <div
-            style={{
-              background: "rgba(255,255,255,0.96)",
-              borderRadius: 28,
-              maxWidth: 550,
-              width: "100%",
-              padding: 30,
-              boxShadow: "0 20px 60px rgba(0,0,0,0.35)",
-              animation: "fadeIn 0.3s ease",
-            }}
-          >
-            <h1
-              style={{
-                color: "#0B3D91",
-                fontSize: 30,
-                marginBottom: 12,
-                fontWeight: "bold",
-                textAlign: "center",
-              }}
-            >
-              Welcome to ISLA-TRANSPO
-            </h1>
+      {/* RSTW WELCOME MODAL */}
+{showRSTWWelcome && (
+  <div
+    style={{
+      position: "fixed",
+      inset: 0,
+      background: "rgba(0,0,0,0.45)",
+      backdropFilter: "blur(6px)",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 1000,
+      padding: 20,
+    }}
+  >
+    <div
+      style={{
+        width: "100%",
+        maxWidth: 700,
+        background: "rgba(255,255,255,0.12)",
+        backdropFilter: "blur(20px)",
+        border: "1px solid rgba(255,255,255,0.2)",
+        borderRadius: 32,
+        padding: "40px 30px",
+        textAlign: "center",
+        boxShadow: "0 25px 80px rgba(0,0,0,0.45)",
+        animation: "fadeIn 0.4s ease",
+      }}
+    >
+      {/* Optional Banner */}
+      <img
+        src="/rstw2026-banner.png"
+        alt="RSTW 2026"
+        style={{
+          width: "100%",
+          borderRadius: 20,
+          marginBottom: 24,
+          objectFit: "cover",
+          maxHeight: 220,
+        }}
+      />
 
-            <p
-              style={{
-                color: "#334155",
-                fontSize: 14,
-                lineHeight: 1.7,
-                marginTop: 10,
-                textAlign: "justify",
-              }}
-            >
-              Welcome to the official transportation management system of the
-              Regional Science, Technology, and Innovation Week (RSTW) in
-              Camiguin.
-              <br />
-              <br />
-              This platform helps manage transportation requests, attendee
-              coordination, and mobility services to ensure a smooth and
-              organized event experience for everyone.
-            </p>
+      <div
+        style={{
+          fontSize: 50,
+          marginBottom: 10,
+        }}
+      >
+        🌋
+      </div>
 
-            <div
-              style={{
-                marginTop: 20,
-                background: "#EFF6FF",
-                padding: 16,
-                borderRadius: 14,
-                border: "1px solid #BFDBFE",
-              }}
-            >
-              <h3
-                style={{
-                  marginBottom: 8,
-                  color: "#1D4ED8",
-                  fontSize: 16,
-                }}
-              >
-                Data Privacy Notice
-              </h3>
+      <h3
+        style={{
+          color: "#FCD34D",
+          letterSpacing: 4,
+          marginBottom: 8,
+          fontSize: 14,
+        }}
+      >
+        WELCOME TO
+      </h3>
 
-              <p
-                style={{
-                  fontSize: 13,
-                  color: "#475569",
-                  lineHeight: 1.6,
-                  textAlign: "justify",
-                }}
-              >
-                Your personal information will be collected and processed solely
-                for transportation coordination, attendance management, and
-                official event-related purposes in accordance with the Data
-                Privacy Act of 2012.
-                <br />
-                <br />
-                All information will be kept confidential and protected.
-              </p>
-            </div>
+      <h1
+        style={{
+          fontSize: "clamp(36px,8vw,72px)",
+          color: "white",
+          margin: 0,
+          fontWeight: 900,
+          lineHeight: 1,
+        }}
+      >
+        RSTW 2026
+      </h1>
 
-            <label
-              style={{
-                display: "flex",
-                alignItems: "flex-start",
-                gap: 10,
-                marginTop: 18,
-                fontSize: 13,
-                color: "#334155",
-                cursor: "pointer",
-                lineHeight: 1.5,
-              }}
-            >
-              <input
-                type="checkbox"
-                checked={agreed}
-                onChange={(e) => setAgreed(e.target.checked)}
-                style={{ marginTop: 3 }}
-              />
-              I agree to the Data Privacy Notice and consent to data collection.
-            </label>
+      <h2
+        style={{
+          marginTop: 12,
+          color: "#E2E8F0",
+          fontWeight: 500,
+        }}
+      >
+        Camiguin Island
+      </h2>
 
-            <button
-              disabled={!agreed}
-              onClick={() => {
-                sessionStorage.setItem("privacyAccepted", "true");
-                setShowModal(false);
-                setShowRSTWWelcome(true);
-              }}
-              style={{
-                width: "100%",
-                marginTop: 22,
-                padding: 14,
-                borderRadius: 12,
-                border: "none",
-                background: agreed
-                  ? "linear-gradient(135deg, #0B3D91, #2563EB)"
-                  : "#94A3B8",
-                color: "white",
-                fontSize: 15,
-                fontWeight: "bold",
-                cursor: agreed ? "pointer" : "not-allowed",
-              }}
-            >
-              Continue
-            </button>
-          </div>
-        </div>
-      )}
+      <p
+        style={{
+          marginTop: 20,
+          color: "#CBD5E1",
+          lineHeight: 1.8,
+          fontSize: 15,
+        }}
+      >
+        Welcome to the Regional Science, Technology and Innovation Week 2026.
+        Experience innovation, collaboration, and sustainable development in
+        the Island Born of Fire.
+      </p>
+
+      <div
+        style={{
+          marginTop: 18,
+          color: "#FCD34D",
+          fontWeight: 700,
+          fontSize: 15,
+        }}
+      >
+        July 22–24, 2026
+      </div>
+
+      <button
+        onClick={() => setShowRSTWWelcome(false)}
+        style={{
+          marginTop: 30,
+          padding: "15px 36px",
+          borderRadius: 50,
+          border: "none",
+          background:
+            "linear-gradient(135deg,#F59E0B,#FBBF24)",
+          color: "#0B3D91",
+          fontWeight: "bold",
+          fontSize: 15,
+          cursor: "pointer",
+          boxShadow: "0 10px 30px rgba(245,158,11,0.4)",
+        }}
+      >
+        Enter ISLA-TRANSPO →
+      </button>
+    </div>
+  </div>
+)}
 
 {/* RSTW WELCOME MODAL */}
 {showRSTWWelcome && (
@@ -169,8 +156,9 @@ export default function HomePage() {
     style={{
       position: "fixed",
       inset: 0,
-      background:
-        "linear-gradient(135deg,#001B4D,#003C8F,#0057D9)",
+      background: "rgba(255,255,255,0.12)",
+      backdropFilter: "blur(20px)",
+      border: "1px solid rgba(255,255,255,0.2)",
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
