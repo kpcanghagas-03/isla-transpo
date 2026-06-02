@@ -244,30 +244,6 @@ export default function HomePage() {
           fontFamily: "Segoe UI, sans-serif",
         }}
 >
-<div
-  style={{
-    position: "absolute",
-    bottom: 124,
-    left: "50%",
-    transform: "translateX(-50%)",
-    width: 240,
-    height: 2,
-    background: "rgba(255,255,255,0.2)",
-    pointerEvents: "none",
-  }}
-/>
-<div
-  style={{
-    position: "absolute",
-    bottom: 80,
-    right: "12%",
-    fontSize: 40,
-    opacity: 0.15,
-    pointerEvents: "none",
-  }}
->
-  ⛴️
-</div>
 
 <div
   style={{
