@@ -198,7 +198,7 @@ export default function HomePage() {
         src="/cam_background.png"
         alt="RSTW 2026 Camiguin"
         style={{
-          width: "100%",
+          width: "50%",
           borderRadius: 24,
           boxShadow: "0 25px 80px rgba(0,0,0,0.6)",
           display: "block",
