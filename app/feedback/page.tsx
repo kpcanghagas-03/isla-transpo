@@ -315,9 +315,6 @@ export default function ProgramPage() {
             }}
           >
             Program of Activities
-          </h1>
-            </h1>
-
             <p
               style={{
                 color: "#64748B",
