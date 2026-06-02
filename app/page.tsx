@@ -188,56 +188,6 @@ export default function HomePage() {
           }}
         />
 
-        {/* HEADER */}
-       <header
-  style={{
-    background: "#fff",
-    borderBottom: "4px solid #F27A35",
-    padding: "12px 30px",
-  }}
->
-  <div
-    style={{
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      flexWrap: "wrap",
-    }}
-  >
-    <div>
-      <h2
-        style={{
-          margin: 0,
-          color: "#1F5AA6",
-          fontSize: 24,
-          fontWeight: 800,
-        }}
-      >
-        ISLA-TRANSPO
-      </h2>
-
-      <p
-        style={{
-          margin: 0,
-          color: "#64748B",
-          fontSize: 13,
-        }}
-      >
-        RSTW 2026 Transportation Management System
-      </p>
-    </div>
-
-    <img
-      src="/rstw_2026.jpg"
-      alt="RSTW"
-      style={{
-        height: 60,
-        width: "auto",
-      }}
-    />
-  </div>
-</header>
-
             {/* RSTW BACKGROUND DESIGN */}
 <div
   style={{
@@ -487,6 +437,58 @@ export default function HomePage() {
             </p>
           </div>
         </section>
+
+        <footer
+  style={{
+    marginTop: 60,
+    padding: "40px 20px",
+    background: "#fff",
+    borderTop: "4px solid #F27A35",
+    position: "relative",
+    zIndex: 2,
+  }}
+>
+  <div
+    style={{
+      textAlign: "center",
+      marginBottom: 25,
+    }}
+  >
+    <h2
+      style={{
+        color: "#1F5AA6",
+        marginBottom: 10,
+      }}
+    >
+      Regional Science, Technology and Innovation Week 2026
+    </h2>
+
+    <p
+      style={{
+        color: "#64748B",
+      }}
+    >
+      Official Event Branding
+    </p>
+  </div>
+
+  <div
+    style={{
+      maxWidth: 900,
+      margin: "0 auto",
+    }}
+  >
+    <img
+      src="/rstw_2026.jpg"
+      alt="RSTW 2026 Poster"
+      style={{
+        width: "100%",
+        borderRadius: 24,
+        boxShadow: "0 15px 40px rgba(0,0,0,.12)",
+      }}
+    />
+  </div>
+</footer>
       </main>
     </>
   );
