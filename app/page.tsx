@@ -206,27 +206,6 @@ export default function HomePage() {
         }}
       />
 
-      {/* Enter Button */}
-      <button
-        onClick={() => setShowRSTWWelcome(false)}
-        style={{
-          marginTop: 20,
-          width: "100%",
-          maxWidth: 320,
-          padding: "16px",
-          borderRadius: 50,
-          border: "none",
-          background:
-            "linear-gradient(135deg,#0B3D91,#2563EB)",
-          color: "white",
-          fontSize: 16,
-          fontWeight: "bold",
-          cursor: "pointer",
-        }}
-      >
-        Enter ISLA-TRANSPO →
-      </button>
-
       {/* Close Button */}
       <button
         onClick={() => setShowRSTWWelcome(false)}
