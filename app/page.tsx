@@ -230,10 +230,20 @@ export default function HomePage() {
 
       {/* Close Button */}
       <button
-        onClick={() => {
-  sessionStorage.setItem("rstwPosterSeen", "true");
-  setShowRSTWWelcome(false);
-}}
+        onClick={() => setShowRSTWWelcome(false)}
+        style={{
+          position: "absolute",
+          top: 15,
+          right: 15,
+          width: 42,
+          height: 42,
+          borderRadius: "50%",
+          border: "none",
+          background: "rgba(0,0,0,0.6)",
+          color: "white",
+          fontSize: 20,
+          cursor: "pointer",
+        }}
       >
         ✕
       </button>
