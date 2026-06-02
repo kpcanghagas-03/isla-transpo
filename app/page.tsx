@@ -195,7 +195,7 @@ export default function HomePage() {
     >
       {/* Poster */}
       <img
-        src="/camiguin_background.png"
+        src="/cam_background.png"
         alt="RSTW 2026 Camiguin"
         style={{
           width: "100%",
