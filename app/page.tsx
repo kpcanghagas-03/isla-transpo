@@ -18,6 +18,8 @@ export default function HomePage() {
     }
   }, []);
 
+  const [showRSTWWelcome, setShowRSTWWelcome] = useState(true);
+
   return (
     <>
       {/* PRIVACY MODAL */}
@@ -140,7 +142,7 @@ export default function HomePage() {
               onClick={() => {
                 sessionStorage.setItem("privacyAccepted", "true");
                 setShowModal(false);
-              
+              }}
               style={{
                 width: "100%",
                 marginTop: 22,
@@ -162,6 +164,7 @@ export default function HomePage() {
         </div>
       )}
 
+    {showRSTWWelcome && (
     <div
       style={{
         position: "relative",
@@ -202,8 +205,7 @@ export default function HomePage() {
         ✕
       </button>
     </div>
-  </div>
-)}
+    )}
 
             {/* MAIN PAGE */}
  <main
