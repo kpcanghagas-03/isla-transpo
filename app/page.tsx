@@ -46,17 +46,6 @@ export default function HomePage() {
               animation: "fadeIn 0.3s ease",
             }}
           >
-            <h1
-              style={{
-                color: "#0B3D91",
-                fontSize: 30,
-                marginBottom: 12,
-                fontWeight: "bold",
-                textAlign: "center",
-              }}
-            >
-              Welcome to ISLA-TRANSPO
-            </h1>
 
             <p
               style={{
@@ -192,19 +181,7 @@ export default function HomePage() {
         animation: "fadeIn 0.4s ease",
       }}
     >
-      {/* Optional Banner */}
-      <img
-        src="/rstw2026-banner.png"
-        alt="RSTW 2026"
-        style={{
-          width: "100%",
-          borderRadius: 20,
-          marginBottom: 24,
-          objectFit: "cover",
-          maxHeight: 220,
-        }}
-      />
-
+      
       <div
         style={{
           fontSize: 50,
@@ -255,7 +232,6 @@ export default function HomePage() {
           fontSize: 15,
         }}
       >
-        Welcome to the Regional Science, Technology and Innovation Week 2026.
         Experience innovation, collaboration, and sustainable development in
         the Island Born of Fire.
       </p>
