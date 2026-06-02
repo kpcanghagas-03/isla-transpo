@@ -46,6 +46,17 @@ export default function HomePage() {
               animation: "fadeIn 0.3s ease",
             }}
           >
+            <h1
+              style={{
+                color: "#0B3D91",
+                fontSize: 30,
+                marginBottom: 12,
+                fontWeight: "bold",
+                textAlign: "center",
+              }}
+            >
+              Data Privacy Notice
+            </h1>
 
             <p
               style={{
@@ -82,7 +93,7 @@ export default function HomePage() {
                   fontSize: 16,
                 }}
               >
-                Data Privacy Notice
+                Important Notice
               </h3>
 
               <p
@@ -273,8 +284,8 @@ export default function HomePage() {
           <main
         style={{
           minHeight: "100vh",
-          background:
-            "linear-gradient(135deg, #0B3D91 0%, #1E40AF 45%, #0284C7 100%)",
+          backgroundImage:
+           "linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.65)), url('/camiguin.jpg')",
           position: "relative",
           overflow: "hidden",
           display: "flex",
