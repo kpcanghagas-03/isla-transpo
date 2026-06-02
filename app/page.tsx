@@ -195,7 +195,7 @@ export default function HomePage() {
     >
       {/* Poster */}
       <img
-        src="/cam_background.png"
+        src="/rstw_2026.jpg"
         alt="RSTW 2026 Camiguin"
         style={{
           width: "100%",
@@ -234,7 +234,7 @@ export default function HomePage() {
         style={{
           minHeight: "100vh",
           backgroundImage:
-           "linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.65)), url('/camiguin.jpg')",
+           "linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.65)), url('/rstw_2026.jpg')",
           position: "relative",
           overflow: "hidden",
           display: "flex",
