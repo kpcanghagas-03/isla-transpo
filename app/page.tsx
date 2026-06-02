@@ -8,7 +8,6 @@ export default function HomePage() {
 
   const [showModal, setShowModal] = useState(false);
   const [agreed, setAgreed] = useState(false);
-  
 
   useEffect(() => {
     const accepted = sessionStorage.getItem("privacyAccepted");
@@ -18,8 +17,6 @@ export default function HomePage() {
     }
   }, []);
 
-  const [showRSTWWelcome, setShowRSTWWelcome] = useState(true);
-
   return (
     <>
       {/* PRIVACY MODAL */}
@@ -28,33 +25,30 @@ export default function HomePage() {
           style={{
             position: "fixed",
             inset: 0,
-            background: "rgba(0,0,0,0.65)",
+            background: "rgba(0,0,0,.6)",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
             zIndex: 999,
             padding: 20,
-            backdropFilter: "blur(6px)",
+            backdropFilter: "blur(5px)",
           }}
         >
           <div
             style={{
-              background: "rgba(255,255,255,0.96)",
-              borderRadius: 28,
-              maxWidth: 550,
+              background: "#fff",
+              maxWidth: 600,
               width: "100%",
+              borderRadius: 24,
               padding: 30,
-              boxShadow: "0 20px 60px rgba(0,0,0,0.35)",
-              animation: "fadeIn 0.3s ease",
+              boxShadow: "0 25px 60px rgba(0,0,0,.25)",
             }}
           >
             <h1
               style={{
-                color: "#0B3D91",
-                fontSize: 30,
-                marginBottom: 12,
-                fontWeight: "bold",
+                color: "#A61E22",
                 textAlign: "center",
+                marginBottom: 15,
               }}
             >
               Data Privacy Notice
@@ -62,79 +56,68 @@ export default function HomePage() {
 
             <p
               style={{
-                color: "#334155",
-                fontSize: 14,
+                color: "#475569",
                 lineHeight: 1.7,
-                marginTop: 10,
+                fontSize: 14,
                 textAlign: "justify",
               }}
             >
               Welcome to the official transportation management system of the
-              Regional Science, Technology, and Innovation Week (RSTW) in
-              Camiguin.
-              <br />
-              <br />
-              This platform helps manage transportation requests, attendee
-              coordination, and mobility services to ensure a smooth and
-              organized event experience for everyone.
+              Regional Science, Technology and Innovation Week (RSTW) 2026.
+              This platform manages transportation requests, mobility services,
+              attendee transportation schedules, and event-related travel
+              coordination.
             </p>
 
             <div
               style={{
                 marginTop: 20,
-                background: "#EFF6FF",
                 padding: 16,
                 borderRadius: 14,
-                border: "1px solid #BFDBFE",
+                background: "#FFF7ED",
+                border: "1px solid #FDBA74",
               }}
             >
-              <h3
+              <strong
                 style={{
-                  marginBottom: 8,
-                  color: "#1D4ED8",
-                  fontSize: 16,
+                  color: "#EA580C",
                 }}
               >
                 Important Notice
-              </h3>
+              </strong>
 
               <p
                 style={{
+                  marginTop: 10,
                   fontSize: 13,
                   color: "#475569",
                   lineHeight: 1.6,
-                  textAlign: "justify",
                 }}
               >
-                Your personal information will be collected and processed solely
-                for transportation coordination, attendance management, and
-                official event-related purposes in accordance with the Data
-                Privacy Act of 2012.
-                <br />
-                <br />
-                All information will be kept confidential and protected.
+                Personal information collected through this system shall only
+                be used for transportation coordination and official event
+                purposes in accordance with the Data Privacy Act of 2012.
               </p>
             </div>
 
             <label
               style={{
                 display: "flex",
-                alignItems: "flex-start",
                 gap: 10,
-                marginTop: 18,
-                fontSize: 13,
-                color: "#334155",
+                marginTop: 20,
+                alignItems: "flex-start",
                 cursor: "pointer",
-                lineHeight: 1.5,
+                fontSize: 13,
               }}
             >
               <input
                 type="checkbox"
                 checked={agreed}
                 onChange={(e) => setAgreed(e.target.checked)}
-                style={{ marginTop: 3 }}
               />
-              I agree to the Data Privacy Notice and consent to data collection.
+
+              I agree to the Data Privacy Notice and consent to data
+              processing.
             </label>
 
             <button
@@ -145,17 +128,16 @@ export default function HomePage() {
               }}
               style={{
                 width: "100%",
-                marginTop: 22,
+                marginTop: 20,
                 padding: 14,
-                borderRadius: 12,
                 border: "none",
-                background: agreed
-                  ? "linear-gradient(135deg, #0B3D91, #2563EB)"
-                  : "#94A3B8",
-                color: "white",
-                fontSize: 15,
+                borderRadius: 12,
+                color: "#fff",
                 fontWeight: "bold",
                 cursor: agreed ? "pointer" : "not-allowed",
+                background: agreed
+                  ? "linear-gradient(135deg,#F27A35,#A61E22)"
+                  : "#CBD5E1",
               }}
             >
               Continue
@@ -164,129 +146,98 @@ export default function HomePage() {
         </div>
       )}
 
-    {showRSTWWelcome && (
-    <div
-      style={{
-        position: "relative",
-        width: "100%",
-        maxWidth: 1100,
-      }}
-    >
-      {/* Poster */}
-      <img
-        src="/rstw_2026.jpg"
-        alt="RSTW 2026 Camiguin"
+      <main
         style={{
-          width: "100%",
-          borderRadius: 24,
-          boxShadow: "0 25px 80px rgba(0,0,0,0.6)",
-          display: "block",
-          margin: "0 auto",
-        }}
-      />
-
-      {/* Close Button */}
-      <button
-        onClick={() => setShowRSTWWelcome(false)}
-        style={{
-          position: "absolute",
-          top: 15,
-          right: 15,
-          width: 42,
-          height: 42,
-          borderRadius: "50%",
-          border: "none",
-          background: "rgba(0,0,0,0.6)",
-          color: "white",
-          fontSize: 20,
-          cursor: "pointer",
+          minHeight: "100vh",
+          background:
+            "linear-gradient(180deg,#ffffff 0%,#f8fafc 50%,#ffffff 100%)",
+          fontFamily: "Segoe UI, sans-serif",
+          position: "relative",
+          overflow: "hidden",
         }}
       >
-        ✕
-      </button>
-    </div>
-    )}
-
-            {/* MAIN PAGE */}
- <main
-          style={{
-            minHeight: "100vh",
-            backgroundImage:
-              "linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.65)), url('/camiguin.jpg')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            position: "relative",
-            overflow: "hidden",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "flex-end",
-            paddingBottom: "80px",
-            paddingLeft: 16,
-            paddingRight: 16,
-            fontFamily: "Segoe UI, sans-serif",
-          }}
->
-
-{/* RSTW 2026 HEADER BANNER */}
-<div
-  style={{
-    position: "absolute",
-    top: 0,
-    left: 0,
-    width: "100%",
-    zIndex: 1,
-  }}
->
-  <img
-    src="/rstw_2026.jpg"
-    alt="RSTW 2026"
-    style={{
-      width: "100%",
-      height: "220px",
-      objectFit: "cover",
-      display: "block",
-      boxShadow: "0 6px 25px rgba(0,0,0,0.4)",
-    }}
-  />
-</div>
-
-
-<div
-  style={{
-    position: "absolute",
-    top: 30,
-    width: "100%",
-    textAlign: "center",
-    color: "rgba(255,255,255,0.8)",
-    letterSpacing: 2,
-    fontSize: 13,
-    fontWeight: 600,
-  }}
->
-  REGIONAL SCIENCE, TECHNOLOGY AND INNOVATION WEEK 2026
-</div>
-
+        {/* LEFT DECORATION */}
         <div
           style={{
-            width: "100%",
-            maxWidth: 520,
-            background: "rgba(255,255,255,0.14)",
-            backdropFilter: "blur(18px)",
-            border: "1px solid rgba(255,255,255,0.25)",
-            borderRadius: 24,
-            padding: "28px 18px",
+            position: "fixed",
+            left: 0,
+            top: 0,
+            width: 120,
+            height: "100%",
+            background:
+              "linear-gradient(180deg,#F27A35,#A61E22,#1F5AA6)",
+            opacity: 0.08,
+            clipPath:
+              "polygon(0 0,100% 0,70% 50%,100% 100%,0 100%)",
+          }}
+        />
+
+        {/* RIGHT DECORATION */}
+        <div
+          style={{
+            position: "fixed",
+            right: 0,
+            top: 0,
+            width: 120,
+            height: "100%",
+            background:
+              "linear-gradient(180deg,#1F5AA6,#F27A35,#A61E22)",
+            opacity: 0.08,
+            clipPath:
+              "polygon(30% 0,100% 0,100% 100%,0 100%,30% 50%)",
+          }}
+        />
+
+        {/* HEADER */}
+        <header
+          style={{
+            background: "#fff",
+            borderBottom: "5px solid #F27A35",
+            boxShadow: "0 3px 20px rgba(0,0,0,.08)",
+            position: "relative",
+            overflow: "hidden",
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              right: -80,
+              top: -80,
+              width: 220,
+              height: 220,
+              borderRadius: "50%",
+              background:
+                "conic-gradient(#F27A35,#A61E22,#1F5AA6,#F27A35)",
+              opacity: 0.08,
+            }}
+          />
+
+          <img
+            src="/rstw_2026.jpg"
+            alt="RSTW 2026"
+            style={{
+              width: "100%",
+              display: "block",
+            }}
+          />
+        </header>
+
+        {/* HERO */}
+        <section
+          style={{
             textAlign: "center",
-            boxShadow: "0 20px 50px rgba(0,0,0,0.35)",
-            zIndex: 2,
+            padding: "70px 20px 50px",
           }}
         >
           <h1
             style={{
-              fontSize: "clamp(28px, 7vw, 54px)",
-              color: "white",
+              fontSize: "clamp(48px,8vw,84px)",
+              fontWeight: 900,
               marginBottom: 10,
-              fontWeight: 800,
-              lineHeight: 1.1,
+              background:
+                "linear-gradient(90deg,#F27A35,#A61E22,#1F5AA6)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
             }}
           >
             ISLA-TRANSPO
@@ -294,62 +245,156 @@ export default function HomePage() {
 
           <p
             style={{
-              color: "#E2E8F0",
-              marginBottom: 25,
-              fontSize: 14,
-              lineHeight: 1.5,
+              maxWidth: 700,
+              margin: "auto",
+              color: "#64748B",
+              fontSize: 18,
             }}
           >
-            RSTW Transportation Management System
+            Transportation Management System for Regional Science,
+            Technology and Innovation Week 2026
           </p>
+        </section>
 
+        {/* CARDS */}
+        <section
+          style={{
+            maxWidth: 1100,
+            margin: "0 auto",
+            padding: "20px",
+            display: "grid",
+            gridTemplateColumns:
+              "repeat(auto-fit,minmax(280px,1fr))",
+            gap: 24,
+          }}
+        >
+          <Card
+            title="Transportation Request"
+            text="Submit transportation requests and coordinate travel requirements."
+            buttonText="Request Transportation"
+            onClick={() => router.push("/request")}
+            color="#F27A35"
+          />
+
+          <Card
+            title="Barge Schedule & Trips"
+            text="Check transportation schedules, arrivals, departures and updates."
+            buttonText="View Schedule"
+            onClick={() => router.push("/attendee")}
+            color="#1F5AA6"
+          />
+
+          <Card
+            title="Program of Activities"
+            text="View official activities and event schedules for RSTW 2026."
+            buttonText="Program Activities"
+            onClick={() => router.push("/feedback")}
+            color="#A61E22"
+          />
+        </section>
+
+        {/* EVENT INFO */}
+        <section
+          style={{
+            maxWidth: 1100,
+            margin: "40px auto",
+            padding: "0 20px",
+          }}
+        >
           <div
             style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 12,
+              background: "#fff",
+              borderRadius: 24,
+              padding: 30,
+              boxShadow: "0 10px 25px rgba(0,0,0,.08)",
             }}
           >
-            <button
-              style={buttonStyle}
-              onClick={() => router.push("/request")}
-            >
-              Request Transportation
-            </button>
-
-            <button
-              style={buttonStyle}
-              onClick={() => router.push("/attendee")}
-            >
-              Barge Schedule & Trips
-            </button>
-
-            <button
+            <h2
               style={{
-                ...buttonStyle,
-                background: "linear-gradient(135deg, #1D4ED8, #3B82F6)",
+                color: "#1F2937",
+                marginBottom: 20,
               }}
-              onClick={() => router.push("/feedback")}
             >
-              Program of Activities
-            </button>
+              RSTW 2026 Information
+            </h2>
+
+            <p style={{ color: "#475569", lineHeight: 1.8 }}>
+              Science, Technology and Digital Innovation:
+              Driving Food Security, Sustainable Energy,
+              and National Resilience.
+            </p>
+
+            <p style={{ color: "#475569" }}>
+              📍 General Santos City, South Cotabato
+            </p>
+
+            <p style={{ color: "#475569" }}>
+              📅 November 25–29, 2026
+            </p>
           </div>
-        </div>
+        </section>
       </main>
     </>
   );
 }
 
-const buttonStyle = {
-  width: "100%",
-  padding: "14px",
-  borderRadius: 14,
-  border: "none",
-  background: "linear-gradient(135deg, #0B3D91, #2563EB)",
-  color: "white",
-  fontSize: 15,
-  fontWeight: "bold",
-  cursor: "pointer",
-  minHeight: 48,
-  boxShadow: "0 8px 20px rgba(37,99,235,0.35)",
-};
+function Card({
+  title,
+  text,
+  buttonText,
+  onClick,
+  color,
+}: {
+  title: string;
+  text: string;
+  buttonText: string;
+  onClick: () => void;
+  color: string;
+}) {
+  return (
+    <div
+      style={{
+        background: "#fff",
+        padding: 30,
+        borderRadius: 24,
+        boxShadow: "0 12px 30px rgba(0,0,0,.08)",
+        borderTop: `6px solid ${color}`,
+      }}
+    >
+      <h2
+        style={{
+          marginBottom: 10,
+          color: "#0F172A",
+        }}
+      >
+        {title}
+      </h2>
+
+      <p
+        style={{
+          color: "#64748B",
+          lineHeight: 1.6,
+          marginBottom: 25,
+        }}
+      >
+        {text}
+      </p>
+
+      <button
+        onClick={onClick}
+        style={{
+          width: "100%",
+          padding: 16,
+          border: "none",
+          borderRadius: 16,
+          color: "#fff",
+          fontWeight: 700,
+          cursor: "pointer",
+          background: color,
+        }}
+      >
+        {buttonText}
+      </button>
+    </div>
+  );
+}
