@@ -8,6 +8,7 @@ export default function HomePage() {
 
   const [showModal, setShowModal] = useState(false);
   const [agreed, setAgreed] = useState(false);
+  const [showRSTWWelcome, setShowRSTWWelcome] = useState(false);
 
   useEffect(() => {
     const accepted = sessionStorage.getItem("privacyAccepted");
@@ -139,6 +140,7 @@ export default function HomePage() {
               onClick={() => {
                 sessionStorage.setItem("privacyAccepted", "true");
                 setShowModal(false);
+                setShowRSTWWelcome(true);
               }}
               style={{
                 width: "100%",
@@ -160,6 +162,110 @@ export default function HomePage() {
           </div>
         </div>
       )}
+
+{/* RSTW WELCOME MODAL */}
+{showRSTWWelcome && (
+  <div
+    style={{
+      position: "fixed",
+      inset: 0,
+      background:
+        "linear-gradient(135deg,#001B4D,#003C8F,#0057D9)",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 1000,
+      padding: 20,
+      overflow: "hidden",
+    }}
+  >
+    <div
+      style={{
+        position: "absolute",
+        width: 500,
+        height: 500,
+        background: "#38BDF8",
+        borderRadius: "50%",
+        filter: "blur(160px)",
+        opacity: 0.25,
+      }}
+    />
+
+    <div
+      style={{
+        textAlign: "center",
+        color: "white",
+        maxWidth: 700,
+        zIndex: 2,
+      }}
+    >
+      <h3
+        style={{
+          color: "#FBBF24",
+          letterSpacing: 5,
+          marginBottom: 10,
+        }}
+      >
+        WELCOME TO
+      </h3>
+
+      <h1
+        style={{
+          fontSize: "clamp(42px,8vw,82px)",
+          margin: 0,
+          fontWeight: 900,
+        }}
+      >
+        RSTW 2026
+      </h1>
+
+      <h2
+        style={{
+          marginTop: 10,
+          color: "#E2E8F0",
+        }}
+      >
+        Camiguin Island
+      </h2>
+
+      <p
+        style={{
+          marginTop: 20,
+          color: "#CBD5E1",
+          lineHeight: 1.8,
+        }}
+      >
+        Regional Science, Technology and Innovation Week
+      </p>
+
+      <p
+        style={{
+          color: "#FCD34D",
+          fontWeight: "bold",
+        }}
+      >
+        Building Smart and Sustainable Communities
+      </p>
+
+      <button
+        onClick={() => setShowRSTWWelcome(false)}
+        style={{
+          marginTop: 30,
+          padding: "14px 34px",
+          borderRadius: 50,
+          border: "none",
+          background:
+            "linear-gradient(135deg,#F59E0B,#FBBF24)",
+          color: "#001B4D",
+          fontWeight: "bold",
+          cursor: "pointer",
+        }}
+      >
+        Enter ISLA-TRANSPO →
+      </button>
+    </div>
+  </div>
+)}
 
       {/* MAIN PAGE */}
       <main
