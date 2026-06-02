@@ -139,9 +139,17 @@ export default function HomePage() {
               disabled={!agreed}
               onClick={() => {
                 sessionStorage.setItem("privacyAccepted", "true");
+
+                const seenPoster = sessionStorage.getItem("seenPoster");
+
                 setShowModal(false);
-                setShowRSTWWelcome(true);
+
+                if (!seenPoster) {
+                  sessionStorage.setItem("seenPoster", "true");
+                  setShowRSTWWelcome(true);
+                }
               }}
+              
               style={{
                 width: "100%",
                 marginTop: 22,
@@ -163,14 +171,14 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* RSTW WELCOME MODAL */}
+      {/* RSTW WELCOME POSTER */}
 {showRSTWWelcome && (
   <div
     style={{
       position: "fixed",
       inset: 0,
-      background: "rgba(0,0,0,0.45)",
-      backdropFilter: "blur(6px)",
+      background: "rgba(0,0,0,0.75)",
+      backdropFilter: "blur(8px)",
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
@@ -180,101 +188,54 @@ export default function HomePage() {
   >
     <div
       style={{
+        position: "relative",
         width: "100%",
-        maxWidth: 700,
-        background: "rgba(255,255,255,0.12)",
-        backdropFilter: "blur(20px)",
-        border: "1px solid rgba(255,255,255,0.2)",
-        borderRadius: 32,
-        padding: "40px 30px",
-        textAlign: "center",
-        boxShadow: "0 25px 80px rgba(0,0,0,0.45)",
-        animation: "fadeIn 0.4s ease",
+        maxWidth: 1100,
       }}
     >
-      
-      <div
+      {/* Poster */}
+      <img
+        src="/camiguin_background.png"
+        alt="RSTW 2026 Camiguin"
         style={{
-          fontSize: 50,
-          marginBottom: 10,
+          width: "100%",
+          borderRadius: 24,
+          boxShadow: "0 25px 80px rgba(0,0,0,0.6)",
+          display: "block",
         }}
-      >
-        🌋
-      </div>
+      />
 
-      <h3
-        style={{
-          color: "#FCD34D",
-          letterSpacing: 4,
-          marginBottom: 8,
-          fontSize: 14,
-        }}
-      >
-        WELCOME TO
-      </h3>
-
-      <h1
-        style={{
-          fontSize: "clamp(36px,8vw,72px)",
-          color: "white",
-          margin: 0,
-          fontWeight: 900,
-          lineHeight: 1,
-        }}
-      >
-        RSTW 2026
-      </h1>
-
-      <h2
-        style={{
-          marginTop: 12,
-          color: "#E2E8F0",
-          fontWeight: 500,
-        }}
-      >
-        Camiguin Island
-      </h2>
-
-      <p
-        style={{
-          marginTop: 20,
-          color: "#CBD5E1",
-          lineHeight: 1.8,
-          fontSize: 15,
-        }}
-      >
-        Experience innovation, collaboration, and sustainable development in
-        the Island Born of Fire.
-      </p>
-
-      <div
-        style={{
-          marginTop: 18,
-          color: "#FCD34D",
-          fontWeight: 700,
-          fontSize: 15,
-        }}
-      >
-        July 22–24, 2026
-      </div>
-
+      {/* Enter Button */}
       <button
         onClick={() => setShowRSTWWelcome(false)}
         style={{
-          marginTop: 30,
-          padding: "15px 36px",
+          position: "absolute",
+          bottom: 30,
+          left: "50%",
+          transform: "translateX(-50%)",
+          padding: "16px 42px",
           borderRadius: 50,
           border: "none",
           background:
-            "linear-gradient(135deg,#F59E0B,#FBBF24)",
-          color: "#0B3D91",
+            "linear-gradient(135deg,#0B3D91,#2563EB)",
+          color: "white",
+          fontSize: 16,
           fontWeight: "bold",
-          fontSize: 15,
           cursor: "pointer",
-          boxShadow: "0 10px 30px rgba(245,158,11,0.4)",
+          boxShadow: "0 12px 30px rgba(0,0,0,0.3)",
         }}
       >
         Enter ISLA-TRANSPO →
+      </button>
+
+      {/* Close Button */}
+      <button
+        onClick={() => {
+  sessionStorage.setItem("rstwPosterSeen", "true");
+  setShowRSTWWelcome(false);
+}}
+      >
+        ✕
       </button>
     </div>
   </div>
@@ -294,52 +255,7 @@ export default function HomePage() {
           padding: 16,
           fontFamily: "Segoe UI, sans-serif",
         }}
-> 
-{/* CAMIGUIN OUTLINE */}
-<div
-  style={{
-    position: "absolute",
-    right: "-100px",
-    top: "50%",
-    transform: "translateY(-50%)",
-    width: 500,
-    height: 500,
-    opacity: 0.08,
-    backgroundImage: "url('/camiguin-outline.svg')",
-    backgroundRepeat: "no-repeat",
-    backgroundSize: "contain",
-    pointerEvents: "none",
-  }}
-
-/>
-
-{/* FERRY ROUTE */}
-<div
-  style={{
-    position: "absolute",
-    bottom: 120,
-    width: "100%",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 25,
-    opacity: 0.18,
-    pointerEvents: "none",
-  }}
 >
-  {Array.from({ length: 5 }).map((_, i) => (
-    <div
-      key={i}
-      style={{
-        width: 10,
-        height: 10,
-        borderRadius: "50%",
-        background: "white",
-      }}
-    />
-  ))}
-</div>
-
 <div
   style={{
     position: "absolute",
