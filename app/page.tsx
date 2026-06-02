@@ -8,7 +8,7 @@ export default function HomePage() {
 
   const [showModal, setShowModal] = useState(false);
   const [agreed, setAgreed] = useState(false);
-  const [showRSTWWelcome, setShowRSTWWelcome] = useState(false);
+  
 
   useEffect(() => {
     const accepted = sessionStorage.getItem("privacyAccepted");
@@ -139,16 +139,7 @@ export default function HomePage() {
               disabled={!agreed}
               onClick={() => {
                 sessionStorage.setItem("privacyAccepted", "true");
-
-                const seenPoster = sessionStorage.getItem("seenPoster");
-
                 setShowModal(false);
-
-                if (!seenPoster) {
-                  sessionStorage.setItem("seenPoster", "true");
-                  setShowRSTWWelcome(true);
-                }
-              }}
               
               style={{
                 width: "100%",
@@ -171,21 +162,6 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* RSTW WELCOME POSTER */}
-{showRSTWWelcome && (
-  <div
-    style={{
-      position: "fixed",
-      inset: 0,
-      background: "rgba(0,0,0,0.75)",
-      backdropFilter: "blur(8px)",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      zIndex: 1000,
-      padding: 20,
-    }}
-  >
     <div
       style={{
         position: "relative",
@@ -230,20 +206,48 @@ export default function HomePage() {
 )}
 
             {/* MAIN PAGE */}
-          <main
-        style={{
-          minHeight: "100vh",
-          backgroundImage:
-           "linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.65)), url('/rstw_2026.jpg')",
-          position: "relative",
-          overflow: "hidden",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: 16,
-          fontFamily: "Segoe UI, sans-serif",
-        }}
+ <main
+          style={{
+            minHeight: "100vh",
+            backgroundImage:
+              "linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.65)), url('/camiguin.jpg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            position: "relative",
+            overflow: "hidden",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "flex-end",
+            paddingBottom: "80px",
+            paddingLeft: 16,
+            paddingRight: 16,
+            fontFamily: "Segoe UI, sans-serif",
+          }}
 >
+
+{/* RSTW 2026 HEADER BANNER */}
+<div
+  style={{
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    zIndex: 1,
+  }}
+>
+  <img
+    src="/rstw_2026.jpg"
+    alt="RSTW 2026"
+    style={{
+      width: "100%",
+      height: "220px",
+      objectFit: "cover",
+      display: "block",
+      boxShadow: "0 6px 25px rgba(0,0,0,0.4)",
+    }}
+  />
+</div>
+
 
 <div
   style={{
