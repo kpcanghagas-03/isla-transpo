@@ -231,18 +231,16 @@ export default function HomePage() {
 
             {/* MAIN PAGE */}
           <main
-        style={{
-          minHeight: "100vh",
-          backgroundImage:
-           "linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.65)), url('/camiguin.jpg')",
-          position: "relative",
-          overflow: "hidden",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: 16,
-          fontFamily: "Segoe UI, sans-serif",
-        }}
+         style={{
+    position: "absolute",
+    inset: 0,
+    backgroundImage: "url('/camiguin.jpg')",
+    backgroundSize: "contain",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center center",
+    opacity: 0.35,
+    zIndex: 0,
+  }}
 >
 
 <div
