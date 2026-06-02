@@ -47,11 +47,11 @@ export default function AttendeePage() {
 
   // Fare rates
   const passengerFares = [
-    { type: "Regular", price: "₱330.00", color: "#0B3D91" },
-    { type: "SP / PWD", price: "₱266.00", color: "#1E40AF" },
-    { type: "Senior Citizen", price: "₱235.00", color: "#3B82F6" },
-    { type: "Children (3-11 yrs)", price: "₱165.00", color: "#60A5FA" },
-  ];
+  { type: "Regular", price: "₱330.00", color: "#F27A35" },
+  { type: "SP / PWD", price: "₱266.00", color: "#A61E22" },
+  { type: "Senior Citizen", price: "₱235.00", color: "#1F5AA6" },
+  { type: "Children (3-11 yrs)", price: "₱165.00", color: "#4C9FD6" },
+];
 
   // Vehicle rates
   const vehicleFares = [
@@ -239,8 +239,42 @@ export default function AttendeePage() {
         backgroundAttachment: "fixed",
         padding: 20,
         fontFamily: "Segoe UI, sans-serif",
+        position: "relative",
+        overflow: "hidden",
       }}
     >
+      {/* LEFT DECORATION */}
+<div
+  style={{
+    position: "fixed",
+    left: 0,
+    top: 0,
+    width: 120,
+    height: "100%",
+    background:
+      "linear-gradient(180deg,#F27A35,#A61E22,#1F5AA6)",
+    opacity: 0.08,
+    clipPath:
+      "polygon(0 0,100% 0,70% 50%,100% 100%,0 100%)",
+  }}
+/>
+
+{/* RIGHT DECORATION */}
+<div
+  style={{
+    position: "fixed",
+    right: 0,
+    top: 0,
+    width: 120,
+    height: "100%",
+    background:
+      "linear-gradient(180deg,#1F5AA6,#F27A35,#A61E22)",
+    opacity: 0.08,
+    clipPath:
+      "polygon(30% 0,100% 0,100% 100%,0 100%,30% 50%)",
+  }}
+/>
+
       <div style={{ maxWidth: 1000, margin: "0 auto" }}>
         {/* Back Button */}
         <button
@@ -276,28 +310,33 @@ export default function AttendeePage() {
           }}
         >
           {/* Header Section */}
-          <div style={{ textAlign: "center", marginBottom: 35 }}>
-            <div
+          <div
+            style={{
+              display: "inline-block",
+              background: "linear-gradient(135deg,#F27A35,#A61E22)",
+              borderRadius: 50,
+              padding: "8px 20px",
+              marginBottom: 15,
+            }}
+          >
+            <span
               style={{
-                display: "inline-block",
-                background: "rgba(255,255,255,0.2)",
-                borderRadius: 50,
-                padding: "8px 20px",
-                marginBottom: 15,
+                fontSize: 14,
+                color: "#fff",
+                fontWeight: 600,
               }}
             >
-              <span style={{ fontSize: 14, color: "white", fontWeight: 600 }}>
-                🚢 St. Benedict Ocean Shipping Lines Corporation
-              </span>
-            </div>
-
+              🚢 St. Benedict Ocean Shipping Lines Corporation
+            </span>
+          </div>
             <h1
               style={{
-                color: "white",
+                background:"linear-gradient(90deg,#F27A35,#A61E22,#1F5AA6)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
                 fontSize: "clamp(32px, 6vw, 52px)",
                 fontWeight: "900",
                 marginBottom: 10,
-                textShadow: "0 4px 20px rgba(0,0,0,0.3)",
                 lineHeight: 1.1,
               }}
             >
@@ -306,7 +345,7 @@ export default function AttendeePage() {
 
             <p
               style={{
-                color: "#E2E8F0",
+                color: "#64748B",
                 fontSize: 16,
                 marginBottom: 8,
               }}
@@ -316,7 +355,7 @@ export default function AttendeePage() {
 
             <p
               style={{
-                color: "#CBD5E1",
+                color: "#475569",
                 fontSize: 14,
               }}
             >
@@ -493,12 +532,11 @@ export default function AttendeePage() {
           <div style={{ marginBottom: 10 }}>
             <h2
               style={{
-                color: "white",
+                color: "#1F2937",
                 fontSize: 24,
                 fontWeight: "800",
                 marginBottom: 20,
                 textAlign: "center",
-                textShadow: "0 2px 10px rgba(0,0,0,0.3)",
               }}
             >
               ⏰ Daily Trip Schedules
@@ -511,37 +549,37 @@ export default function AttendeePage() {
                 gap: 20,
               }}
             >
-              <TripCard
-                route="Benoni → Balingoan"
-                trips={benoniToBalingoan}
-                icon="🏝️"
-                gradientFrom="#0B3D91"
-                gradientTo="#1E40AF"
-              />
+             <TripCard
+              route="Benoni → Balingoan"
+              trips={benoniToBalingoan}
+              icon="🏝️"
+              gradientFrom="#F27A35"
+              gradientTo="#A61E22"
+            />
 
-              <TripCard
-                route="Balingoan → Benoni"
-                trips={balingoanToBenoni}
-                icon="⛴️"
-                gradientFrom="#1E40AF"
-                gradientTo="#3B82F6"
-              />
+            <TripCard
+              route="Balingoan → Benoni"
+              trips={balingoanToBenoni}
+              icon="⛴️"
+              gradientFrom="#1F5AA6"
+              gradientTo="#4C9FD6"
+            />
 
-              <TripCard
-                route="Balingoan → Guinsiliban"
-                trips={balingoanToGuinsiliban}
-                icon="🌊"
-                gradientFrom="#059669"
-                gradientTo="#10B981"
-              />
+            <TripCard
+              route="Balingoan → Guinsiliban"
+              trips={balingoanToGuinsiliban}
+              icon="🌊"
+              gradientFrom="#A61E22"
+              gradientTo="#F27A35"
+            />
 
-              <TripCard
-                route="Guinsiliban → Balingoan"
-                trips={guinsilibanToBalingoan}
-                icon="🚤"
-                gradientFrom="#047857"
-                gradientTo="#059669"
-              />
+            <TripCard
+              route="Guinsiliban → Balingoan"
+              trips={guinsilibanToBalingoan}
+              icon="🚤"
+              gradientFrom="#1F5AA6"
+              gradientTo="#A61E22"
+            />
             </div>
           </div>
 
@@ -550,14 +588,15 @@ export default function AttendeePage() {
             style={{
               marginTop: 30,
               textAlign: "center",
-              background: "rgba(255,255,255,0.1)",
+              background: "#FFF7ED",
+              border: "1px solid #FDBA74",
               borderRadius: 16,
               padding: 20,
             }}
           >
             <p
               style={{
-                color: "#E2E8F0",
+                color: "#EA580C",
                 fontSize: 14,
                 marginBottom: 8,
               }}
@@ -566,7 +605,7 @@ export default function AttendeePage() {
             </p>
             <p
               style={{
-                color: "#CBD5E1",
+                color: "#475569",
                 fontSize: 13,
               }}
             >
