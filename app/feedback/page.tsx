@@ -110,7 +110,7 @@ export default function ProgramPage() {
     },
     {
       day: "Day 3",
-      date: "July 23, 2026",
+      date: "July 24, 2026",
       theme: "Competitions & Judging",
       color: "#059669",
       events: [
@@ -162,7 +162,7 @@ export default function ProgramPage() {
     },
     {
       day: "Day 4",
-      date: "July 24, 2026",
+      date: "July 25, 2026",
       theme: "Awarding & Closing",
       color: "#DC2626",
       events: [
@@ -204,17 +204,48 @@ export default function ProgramPage() {
 
   return (
     <main
-      style={{
-        minHeight: "100vh",
-        backgroundImage:
-          "linear-gradient(rgba(0,0,0,0.60), rgba(0,0,0,0.72)), url('/camiguin.jpg')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundAttachment: "fixed",
-        padding: 20,
-        fontFamily: "Segoe UI, sans-serif",
-      }}
-    >
+  style={{
+    minHeight: "100vh",
+    background:
+      "linear-gradient(180deg,#ffffff 0%,#f8fafc 50%,#ffffff 100%)",
+    padding: 20,
+    fontFamily: "Segoe UI, sans-serif",
+    position: "relative",
+    overflow: "hidden",
+  }}
+>
+      {/* LEFT DECORATION */}
+<div
+  style={{
+    position: "fixed",
+    left: 0,
+    top: 0,
+    width: 120,
+    height: "100%",
+    background:
+      "linear-gradient(180deg,#F27A35,#A61E22,#1F5AA6)",
+    opacity: 0.08,
+    clipPath:
+      "polygon(0 0,100% 0,70% 50%,100% 100%,0 100%)",
+  }}
+/>
+
+{/* RIGHT DECORATION */}
+<div
+  style={{
+    position: "fixed",
+    right: 0,
+    top: 0,
+    width: 120,
+    height: "100%",
+    background:
+      "linear-gradient(180deg,#1F5AA6,#F27A35,#A61E22)",
+    opacity: 0.08,
+    clipPath:
+      "polygon(30% 0,100% 0,100% 100%,0 100%,30% 50%)",
+  }}
+/>
+
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         {/* Back Button */}
         <button
@@ -241,51 +272,55 @@ export default function ProgramPage() {
         {/* MAIN GLASS CONTAINER */}
         <div
           style={{
-            background: "rgba(255,255,255,0.12)",
-            backdropFilter: "blur(20px)",
-            borderRadius: 30,
-            padding: "40px 30px",
-            border: "1px solid rgba(255,255,255,0.2)",
-            boxShadow: "0 25px 60px rgba(0,0,0,0.35)",
-          }}
+          background: "#ffffff",
+          borderRadius: 30,
+          padding: "40px 35px",
+          border: "1px solid #E2E8F0",
+          boxShadow: "0 25px 60px rgba(0,0,0,0.12)",
+        }}
         >
           {/* Header */}
           <div
             style={{
-              textAlign: "center",
-              marginBottom: 40,
+              display: "inline-block",
+              background:
+                "linear-gradient(135deg,#F27A35,#A61E22)",
+              borderRadius: 50,
+              padding: "10px 24px",
+              marginBottom: 18,
+              boxShadow: "0 8px 20px rgba(166,30,34,0.25)",
             }}
           >
-            <div
+            <span
               style={{
-                display: "inline-block",
-                background: "rgba(255,255,255,0.18)",
-                borderRadius: 50,
-                padding: "10px 24px",
-                marginBottom: 18,
+                fontSize: 14,
+                color: "#fff",
+                fontWeight: 700,
               }}
             >
-              <span style={{ fontSize: 14, color: "white", fontWeight: 700 }}>
-                📅 July 23–24, 2026 | Camiguin Island
-              </span>
-            </div>
+              📅 July 23–24, 2026 | Camiguin Island
+            </span>
+          </div>
 
             <h1
-              style={{
-                color: "white",
-                fontSize: "clamp(36px, 7vw, 60px)",
-                fontWeight: "900",
-                marginBottom: 12,
-                textShadow: "0 4px 20px rgba(0,0,0,0.4)",
-                lineHeight: 1.1,
-              }}
-            >
-              Program of Activities
+            style={{
+              background:
+                "linear-gradient(90deg,#F27A35,#A61E22,#1F5AA6)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              fontSize: "clamp(36px, 7vw, 60px)",
+              fontWeight: "900",
+              marginBottom: 12,
+              lineHeight: 1.1,
+            }}
+          >
+            Program of Activities
+          </h1>
             </h1>
 
             <p
               style={{
-                color: "#E2E8F0",
+                color: "#64748B",
                 fontSize: 18,
                 maxWidth: 650,
                 margin: "0 auto",
@@ -313,16 +348,16 @@ export default function ProgramPage() {
                 key={index}
                 href={`#${day.day.toLowerCase().replace(" ", "-")}`}
                 style={{
-                  background: "rgba(255,255,255,0.15)",
+                  background: "#ffffff",
                   backdropFilter: "blur(10px)",
-                  color: "white",
+                  color: "#1F5AA6",
                   padding: "12px 22px",
                   borderRadius: 50,
                   fontWeight: 700,
                   fontSize: 14,
                   textDecoration: "none",
-                  border: "1px solid rgba(255,255,255,0.15)",
-                  boxShadow: "0 4px 15px rgba(0,0,0,0.2)",
+                  border: "1px solid #E2E8F0",
+                  boxShadow: "0 4px 15px rgba(0,0,0,0.08)",
                 }}
               >
                 {day.day}
@@ -343,7 +378,12 @@ export default function ProgramPage() {
               {/* Day Header */}
               <div
                 style={{
-                  background: `linear-gradient(135deg, ${dayData.color}, ${dayData.color}cc)`,
+                  background:
+                dayIndex % 3 === 0
+                  ? "linear-gradient(135deg,#F27A35,#A61E22)"
+                  : dayIndex % 3 === 1
+                  ? "linear-gradient(135deg,#1F5AA6,#4C9FD6)"
+                  : "linear-gradient(135deg,#A61E22,#F27A35)",
                   borderRadius: "24px 24px 0 0",
                   padding: "24px 28px",
                   display: "flex",
@@ -417,11 +457,12 @@ export default function ProgramPage() {
                         eventIndex < dayData.events.length - 1
                           ? "1px solid #F1F5F9"
                           : "none",
-                      background: event.highlight
-                        ? `${dayData.color}08`
-                        : "transparent",
+                       background:
+                        event.highlight
+                          ? "#FFF7ED"
+                          : "#FFFFFF",
                       borderLeft: event.highlight
-                        ? `5px solid ${dayData.color}`
+                      ? "5px solid #F27A35"
                         : "5px solid transparent",
                     }}
                   >
@@ -529,7 +570,7 @@ export default function ProgramPage() {
           >
             <h3
               style={{
-                color: "#0B3D91",
+                color: "#1F5AA6",
                 fontSize: 22,
                 fontWeight: 900,
                 marginBottom: 22,
@@ -617,14 +658,14 @@ export default function ProgramPage() {
             style={{
               marginTop: 30,
               textAlign: "center",
-              background: "rgba(255,255,255,0.1)",
+              background: "#FFF7ED",
               borderRadius: 16,
               padding: 20,
             }}
           >
             <p
               style={{
-                color: "#E2E8F0",
+                color: "#EA580C",
                 fontSize: 14,
                 marginBottom: 8,
               }}
@@ -635,7 +676,7 @@ export default function ProgramPage() {
 
             <p
               style={{
-                color: "#CBD5E1",
+                color: "#475569",
                 fontSize: 13,
                 margin: 0,
               }}
@@ -649,7 +690,7 @@ export default function ProgramPage() {
         <p
           style={{
             textAlign: "center",
-            color: "rgba(255,255,255,0.7)",
+            color: "#64748B",
             fontSize: 13,
             marginTop: 20,
             paddingBottom: 20,
