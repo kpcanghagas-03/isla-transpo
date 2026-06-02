@@ -216,17 +216,132 @@ export default function HomePage() {
             src="/rstw_2026.jpg"
             alt="RSTW 2026"
             style={{
-              width: "100%",
+              width: "80%",
               display: "block",
             }}
           />
         </header>
+
+            {/* RSTW BACKGROUND DESIGN */}
+<div
+  style={{
+    position: "absolute",
+    inset: 0,
+    overflow: "hidden",
+    pointerEvents: "none",
+    zIndex: 0,
+  }}
+></div>
+
+<div
+  style={{
+    position: "absolute",
+    top: -80,
+    right: -80,
+    width: 320,
+    height: 320,
+    borderRadius: "50%",
+    background:
+      "conic-gradient(#F27A35,#A61E22,#1F5AA6,#F27A35)",
+    opacity: 0.08,
+  }}
+/>
+
+<div
+  style={{
+    position: "absolute",
+    bottom: -120,
+    left: -120,
+    width: 350,
+    height: 350,
+    borderRadius: "50%",
+    background:
+      "conic-gradient(#1F5AA6,#F27A35,#A61E22,#1F5AA6)",
+    opacity: 0.08,
+  }}
+/>
+
+<div
+  style={{
+    position: "absolute",
+    top: 220,
+    left: 80,
+    width: 120,
+    height: 120,
+    borderRadius: "0 100% 0 0",
+    background: "#F27A35",
+    opacity: 0.12,
+  }}
+/>
+
+<div
+  style={{
+    position: "absolute",
+    top: 380,
+    right: 120,
+    width: 140,
+    height: 140,
+    borderRadius: "100% 0 0 0",
+    background: "#1F5AA6",
+    opacity: 0.12,
+  }}
+/>
+
+<div
+  style={{
+    position: "absolute",
+    top: 150,
+    right: 250,
+    width: 90,
+    height: 90,
+    border: "8px solid #A61E22",
+    transform: "rotate(45deg)",
+    opacity: 0.1,
+  }}
+/>
+
+<div
+  style={{
+    position: "absolute",
+    bottom: 180,
+    left: 220,
+    width: 70,
+    height: 70,
+    border: "6px solid #1F5AA6",
+    transform: "rotate(45deg)",
+    opacity: 0.1,
+  }}
+/>
+
+{[...Array(12)].map((_, i) => (
+  <div
+    key={i}
+    style={{
+      position: "absolute",
+      width: 10,
+      height: 10,
+      borderRadius: "50%",
+      background:
+        i % 3 === 0
+          ? "#F27A35"
+          : i % 3 === 1
+          ? "#A61E22"
+          : "#1F5AA6",
+      top: `${120 + i * 60}px`,
+      right: `${40 + (i % 4) * 25}px`,
+      opacity: 0.18,
+    }}
+  />
+))}
+
 
         {/* HERO */}
         <section
           style={{
             textAlign: "center",
             padding: "70px 20px 50px",
+            position: "relative",
+            zIndex: 2,
           }}
         >
           <h1
@@ -240,7 +355,9 @@ export default function HomePage() {
               WebkitTextFillColor: "transparent",
             }}
           >
-            ISLA-TRANSPO
+            <span style={{ color: "#1F5AA6" }}>ISLA</span>
+            <span style={{ color: "#F27A35" }}>-</span>
+            <span style={{ color: "#A61E22" }}>TRANSPO</span>
           </h1>
 
           <p
@@ -255,17 +372,37 @@ export default function HomePage() {
             Technology and Innovation Week 2026
           </p>
         </section>
+            <div
+              style={{
+                maxWidth: 1100,
+                margin: "0 auto 40px",
+                padding: "20px 30px",
+                background:
+                  "linear-gradient(90deg,#1F5AA6,#4C9FD6)",
+                color: "#fff",
+                borderRadius: 20,
+                position: "relative",
+                zIndex: 2,
+              }}
+            >
+              Welcome to the official transportation management system for
+              Regional Science, Technology and Innovation Week 2026.
+            </div>
 
         {/* CARDS */}
         <section
           style={{
             maxWidth: 1100,
+            background:"linear-gradient(180deg,#ffffff,#fafafa)",
+            transition: "all 0.3s ease",
             margin: "0 auto",
             padding: "20px",
             display: "grid",
             gridTemplateColumns:
               "repeat(auto-fit,minmax(280px,1fr))",
             gap: 24,
+            position: "relative",
+            zIndex: 2,
           }}
         >
           <Card
@@ -299,6 +436,8 @@ export default function HomePage() {
             maxWidth: 1100,
             margin: "40px auto",
             padding: "0 20px",
+            position: "relative",
+            zIndex: 2,
           }}
         >
           <div
@@ -325,11 +464,11 @@ export default function HomePage() {
             </p>
 
             <p style={{ color: "#475569" }}>
-              📍 General Santos City, South Cotabato
+              📍 Camiguin Island
             </p>
 
             <p style={{ color: "#475569" }}>
-              📅 November 25–29, 2026
+              📅 July 22-24, 2026
             </p>
           </div>
         </section>
