@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 
+
 export default function AttendeePage() {
   const router = useRouter();
 
@@ -310,59 +311,61 @@ export default function AttendeePage() {
           }}
         >
           {/* Header Section */}
-          <div
-            style={{
-              display: "inline-block",
-              background: "linear-gradient(135deg,#F27A35,#A61E22)",
-              borderRadius: 50,
-              padding: "8px 20px",
-              marginBottom: 15,
-            }}
-          >
-            <span
-              style={{
-                fontSize: 14,
-                color: "#fff",
-                fontWeight: 600,
-              }}
-            >
-              🚢 St. Benedict Ocean Shipping Lines Corporation
-            </span>
-          </div>
-            <h1
-              style={{
-                background:"linear-gradient(90deg,#F27A35,#A61E22,#1F5AA6)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                fontSize: "clamp(32px, 6vw, 52px)",
-                fontWeight: "900",
-                marginBottom: 10,
-                lineHeight: 1.1,
-              }}
-            >
-              Barge Schedule & Trips
-            </h1>
+          {/* Header Section */}
+<div style={{ textAlign: "center", marginBottom: 35 }}>
+  <div
+    style={{
+      display: "inline-block",
+      background: "linear-gradient(135deg,#F27A35,#A61E22)",
+      borderRadius: 50,
+      padding: "8px 20px",
+      marginBottom: 15,
+    }}
+  >
+    <span
+      style={{
+        fontSize: 14,
+        color: "#fff",
+        fontWeight: 600,
+      }}
+    >
+      🚢 St. Benedict Ocean Shipping Lines Corporation
+    </span>
+  </div>
 
-            <p
-              style={{
-                color: "#64748B",
-                fontSize: 16,
-                marginBottom: 8,
-              }}
-            >
-              Camiguin Ferry Timetable for RSTW Participants
-            </p>
+  <h1
+    style={{
+      background: "linear-gradient(90deg,#F27A35,#A61E22,#1F5AA6)",
+      WebkitBackgroundClip: "text",
+      WebkitTextFillColor: "transparent",
+      fontSize: "clamp(32px, 6vw, 52px)",
+      fontWeight: "900",
+      marginBottom: 10,
+      lineHeight: 1.1,
+    }}
+  >
+    Barge Schedule & Trips
+  </h1>
 
-            <p
-              style={{
-                color: "#475569",
-                fontSize: 14,
-              }}
-            >
-              📞 0956 638 7141 | 📍 Benoni, Mahinog, Camiguin
-            </p>
-          </div>
+  <p
+    style={{
+      color: "#64748B",
+      fontSize: 16,
+      marginBottom: 8,
+    }}
+  >
+    Camiguin Ferry Timetable for RSTW Participants
+  </p>
 
+  <p
+    style={{
+      color: "#475569",
+      fontSize: 14,
+    }}
+  >
+    📞 0956 638 7141 | 📍 Benoni, Mahinog, Camiguin
+  </p>
+</div>
           {/* PASSENGER FARE RATES */}
           <div
             style={{
@@ -630,3 +633,4 @@ export default function AttendeePage() {
     </main>
   );
 }
+
