@@ -232,7 +232,7 @@ export default function HomePage() {
             {/* MAIN PAGE */}
           <main
         style={{
-          minHeight: "80vh",
+          minHeight: "100vh",
           backgroundImage:
            "linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.65)), url('/camiguin.jpg')",
           position: "relative",
