@@ -166,7 +166,7 @@ export default function HomePage() {
         style={{
           minHeight: "100vh",
           backgroundImage:
-            "linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.65)), url('/rstw_background.png')",
+            "linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.65)), url('/cam_background.png')",
           backgroundSize: "cover",
           backgroundPosition: "center",
           display: "flex",
