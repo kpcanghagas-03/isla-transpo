@@ -198,10 +198,11 @@ export default function HomePage() {
         src="/cam_background.png"
         alt="RSTW 2026 Camiguin"
         style={{
-          width: "50%",
+          width: "100%",
           borderRadius: 24,
           boxShadow: "0 25px 80px rgba(0,0,0,0.6)",
           display: "block",
+          margin: "0 auto",
         }}
       />
 
@@ -209,11 +210,10 @@ export default function HomePage() {
       <button
         onClick={() => setShowRSTWWelcome(false)}
         style={{
-          position: "absolute",
-          bottom: 30,
-          left: "50%",
-          transform: "translateX(-50%)",
-          padding: "16px 42px",
+          marginTop: 20,
+          width: "100%",
+          maxWidth: 320,
+          padding: "16px",
           borderRadius: 50,
           border: "none",
           background:
@@ -222,7 +222,6 @@ export default function HomePage() {
           fontSize: 16,
           fontWeight: "bold",
           cursor: "pointer",
-          boxShadow: "0 12px 30px rgba(0,0,0,0.3)",
         }}
       >
         Enter ISLA-TRANSPO →
