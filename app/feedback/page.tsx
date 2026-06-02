@@ -204,16 +204,16 @@ export default function ProgramPage() {
 
   return (
     <main
-  style={{
-    minHeight: "100vh",
-    background:
-      "linear-gradient(180deg,#ffffff 0%,#f8fafc 50%,#ffffff 100%)",
-    padding: 20,
-    fontFamily: "Segoe UI, sans-serif",
-    position: "relative",
-    overflow: "hidden",
-  }}
->
+      style={{
+        minHeight: "100vh",
+        background:
+          "linear-gradient(180deg,#ffffff 0%,#f8fafc 50%,#ffffff 100%)",
+        padding: 20,
+        fontFamily: "Segoe UI, sans-serif",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
       {/* LEFT DECORATION */}
 <div
   style={{
@@ -231,20 +231,20 @@ export default function ProgramPage() {
 />
 
 {/* RIGHT DECORATION */}
-<div
-  style={{
-    position: "fixed",
-    right: 0,
-    top: 0,
-    width: 120,
-    height: "100%",
-    background:
-      "linear-gradient(180deg,#1F5AA6,#F27A35,#A61E22)",
-    opacity: 0.08,
-    clipPath:
-      "polygon(30% 0,100% 0,100% 100%,0 100%,30% 50%)",
-  }}
-/>
+      <div
+        style={{
+          position: "fixed",
+          right: 0,
+          top: 0,
+          width: 120,
+          height: "100%",
+          background:
+            "linear-gradient(180deg,#1F5AA6,#F27A35,#A61E22)",
+          opacity: 0.08,
+          clipPath:
+            "polygon(30% 0,100% 0,100% 100%,0 100%,30% 50%)",
+        }}
+      />
 
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         {/* Back Button */}
@@ -279,56 +279,64 @@ export default function ProgramPage() {
           boxShadow: "0 25px 60px rgba(0,0,0,0.12)",
         }}
         >
-          {/* Header */}
-          <div
-            style={{
-              display: "inline-block",
-              background:
-                "linear-gradient(135deg,#F27A35,#A61E22)",
-              borderRadius: 50,
-              padding: "10px 24px",
-              marginBottom: 18,
-              boxShadow: "0 8px 20px rgba(166,30,34,0.25)",
-            }}
-          >
-            <span
-              style={{
-                fontSize: 14,
-                color: "#fff",
-                fontWeight: 700,
-              }}
-            >
-              📅 July 23–24, 2026 | Camiguin Island
-            </span>
-          </div>
+         {/* Header */}
+<div
+  style={{
+    textAlign: "center",
+    marginBottom: 40,
+  }}
+>
+  <div
+    style={{
+      display: "inline-block",
+      background:
+        "linear-gradient(135deg,#F27A35,#A61E22)",
+      borderRadius: 50,
+      padding: "10px 24px",
+      marginBottom: 18,
+      boxShadow: "0 8px 20px rgba(166,30,34,0.25)",
+    }}
+  >
+    <span
+      style={{
+        fontSize: 14,
+        color: "#fff",
+        fontWeight: 700,
+      }}
+    >
+      📅 July 23–24, 2026 | Camiguin Island
+    </span>
+  </div>
 
-            <h1
-            style={{
-              background:
-                "linear-gradient(90deg,#F27A35,#A61E22,#1F5AA6)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              fontSize: "clamp(36px, 7vw, 60px)",
-              fontWeight: "900",
-              marginBottom: 12,
-              lineHeight: 1.1,
-            }}
-          >
-            Program of Activities
-            <p
-              style={{
-                color: "#64748B",
-                fontSize: 18,
-                maxWidth: 650,
-                margin: "0 auto",
-                lineHeight: 1.6,
-              }}
-            >
-              Explore the complete lineup of events, exhibits, workshops,
-              competitions, and celebrations for the Regional Science &
-              Technology Week 2026.
-            </p>
-          </div>
+  <h1
+    style={{
+      background:
+        "linear-gradient(90deg,#F27A35,#A61E22,#1F5AA6)",
+      WebkitBackgroundClip: "text",
+      WebkitTextFillColor: "transparent",
+      fontSize: "clamp(36px, 7vw, 60px)",
+      fontWeight: "900",
+      marginBottom: 12,
+      lineHeight: 1.1,
+    }}
+  >
+    Program of Activities
+  </h1>
+
+  <p
+    style={{
+      color: "#64748B",
+      fontSize: 18,
+      maxWidth: 650,
+      margin: "0 auto",
+      lineHeight: 1.6,
+    }}
+  >
+    Explore the complete lineup of events, exhibits,
+    workshops, competitions, and celebrations for the
+    Regional Science & Technology Week 2026.
+  </p>
+</div>
 
           {/* Navigation Pills */}
           <div
