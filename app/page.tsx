@@ -178,16 +178,6 @@ export default function HomePage() {
             objectFit: "contain",
           }}
         />
-
-        <img
-          src="/bp_logo.png"
-          alt="BP Logo"
-          style={{
-            width: 140,
-            height: "auto",
-            objectFit: "contain",
-          }}
-        />
 </div>
         {/* LEFT DECORATION */}
         <div
