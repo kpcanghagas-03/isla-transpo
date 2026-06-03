@@ -166,7 +166,7 @@ export default function HomePage() {
     zIndex: 20,
     display: "flex",
     alignItems: "center", // important fix
-    gap: 12,
+    gap: 10,
   }}
 >
   <img
@@ -183,7 +183,7 @@ export default function HomePage() {
     src="/dost-normin.png"
     alt="DOST Logo"
     style={{
-      width: 210,
+      width: 180,
       height: 90, // force same height alignment
       objectFit: "contain",
     }}
