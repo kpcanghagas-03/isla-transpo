@@ -166,7 +166,7 @@ export default function HomePage() {
     zIndex: 20,
     display: "flex",
     alignItems: "center", // important fix
-    gap: 8,
+    gap: 5,
   }}
 >
   <img
