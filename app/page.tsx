@@ -165,6 +165,8 @@ export default function HomePage() {
     top: -70,
     left: 20,
     zIndex: 10,
+    alignItems: "center",
+    gap: 12,
   }}
 >
   <img
@@ -176,6 +178,16 @@ export default function HomePage() {
     objectFit: "contain",
   }}
 />
+
+ <img
+    src="/BP_logo.png"
+    alt="BP Logo"
+    style={{
+      width: 200,
+      height: 200,
+      objectFit: "contain",
+    }}
+  />
 </div>
         {/* LEFT DECORATION */}
         <div
