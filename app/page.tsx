@@ -162,7 +162,7 @@ export default function HomePage() {
 <div
   style={{
     position: "absolute",
-    top: 1,
+    top: 0,
     left: 20,
     zIndex: 10,
   }}
