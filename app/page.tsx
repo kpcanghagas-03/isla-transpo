@@ -183,7 +183,7 @@ export default function HomePage() {
     src="/dost-normin.png"
     alt="DOST Logo"
     style={{
-      width: 180,
+      width: 210,
       height: 90, // force same height alignment
       objectFit: "contain",
     }}
