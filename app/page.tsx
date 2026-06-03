@@ -162,7 +162,7 @@ export default function HomePage() {
 <div
   style={{
     position: "absolute",
-    top: 20,
+    top: 10,
     left: 20,
     zIndex: 10,
   }}
@@ -171,8 +171,8 @@ export default function HomePage() {
   src="/dost-normin.png"
   alt="DOST Logo"
   style={{
-    width: 130,
-    height: 130,
+    width: 200,
+    height: 200,
     objectFit: "contain",
   }}
 />
