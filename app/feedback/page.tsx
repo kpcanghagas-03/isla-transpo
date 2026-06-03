@@ -314,7 +314,7 @@ export default function ProgramPage() {
         "linear-gradient(90deg,#F27A35,#A61E22,#1F5AA6)",
       WebkitBackgroundClip: "text",
       WebkitTextFillColor: "transparent",
-      fontSize: "clamp(36px, 7vw, 60px)",
+      fontSize: "clamp(30px, 7vw, 60px)",
       fontWeight: "850",
       marginBottom: 12,
       lineHeight: 1.1,
@@ -327,7 +327,7 @@ export default function ProgramPage() {
     style={{
       color: "#64748B",
       fontSize: 16,
-      maxWidth: 800,
+      maxWidth: 600,
       margin: "0 auto",
       lineHeight: 1.6,
     }}
