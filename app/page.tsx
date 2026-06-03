@@ -162,7 +162,7 @@ export default function HomePage() {
 <div
   style={{
     position: "fixed",
-    top: -10,
+    top: -80,
     left: 20,
     zIndex: 10,
   }}
