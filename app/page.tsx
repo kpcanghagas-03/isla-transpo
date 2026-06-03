@@ -328,10 +328,10 @@ export default function HomePage() {
 
           <p
             style={{
-              maxWidth: 700,
+              maxWidth: 800,
               margin: "auto",
               color: "#64748B",
-              fontSize: 18,
+              fontSize: 16,
             }}
           >
             Transportation Management System for Regional Science,Technology and Innovation Week 2026
