@@ -471,55 +471,91 @@ export default function HomePage() {
           </div>
         </section>
 
-        <footer
+       <footer
   style={{
-    marginTop: 60,
-    padding: "40px 20px",
-    background: "#fff",
-    borderTop: "4px solid #F27A35",
+    marginTop: 80,
+    padding: "50px 20px",
+    background: "linear-gradient(180deg, #ffffff, #f8fafc)",
+    borderTop: "5px solid #F27A35",
     position: "relative",
     zIndex: 2,
   }}
 >
+  {/* HEADER TEXT */}
   <div
     style={{
       textAlign: "center",
-      marginBottom: 25,
+      marginBottom: 30,
     }}
   >
     <h2
       style={{
         color: "#1F5AA6",
-        marginBottom: 10,
+        marginBottom: 8,
+        fontSize: 22,
+        fontWeight: 800,
       }}
     >
       Regional Science, Technology and Innovation Week 2026
     </h2>
 
-    <p
-      style={{
-        color: "#64748B",
-      }}
-    >
-      Official Event Branding
+    <p style={{ color: "#64748B", fontSize: 14 }}>
+      Official Transportation Management System
     </p>
   </div>
 
+  {/* CONTENT GRID */}
   <div
     style={{
-      maxWidth: 900,
+      maxWidth: 1100,
       margin: "0 auto",
+      display: "grid",
+      gridTemplateColumns: "1fr 1fr",
+      gap: 30,
+      alignItems: "center",
     }}
   >
-    <img
-      src="/rstw_2026.jpg"
-      alt="RSTW 2026 Poster"
-      style={{
-        width: "100%",
-        borderRadius: 24,
-        boxShadow: "0 15px 40px rgba(0,0,0,.12)",
-      }}
-    />
+    {/* LEFT TEXT */}
+    <div>
+      <h3 style={{ color: "#0F172A", marginBottom: 10 }}>
+        About This System
+      </h3>
+
+      <p style={{ color: "#64748B", lineHeight: 1.7, fontSize: 14 }}>
+        This platform is developed to manage transportation requests,
+        scheduling, and coordination for RSTW 2026. It ensures smooth
+        mobility and organized travel operations for all participants.
+      </p>
+
+      <p style={{ color: "#64748B", fontSize: 13, marginTop: 10 }}>
+        📍 Camiguin Island • 📅 July 22–24, 2026
+      </p>
+    </div>
+
+    {/* RIGHT IMAGE */}
+    <div>
+      <img
+        src="/rstw_2026.jpg"
+        alt="RSTW 2026 Banner"
+        style={{
+          width: "100%",
+          borderRadius: 18,
+          boxShadow: "0 10px 30px rgba(0,0,0,0.12)",
+        }}
+      />
+    </div>
+  </div>
+
+  {/* BOTTOM LINE */}
+  <div
+    style={{
+      marginTop: 40,
+      textAlign: "center",
+      fontSize: 12,
+      color: "#94A3B8",
+    }}
+  >
+    © 2026 ISLA-TRANSPO | Developed for RSTW Transportation System
   </div>
 </footer>
       </main>
