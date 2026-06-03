@@ -180,14 +180,15 @@ export default function HomePage() {
   />
 
   <img
-    src="/bp_logo.png"
-    alt="bp_Logo"
-    style={{
-      width: 150,
-      height: 150,
-      objectFit: "contain",
-    }}
-  />
+  src="/bp_logo.png"
+  alt="BP Logo"
+  style={{
+    width: 150,
+    height: 150,
+    objectFit: "contain",
+    border: "3px solid red",
+  }}
+/>
 </div>
         {/* LEFT DECORATION */}
         <div
