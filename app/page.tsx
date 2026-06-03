@@ -173,7 +173,7 @@ export default function HomePage() {
     src="/bp_logo.png"
     alt="BP Logo"
     style={{
-      width: 90,
+      width: 80,
       height: 90,
       objectFit: "contain",
     }}
@@ -183,7 +183,7 @@ export default function HomePage() {
     src="/dost-normin.png"
     alt="DOST Logo"
     style={{
-      width: 140,
+      width: 180,
       height: 90, // force same height alignment
       objectFit: "contain",
     }}
