@@ -166,14 +166,14 @@ export default function HomePage() {
     zIndex: 20,
     display: "flex",
     alignItems: "center", // important fix
-    gap: 10,
+    gap: 8,
   }}
 >
   <img
     src="/bp_logo.png"
     alt="BP Logo"
     style={{
-      width: 70,
+      width: 60,
       height: 90,
       objectFit: "contain",
     }}
@@ -183,7 +183,7 @@ export default function HomePage() {
     src="/dost-normin.png"
     alt="DOST Logo"
     style={{
-      width: 180,
+      width: 190,
       height: 90, // force same height alignment
       objectFit: "contain",
     }}
