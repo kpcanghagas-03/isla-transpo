@@ -156,7 +156,7 @@ export default function HomePage() {
           overflow: "hidden",
         }}
       >
-        {/* DOST Logo - Upper Left */}
+      
 {/* DOST Logo - Upper Left */}
 <div
   style={{
@@ -167,7 +167,7 @@ export default function HomePage() {
   }}
 >
   <img
-    src="/dost-logo.png"
+    src="/dost-normin.png"
     alt="DOST Logo"
     style={{
       width: 110,
