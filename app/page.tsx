@@ -161,12 +161,12 @@ export default function HomePage() {
         <div
         style={{
           position: "absolute",
-          top: -10,
+          top: -30,
           left: 15,
           zIndex: 20,
           display: "flex",
           alignItems: "flex-end",
-          gap: 12,
+          gap: 10,
         }}
       >
         <img
