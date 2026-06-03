@@ -527,7 +527,7 @@ export default function HomePage() {
       src="/rstw_2026.jpg"
       alt="RSTW Banner"
       style={{
-        width: 220,
+        width: 300,
         height: 80,
         objectFit: "cover",
         borderRadius: 10,
