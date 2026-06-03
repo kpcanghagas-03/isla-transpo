@@ -157,47 +157,37 @@ export default function HomePage() {
         }}
       >
       
-{/* DOST Logo - Upper Left */}
-
+{/* Logos - Upper Left */}
 <div
   style={{
     position: "absolute",
-    top: -70,
+    top: -40,
     left: 20,
     zIndex: 10,
+    display: "flex-end",
     alignItems: "center",
-    gap: 12,
+    gap: 15,
   }}
 >
   <img
-  src="/dost-normin.png"
-  alt="DOST Logo"
-  style={{
-    width: 200,
-    height: 200,
-    objectFit: "contain",
-  }}
-/>
-<div
-  style={{
-    position: "absolute",
-    top: -70,
-    left: 20,
-    zIndex: 10,
-    alignItems: "center",
-    gap: 12,
-  }}  
-  >
- <img
-    src="/BP_logo.png"
-    alt="BP Logo"
+    src="/dost-normin.png"
+    alt="DOST Logo"
+    style={{
+      width: 200,
+      height: 200,
+      objectFit: "contain",
+    }}
+  />
+
+  <img
+    src="/bp_logo.png"
+    alt="bp Logo"
     style={{
       width: 150,
       height: 150,
       objectFit: "contain",
     }}
   />
-  </div>
 </div>
         {/* LEFT DECORATION */}
         <div
