@@ -163,7 +163,7 @@ export default function HomePage() {
   style={{
     position: "absolute",
     top: 10,
-    left: 20,
+    left: 5,
     zIndex: 10,
   }}
 >
