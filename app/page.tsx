@@ -156,6 +156,30 @@ export default function HomePage() {
           overflow: "hidden",
         }}
       >
+        {/* DOST Logo - Upper Left */}
+{/* DOST Logo - Upper Left */}
+<div
+  style={{
+    position: "absolute",
+    top: 20,
+    left: 20,
+    zIndex: 10,
+  }}
+>
+  <img
+    src="/dost-logo.png"
+    alt="DOST Logo"
+    style={{
+      width: 110,
+      height: 110,
+      objectFit: "contain",
+      background: "#fff",
+      padding: 10,
+      borderRadius: 18,
+      boxShadow: "0 10px 25px rgba(0,0,0,.08)",
+    }}
+  />
+</div>
         {/* LEFT DECORATION */}
         <div
           style={{
