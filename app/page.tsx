@@ -174,7 +174,7 @@ export default function HomePage() {
     alt="BP Logo"
     style={{
       width: 50,
-      top: 0,
+      top: 10,
       height: "auto",
       objectFit: "contain",
     }}
