@@ -173,7 +173,7 @@ export default function HomePage() {
     src="/bp_logo.png"
     alt="BP Logo"
     style={{
-      width: 80,
+      width: 70,
       height: 90,
       objectFit: "contain",
     }}
