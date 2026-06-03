@@ -171,6 +171,15 @@ export default function HomePage() {
     gap: 15,
   }}
 >
+   <img
+    src="/bp_logo.png"
+    alt="BP Logo"
+    style={{
+      width: 140,
+      height: "auto",
+      objectFit: "contain",
+    }}
+  />
   <img
     src="/dost-normin.png"
     alt="DOST Logo"
@@ -181,15 +190,6 @@ export default function HomePage() {
     }}
   />
 
-  <img
-    src="/bp_logo.png"
-    alt="BP Logo"
-    style={{
-      width: 140,
-      height: "auto",
-      objectFit: "contain",
-    }}
-  />
 </div>
         {/* LEFT DECORATION */}
         <div
