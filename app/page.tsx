@@ -528,7 +528,7 @@ export default function HomePage() {
       alt="RSTW Banner"
       style={{
         width: 500,
-        height: 80,
+        height: 100,
         objectFit: "cover",
         borderRadius: 30,
         boxShadow: "0 6px 18px rgba(0,0,0,0.12)",
