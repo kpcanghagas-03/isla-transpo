@@ -156,8 +156,6 @@ export default function HomePage() {
           overflow: "hidden",
         }}
       >
-      
-{/* Logos - Upper Left */}
 
 {/* Logos - Upper Left */}
 <div
