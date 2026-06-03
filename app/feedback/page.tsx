@@ -315,7 +315,7 @@ export default function ProgramPage() {
       WebkitBackgroundClip: "text",
       WebkitTextFillColor: "transparent",
       fontSize: "clamp(36px, 7vw, 60px)",
-      fontWeight: "900",
+      fontWeight: "850",
       marginBottom: 12,
       lineHeight: 1.1,
     }}
@@ -326,8 +326,8 @@ export default function ProgramPage() {
   <p
     style={{
       color: "#64748B",
-      fontSize: 18,
-      maxWidth: 650,
+      fontSize: 16,
+      maxWidth: 800,
       margin: "0 auto",
       lineHeight: 1.6,
     }}
