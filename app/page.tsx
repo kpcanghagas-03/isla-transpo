@@ -473,89 +473,79 @@ export default function HomePage() {
 
        <footer
   style={{
-    marginTop: 80,
-    padding: "50px 20px",
+    marginTop: 60,
+    padding: "25px 20px",
     background: "linear-gradient(180deg, #ffffff, #f8fafc)",
-    borderTop: "5px solid #F27A35",
+    borderTop: "4px solid #F27A35",
     position: "relative",
     zIndex: 2,
   }}
 >
-  {/* HEADER TEXT */}
-  <div
-    style={{
-      textAlign: "center",
-      marginBottom: 30,
-    }}
-  >
+  {/* TITLE */}
+  <div style={{ textAlign: "center", marginBottom: 15 }}>
     <h2
       style={{
         color: "#1F5AA6",
-        marginBottom: 8,
-        fontSize: 22,
-        fontWeight: 800,
+        marginBottom: 4,
+        fontSize: 18,
+        fontWeight: 700,
       }}
     >
-      Regional Science, Technology and Innovation Week 2026
+      RSTW 2026 Transportation System
     </h2>
 
-    <p style={{ color: "#64748B", fontSize: 14 }}>
-      Official Transportation Management System
+    <p style={{ color: "#64748B", fontSize: 12 }}>
+      Official ISLA-TRANSPO Platform
     </p>
   </div>
 
-  {/* CONTENT GRID */}
+  {/* CONTENT (compact row layout) */}
   <div
     style={{
-      maxWidth: 1100,
+      maxWidth: 1000,
       margin: "0 auto",
-      display: "grid",
-      gridTemplateColumns: "1fr 1fr",
-      gap: 30,
+      display: "flex",
+      gap: 20,
       alignItems: "center",
+      justifyContent: "space-between",
+      flexWrap: "wrap",
     }}
   >
-    {/* LEFT TEXT */}
-    <div>
-      <h3 style={{ color: "#0F172A", marginBottom: 10 }}>
-        About This System
-      </h3>
-
-      <p style={{ color: "#64748B", lineHeight: 1.7, fontSize: 14 }}>
-        This platform is developed to manage transportation requests,
-        scheduling, and coordination for RSTW 2026. It ensures smooth
-        mobility and organized travel operations for all participants.
+    {/* TEXT */}
+    <div style={{ flex: 1, minWidth: 260 }}>
+      <p style={{ color: "#475569", fontSize: 13, lineHeight: 1.5, margin: 0 }}>
+        Manages transportation requests, scheduling, and coordination for RSTW 2026.
       </p>
 
-      <p style={{ color: "#64748B", fontSize: 13, marginTop: 10 }}>
+      <p style={{ color: "#64748B", fontSize: 12, marginTop: 8 }}>
         📍 Camiguin Island • 📅 July 22–24, 2026
       </p>
     </div>
 
-    {/* RIGHT IMAGE */}
-    <div>
-      <img
-        src="/rstw_2026.jpg"
-        alt="RSTW 2026 Banner"
-        style={{
-          width: "100%",
-          borderRadius: 18,
-          boxShadow: "0 10px 30px rgba(0,0,0,0.12)",
-        }}
-      />
-    </div>
+    {/* IMAGE */}
+    <img
+      src="/rstw_2026.jpg"
+      alt="RSTW Banner"
+      style={{
+        width: 220,
+        height: 80,
+        objectFit: "cover",
+        borderRadius: 10,
+        boxShadow: "0 6px 18px rgba(0,0,0,0.12)",
+      }}
+    />
   </div>
 
   {/* BOTTOM LINE */}
   <div
     style={{
-      marginTop: 40,
+      marginTop: 18,
       textAlign: "center",
-      fontSize: 12,
+      fontSize: 11,
       color: "#94A3B8",
     }}
   >
-    © 2026 ISLA-TRANSPO | Developed for RSTW Transportation System
+    © 2026 ISLA-TRANSPO | RSTW Official System
   </div>
 </footer>
       </main>
