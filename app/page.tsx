@@ -161,8 +161,8 @@ export default function HomePage() {
         <div
         style={{
           position: "absolute",
-          top: 10,
-          left: 10,
+          top: -80,
+          left: 15,
           zIndex: 20,
           display: "flex",
           alignItems: "flex-end",
@@ -173,7 +173,7 @@ export default function HomePage() {
           src="/dost-normin.png"
           alt="DOST Logo"
           style={{
-            width: 180,
+            width: 200,
             height: "auto",
             objectFit: "contain",
           }}
