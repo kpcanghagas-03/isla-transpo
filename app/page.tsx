@@ -181,7 +181,7 @@ export default function HomePage() {
 
   <img
     src="/bp_logo.png"
-    alt="bp Logo"
+    alt="bp_Logo"
     style={{
       width: 150,
       height: 150,
