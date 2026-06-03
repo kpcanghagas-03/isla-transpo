@@ -166,9 +166,18 @@ export default function HomePage() {
           zIndex: 20,
           display: "flex",
           alignItems: "flex-end",
-          gap: 15,
+          gap: 12,
         }}
       >
+        <img
+    src="/bp_logo.png"
+    alt="BP Logo"
+    style={{
+      width: 80,
+      height: "auto",
+      objectFit: "contain",
+    }}
+  />
         <img
           src="/dost-normin.png"
           alt="DOST Logo"
