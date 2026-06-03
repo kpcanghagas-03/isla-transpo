@@ -530,7 +530,7 @@ export default function HomePage() {
         width: 500,
         height: 80,
         objectFit: "cover",
-        borderRadius: 10,
+        borderRadius: 30,
         boxShadow: "0 6px 18px rgba(0,0,0,0.12)",
       }}
     />
