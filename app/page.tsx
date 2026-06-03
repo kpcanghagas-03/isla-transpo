@@ -158,6 +158,7 @@ export default function HomePage() {
       >
       
 {/* DOST Logo - Upper Left */}
+
 <div
   style={{
     position: "absolute",
@@ -167,18 +168,14 @@ export default function HomePage() {
   }}
 >
   <img
-    src="/dost-normin.png"
-    alt="DOST Logo"
-    style={{
-      width: 110,
-      height: 110,
-      objectFit: "contain",
-      background: "#fff",
-      padding: 10,
-      borderRadius: 18,
-      boxShadow: "0 10px 25px rgba(0,0,0,.08)",
-    }}
-  />
+  src="/dost-normin.png"
+  alt="DOST Logo"
+  style={{
+    width: 130,
+    height: 130,
+    objectFit: "contain",
+  }}
+/>
 </div>
         {/* LEFT DECORATION */}
         <div
