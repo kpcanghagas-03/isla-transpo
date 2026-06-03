@@ -471,178 +471,81 @@ export default function HomePage() {
           </div>
         </section>
 
-      <footer
+       <footer
   style={{
     marginTop: 60,
-    padding: "40px 20px",
-    position: "relative",
-    overflow: "hidden",
-    background: "linear-gradient(180deg,#ffffff,#f8fafc)",
+    padding: "25px 20px",
+    background: "linear-gradient(180deg, #ffffff, #f8fafc)",
     borderTop: "4px solid #F27A35",
+    position: "relative",
     zIndex: 2,
   }}
 >
-  {/* REUSE SAME GEOMETRIC STYLE AS HEADER */}
-
-  <div
-    style={{
-      position: "absolute",
-      top: -80,
-      right: -80,
-      width: 320,
-      height: 320,
-      borderRadius: "50%",
-      background:
-        "conic-gradient(#F27A35,#A61E22,#1F5AA6,#F27A35)",
-      opacity: 0.08,
-    }}
-  />
-
-  <div
-    style={{
-      position: "absolute",
-      bottom: -120,
-      left: -120,
-      width: 350,
-      height: 350,
-      borderRadius: "50%",
-      background:
-        "conic-gradient(#1F5AA6,#F27A35,#A61E22,#1F5AA6)",
-      opacity: 0.08,
-    }}
-  />
-
-  <div
-    style={{
-      position: "absolute",
-      top: 60,
-      left: 80,
-      width: 120,
-      height: 120,
-      borderRadius: "0 100% 0 0",
-      background: "#F27A35",
-      opacity: 0.12,
-    }}
-  />
-
-  <div
-    style={{
-      position: "absolute",
-      bottom: 80,
-      right: 120,
-      width: 140,
-      height: 140,
-      borderRadius: "100% 0 0 0",
-      background: "#1F5AA6",
-      opacity: 0.12,
-    }}
-  />
-
-  <div
-    style={{
-      position: "absolute",
-      top: 40,
-      right: 200,
-      width: 90,
-      height: 90,
-      border: "8px solid #A61E22",
-      transform: "rotate(45deg)",
-      opacity: 0.1,
-    }}
-  />
-
-  <div
-    style={{
-      position: "absolute",
-      bottom: 120,
-      left: 200,
-      width: 70,
-      height: 70,
-      border: "6px solid #1F5AA6",
-      transform: "rotate(45deg)",
-      opacity: 0.1,
-    }}
-  />
-
-  {/* DOTS (same pattern) */}
-  {[...Array(12)].map((_, i) => (
-    <div
-      key={i}
+  {/* TITLE */}
+  <div style={{ textAlign: "center", marginBottom: 15 }}>
+    <h2
       style={{
-        position: "absolute",
-        width: 10,
-        height: 10,
-        borderRadius: "50%",
-        background:
-          i % 3 === 0
-            ? "#F27A35"
-            : i % 3 === 1
-            ? "#A61E22"
-            : "#1F5AA6",
-        top: `${80 + i * 35}px`,
-        right: `${40 + (i % 4) * 30}px`,
-        opacity: 0.18,
+        color: "#1F5AA6",
+        marginBottom: 4,
+        fontSize: 18,
+        fontWeight: 700,
       }}
-    />
-  ))}
+    >
+      RSTW 2026 Transportation System
+    </h2>
 
-  {/* CONTENT */}
-  <div style={{ position: "relative", zIndex: 2 }}>
-    <div style={{ textAlign: "center", marginBottom: 20 }}>
-      <h2 style={{ color: "#1F5AA6", marginBottom: 8 }}>
-        RSTW 2026 Transportation System
-      </h2>
+    <p style={{ color: "#64748B", fontSize: 12 }}>
+      Official ISLA-TRANSPO Platform
+    </p>
+  </div>
 
-      <p style={{ color: "#64748B", fontSize: 13 }}>
-        Official ISLA-TRANSPO Platform
+  {/* CONTENT (compact row layout) */}
+  <div
+    style={{
+      maxWidth: 1000,
+      margin: "0 auto",
+      display: "flex",
+      gap: 20,
+      alignItems: "center",
+      justifyContent: "space-between",
+      flexWrap: "wrap",
+    }}
+  >
+    {/* TEXT */}
+    <div style={{ flex: 1, minWidth: 260 }}>
+      <p style={{ color: "#475569", fontSize: 13, lineHeight: 1.5, margin: 0 }}>
+        Manages transportation requests, scheduling, and coordination for RSTW 2026.
+      </p>
+
+      <p style={{ color: "#64748B", fontSize: 12, marginTop: 8 }}>
+        📍 Camiguin Island • 📅 July 22–24, 2026
       </p>
     </div>
 
-    <div
+    {/* IMAGE */}
+    <img
+      src="/rstw_2026.jpg"
+      alt="RSTW Banner"
       style={{
-        maxWidth: 1000,
-        margin: "0 auto",
-        display: "flex",
-        gap: 20,
-        alignItems: "center",
-        justifyContent: "space-between",
-        flexWrap: "wrap",
+        width: 500,
+        height: 80,
+        objectFit: "cover",
+        borderRadius: 10,
+        boxShadow: "0 6px 18px rgba(0,0,0,0.12)",
       }}
-    >
-      <div style={{ flex: 1, minWidth: 250 }}>
-        <p style={{ color: "#475569", fontSize: 13, margin: 0 }}>
-          Transportation coordination system for RSTW 2026. Ensuring smooth
-          scheduling, request handling, and mobility management.
-        </p>
+    />
+  </div>
 
-        <p style={{ color: "#64748B", fontSize: 12, marginTop: 10 }}>
-          📍 Camiguin Island • 📅 July 22–24, 2026
-        </p>
-      </div>
-
-      <img
-        src="/rstw_2026.jpg"
-        alt="RSTW Banner"
-        style={{
-          width: 220,
-          height: 85,
-          objectFit: "cover",
-          borderRadius: 12,
-          boxShadow: "0 10px 25px rgba(0,0,0,0.12)",
-        }}
-      />
-    </div>
-
-    <div
-      style={{
-        marginTop: 25,
-        textAlign: "center",
-        fontSize: 11,
-        color: "#94A3B8",
-      }}
-    >
-      © 2026 ISLA-TRANSPO | RSTW Official System
-    </div>
+  {/* BOTTOM LINE */}
+  <div
+    style={{
+      marginTop: 18,
+      textAlign: "center",
+      fontSize: 11,
+      color: "#94A3B8",
+    }}
+  >
+    © 2026 ISLA-TRANSPO | RSTW Official System
   </div>
 </footer>
       </main>
