@@ -161,7 +161,7 @@ export default function HomePage() {
         <div
         style={{
           position: "absolute",
-          top: 0,
+          top: -10,
           left: 15,
           zIndex: 20,
           display: "flex",
@@ -174,7 +174,6 @@ export default function HomePage() {
     alt="BP Logo"
     style={{
       width: 70,
-      top: -10,
       height: "auto",
       objectFit: "contain",
     }}
