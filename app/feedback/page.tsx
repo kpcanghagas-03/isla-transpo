@@ -326,19 +326,15 @@ const keySites = [
       <div
         key={index}
         style={{
-          background: "#fff",
-          borderRadius: 24,
-          padding: 24,
-          boxShadow:
-            "0 10px 25px rgba(0,0,0,0.08)",
-          border: venue.featured
-          ? "2px solid #F27A35"
-          : "1px solid #E2E8F0",
-
-        background: venue.featured
-          ? "#FFF7ED"
-          : "#FFFFFF",
-                }}
+            background: venue.featured ? "#FFF7ED" : "#FFFFFF",
+            borderRadius: 24,
+            padding: 24,
+            boxShadow:
+              "0 10px 25px rgba(0,0,0,0.08)",
+            border: venue.featured
+              ? "2px solid #F27A35"
+              : "1px solid #E2E8F0",
+          }}
       >
         <div
           style={{
