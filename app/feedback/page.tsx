@@ -69,7 +69,9 @@ const keySites = [
 
 export default function AccomodationPage() {
   const router = useRouter();
-  const [selectedVenue, setSelectedVenue] = useState(null);
+  const [selectedVenue, setSelectedVenue] = useState<
+    (typeof activityVenues)[number] | null
+  >(null);
 
 
   return (
@@ -398,7 +400,9 @@ export default function AccomodationPage() {
     {activityVenues.map((venue, index) => (
      <div
   key={index}
-  onClick={() => setSelectedVenue(venue)}
+  onClick={() => setSelectedVenue(
+    venue
+  )}
   style={{
     background: venue.featured ? "#FFF7ED" : "#FFFFFF",
 
