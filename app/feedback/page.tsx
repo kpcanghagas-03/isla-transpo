@@ -182,7 +182,7 @@ const venues = [
       WebkitBackgroundClip: "text",
       WebkitTextFillColor: "transparent",
       fontSize: "clamp(30px, 7vw, 60px)",
-      fontWeight: "850",
+      fontWeight: "600",
       marginBottom: 12,
       lineHeight: 1.1,
     }}
