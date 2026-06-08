@@ -1,5 +1,6 @@
 "use client";
 
+import React, { FC } from "react";
 import { useRouter } from "next/navigation";
 
 
@@ -68,7 +69,15 @@ export default function AttendeePage() {
     { type: "Pick-up / Van / SUV", price: "₱2,224.00" },
   ];
 
-  const TripCard = ({ route, trips, icon, gradientFrom, gradientTo }) => (
+  interface TripCardProps {
+    route: string;
+    trips: { time: string; vessel: string; arrival: string }[];
+    icon: React.ReactNode;
+    gradientFrom: string;
+    gradientTo: string;
+  }
+
+  const TripCard: FC<TripCardProps> = ({ route, trips, icon, gradientFrom, gradientTo }) => (
   <div
     style={{
       background: "white",
