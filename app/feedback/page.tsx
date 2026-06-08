@@ -348,33 +348,41 @@ export default function AccomodationPage() {
 {/* Activity Venues */}
 
 <div style={{ marginBottom: 50 }}>
-  <h2
+   <div>
+  <div
     style={{
-      color: "#1F5AA6",
-      fontSize: 32,
-      fontWeight: 900,
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      flexWrap: "wrap",
       marginBottom: 25,
     }}
   >
-    <div
-  style={{
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    flexWrap: "wrap",
-    marginBottom: 25,
-  }}
->
-  <h2
-    style={{
-      color: "#1F5AA6",
-      fontSize: 32,
-      fontWeight: 900,
-      margin: 0,
-    }}
-  >
-    🎯 Activity Venues
-  </h2>
+    <h2
+      style={{
+        color: "#1F5AA6",
+        fontSize: 32,
+        fontWeight: 900,
+        margin: 0,
+      }}
+    >
+      🎯 Activity Venues
+    </h2>
+
+    <span
+      style={{
+        background: "linear-gradient(135deg,#F27A35,#A61E22)",
+        color: "white",
+        padding: "8px 14px",
+        borderRadius: 999,
+        fontSize: 13,
+        fontWeight: 700,
+      }}
+    >
+      ⭐ Main Venue: Convention Center
+    </span>
+  </div>
+</div>
 
   <span
     style={{
@@ -757,7 +765,7 @@ export default function AccomodationPage() {
             </div>
           </div>
 
-              {selectedVenue && (
+             {selectedVenue && (
   <div
     onClick={() => setSelectedVenue(null)}
     style={{
@@ -838,7 +846,7 @@ export default function AccomodationPage() {
       </div>
     </div>
   </div>
-
+)}
 
           {/* Bottom Footer */}
           <div
