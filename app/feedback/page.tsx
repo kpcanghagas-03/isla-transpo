@@ -1,9 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-
-export default function AccomodationPage() {
-  const router = useRouter();
+import { useState } from "react";
 
 const activityVenues = [
   {
@@ -68,6 +66,11 @@ const keySites = [
     icon: "🔬",
   },
 ];
+
+export default function AccomodationPage() {
+  const router = useRouter();
+  const [selectedVenue, setSelectedVenue] = useState(null);
+
 
   return (
     <main
@@ -174,6 +177,41 @@ const keySites = [
       🏨 Check Accommodation & Venue Here
     </span>
   </div>
+
+  <div
+  style={{
+    display: "flex",
+    gap: 10,
+    flexWrap: "wrap",
+    justifyContent: "center",
+    marginBottom: 30,
+  }}
+>
+  {[
+    "Accommodations",
+    "Activity Venues",
+    "Transportation Hubs",
+    "Key Sites",
+  ].map((item, i) => (
+    <button
+      key={i}
+      onClick={() =>
+        document.getElementById(item)?.scrollIntoView({
+          behavior: "smooth",
+        })
+      }
+      style={{
+        padding: "8px 14px",
+        borderRadius: 999,
+        border: "1px solid #E2E8F0",
+        background: "#fff",
+        cursor: "pointer",
+      }}
+    >
+      {item}
+    </button>
+  ))}
+</div>
 
   <h1
     style={{
@@ -363,19 +401,27 @@ const keySites = [
     }}
   >
     {activityVenues.map((venue, index) => (
-      <div
-        key={index}
-        style={{
-            background: venue.featured ? "#FFF7ED" : "#FFFFFF",
-            borderRadius: 24,
-            padding: 24,
-            boxShadow:
-              "0 10px 25px rgba(0,0,0,0.08)",
-            border: venue.featured
-              ? "2px solid #F27A35"
-              : "1px solid #E2E8F0",
-          }}
-      >
+     <div
+  key={index}
+  onClick={() => setSelectedVenue(venue)}
+  style={{
+    background: venue.featured ? "#FFF7ED" : "#FFFFFF",
+    borderRadius: 24,
+    padding: 24,
+    boxShadow: "0 10px 25px rgba(0,0,0,0.08)",
+    border: venue.featured
+      ? "2px solid #F27A35"
+      : "1px solid #E2E8F0",
+    cursor: "pointer",
+    transition: "0.2s ease",
+  }}
+  onMouseEnter={(e) =>
+    (e.currentTarget.style.transform = "translateY(-4px)")
+  }
+  onMouseLeave={(e) =>
+    (e.currentTarget.style.transform = "translateY(0px)")
+  }
+>
         <div
           style={{
             fontSize: 40,
@@ -711,6 +757,89 @@ const keySites = [
             </div>
           </div>
 
+              {selectedVenue && (
+  <div
+    onClick={() => setSelectedVenue(null)}
+    style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+      background: "rgba(0,0,0,0.5)",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 9999,
+    }}
+  >
+    <div
+      onClick={(e) => e.stopPropagation()}
+      style={{
+        background: "#fff",
+        padding: 30,
+        borderRadius: 20,
+        width: "90%",
+        maxWidth: 500,
+        boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
+      }}
+    >
+      <div style={{ fontSize: 40 }}>{selectedVenue.icon}</div>
+
+      <h2 style={{ color: "#1F5AA6" }}>
+        {selectedVenue.name}
+      </h2>
+
+      <p style={{ color: "#64748B", lineHeight: 1.6 }}>
+        {selectedVenue.description}
+      </p>
+
+      <span
+        style={{
+          display: "inline-block",
+          marginTop: 10,
+          background: "#EFF6FF",
+          color: "#1F5AA6",
+          padding: "6px 12px",
+          borderRadius: 999,
+          fontSize: 12,
+        }}
+      >
+        {selectedVenue.type}
+      </span>
+
+      <div style={{ marginTop: 20, display: "flex", gap: 10 }}>
+        <a
+          href={`https://www.google.com/maps/search/?api=1&query=${selectedVenue.name}`}
+          target="_blank"
+          style={{
+            background: "#F27A35",
+            color: "#fff",
+            padding: "10px 14px",
+            borderRadius: 10,
+            textDecoration: "none",
+          }}
+        >
+          Open in Maps
+        </a>
+
+        <button
+          onClick={() => setSelectedVenue(null)}
+          style={{
+            padding: "10px 14px",
+            borderRadius: 10,
+            border: "1px solid #E2E8F0",
+            background: "#fff",
+            cursor: "pointer",
+          }}
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+
           {/* Bottom Footer */}
           <div
             style={{
@@ -743,6 +872,8 @@ const keySites = [
             </p>
           </div>
         </div>
+
+
 
         {/* Footer */}
         <p
