@@ -68,166 +68,100 @@ export default function AttendeePage() {
     { type: "Pick-up / Van / SUV", price: "₱2,224.00" },
   ];
 
-  const TripCard = ({
-    route,
-    trips,
-    icon,
-    gradientFrom,
-    gradientTo,
-  }: {
-    route: string;
-    trips: { time: string; vessel: string; arrival: string }[];
-    icon: string;
-    gradientFrom: string;
-    gradientTo: string;
-  }) => (
+  const TripCard = ({ route, trips, icon, gradientFrom, gradientTo }) => (
+  <div
+    style={{
+      background: "white",
+      borderRadius: 18,
+      overflow: "hidden",
+      boxShadow: "0 10px 35px rgba(0,0,0,0.12)",
+      marginBottom: 18,
+    }}
+  >
+    {/* Header */}
     <div
       style={{
-        background: "white",
-        borderRadius: 20,
-        overflow: "hidden",
-        boxShadow: "0 10px 40px rgba(0,0,0,0.12)",
-        marginBottom: 20,
-      }}
-    >
-      {/* Header */}
-      <div
-        style={{
-          background: `linear-gradient(135deg, ${gradientFrom}, ${gradientTo})`,
-          padding: "18px 20px",
-          display: "flex",
-          alignItems: "center",
-          gap: 12,
-        }}
-      >
-        <span style={{ fontSize: 28 }}>{icon}</span>
-        <h2
-          style={{
-            color: "white",
-            fontSize: 18,
-            fontWeight: "800",
-            margin: 0,
-            textShadow: "0 2px 4px rgba(0,0,0,0.2)",
-          }}
-        >
-          {route}
-        </h2>
-      </div>
-
-      {/* Table Header */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr 1fr",
-          gap: 8,
-          padding: "14px 20px",
-          background: "#F8FAFC",
-          borderBottom: "2px solid #E2E8F0",
-        }}
-      >
-        <span
-          style={{
-            fontSize: 11,
-            fontWeight: 700,
-            color: "#64748B",
-            textTransform: "uppercase",
-            letterSpacing: "0.5px",
-          }}
-        >
-          🕐 Departure
-        </span>
-        <span
-          style={{
-            fontSize: 11,
-            fontWeight: 700,
-            color: "#64748B",
-            textTransform: "uppercase",
-            letterSpacing: "0.5px",
-          }}
-        >
-          🚢 Vessel
-        </span>
-        <span
-          style={{
-            fontSize: 11,
-            fontWeight: 700,
-            color: "#64748B",
-            textTransform: "uppercase",
-            letterSpacing: "0.5px",
-          }}
-        >
-          📍 Arrival
-        </span>
-      </div>
-
-     {/* Trip Rows */}
-<div style={{ padding: "0 20px" }}>
-  {trips.map((trip, index) => (
-    <div
-      key={index}
-      style={{
+        background: `linear-gradient(135deg, ${gradientFrom}, ${gradientTo})`,
+        padding: "16px 18px",
         display: "flex",
-        justifyContent: "space-between",
+        alignItems: "center",
         gap: 10,
-        padding: "14px 0",
-        borderBottom:
-          index < trips.length - 1 ? "1px solid #F1F5F9" : "none",
-        flexWrap: "wrap", // 👈 key for mobile
       }}
     >
-      {/* Departure */}
-      <div style={{ minWidth: "30%" }}>
-        <p style={{ color: "#64748B", fontSize: 11, margin: 0 }}>
-          Departure
-        </p>
-        <p style={{ color: "#0F172A", fontSize: 15, fontWeight: 700, margin: 0 }}>
-          {trip.time}
-        </p>
-      </div>
-
-      {/* Vessel */}
-      <div style={{ minWidth: "30%" }}>
-        <p style={{ color: "#64748B", fontSize: 11, margin: 0 }}>
-          Vessel
-        </p>
-        <p style={{ color: "#475569", fontSize: 14, fontWeight: 600, margin: 0, wordBreak: "break-word"}}>
-          {trip.vessel}
-        </p>
-      </div>
-
-      {/* Arrival */}
-      <div style={{ minWidth: "30%" }}>
-        <p style={{ color: "#64748B", fontSize: 11, margin: 0 }}>
-          Arrival
-        </p>
-        <p style={{ color: "#0F172A", fontSize: 15, fontWeight: 700, margin: 0 }}>
-          {trip.arrival}
-        </p>
-      </div>
-    </div>
-  ))}
-</div>
-
-      {/* Trip Count Badge */}
-      <div
+      <span style={{ fontSize: 26 }}>{icon}</span>
+      <h2
         style={{
-          padding: "12px 20px",
-          background: "#F8FAFC",
-          borderTop: "1px solid #E2E8F0",
+          color: "white",
+          fontSize: 16,
+          fontWeight: 800,
+          margin: 0,
         }}
       >
-        <span
+        {route}
+      </h2>
+    </div>
+
+    {/* Cards Stack */}
+    <div style={{ padding: 14 }}>
+      {trips.map((trip, index) => (
+        <div
+          key={index}
           style={{
-            fontSize: 12,
-            color: "#64748B",
-            fontWeight: 600,
+            background: "#F8FAFC",
+            border: "1px solid #E2E8F0",
+            borderRadius: 14,
+            padding: 12,
+            marginBottom: index === trips.length - 1 ? 0 : 10,
           }}
         >
-          {trips.length} daily trips available
-        </span>
-      </div>
+          {/* Top Row */}
+          <div style={{ marginBottom: 6 }}>
+            <p style={{ fontSize: 11, color: "#64748B", margin: 0 }}>
+              Departure
+            </p>
+            <p style={{ fontSize: 15, fontWeight: 700, margin: 0, color: "#0F172A" }}>
+              🕐 {trip.time}
+            </p>
+          </div>
+
+          {/* Middle Row */}
+          <div style={{ marginBottom: 6 }}>
+            <p style={{ fontSize: 11, color: "#64748B", margin: 0 }}>
+              Vessel
+            </p>
+            <p style={{ fontSize: 14, fontWeight: 600, margin: 0, color: "#475569" }}>
+              🚢 {trip.vessel}
+            </p>
+          </div>
+
+          {/* Bottom Row */}
+          <div>
+            <p style={{ fontSize: 11, color: "#64748B", margin: 0 }}>
+              Arrival
+            </p>
+            <p style={{ fontSize: 15, fontWeight: 700, margin: 0, color: "#0F172A" }}>
+              📍 {trip.arrival}
+            </p>
+          </div>
+        </div>
+      ))}
     </div>
-  );
+
+    {/* Footer */}
+    <div
+      style={{
+        padding: "10px 14px",
+        background: "#F8FAFC",
+        borderTop: "1px solid #E2E8F0",
+        fontSize: 12,
+        color: "#64748B",
+        fontWeight: 600,
+      }}
+    >
+      {trips.length} trips available
+    </div>
+  </div>
+);
 
   return (
     <main
@@ -407,8 +341,8 @@ export default function AttendeePage() {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-                gap: 14,
+                gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+                gap: 16,
               }}
             >
               {passengerFares.map((fare, index) => (
@@ -490,8 +424,8 @@ export default function AttendeePage() {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-                gap: 12,
+                gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+                gap: 16,
               }}
             >
               {vehicleFares.map((fare, index) => (
@@ -547,8 +481,8 @@ export default function AttendeePage() {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-                gap: 20,
+                gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+                gap: 16,
               }}
             >
              <TripCard
