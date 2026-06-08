@@ -171,7 +171,7 @@ const venues = [
         fontWeight: 700,
       }}
     >
-      🏨 RSTW 2026 Accommodation Directory
+      🏨 Check Accommodation & Venue Here
     </span>
   </div>
 
@@ -187,7 +187,7 @@ const venues = [
       lineHeight: 1.1,
     }}
   >
-    RSTW Camiguin Venue Directory
+    Accommodation & Venue Directory
   </h1>
 
   <p
@@ -199,7 +199,7 @@ const venues = [
       lineHeight: 1.6,
     }}
   >
-    View activity venues, key locations, transportation hubs, and important event sites for the Regional Science and Technology Week 2026 in Camiguin.
+    View activity venues, key locations, transportation hubs, and important event sites.
   </p>
 </div>
 
