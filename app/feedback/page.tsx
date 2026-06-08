@@ -252,7 +252,7 @@ export default function AccomodationPage() {
                 style={{
                   padding: "8px 12px",
                   borderRadius: 999,
-                  border: "1px solid #E2E8F0",
+                  border: "1px solid #334155",
                   background: "#fff",
                   fontSize: 12,
                   fontWeight: 600,
@@ -364,7 +364,7 @@ export default function AccomodationPage() {
                     {v.name}
                   </h3>
 
-                  <p style={{ fontSize: 13,color: "#0B3D91" }}>
+                  <p style={{ fontSize: 13,color: "#334155" }}>
                     {v.description}
                   </p>
                 </div>
@@ -384,7 +384,7 @@ export default function AccomodationPage() {
                   key={i}
                   style={{
                     padding: 14,
-                    border: "1px solid #E2E8F0",
+                    border: "1px solid #334155",
                     borderRadius: 12,
                     marginBottom: 8,
                     fontSize: 14,
@@ -410,6 +410,7 @@ export default function AccomodationPage() {
                   padding: 12,
                   fontSize: 14,
                   fontWeight: 600,
+                  color: "#334155",
                 }}
               >
                 {k.icon} {k.name}
@@ -429,6 +430,7 @@ export default function AccomodationPage() {
                 justifyContent: "center",
                 alignItems: "center",
                 padding: 16,
+                color: "#334155",
               }}
             >
               <div
@@ -442,7 +444,7 @@ export default function AccomodationPage() {
                 }}
               >
                 <h2 style={{ color: "#1F5AA6" }}>{selectedVenue.name}</h2>
-                <p style={{ color: "#1E293B", fontSize: 14 }}>
+                <p style={{ color: "#334155", fontSize: 14 }}>
                   {selectedVenue.description}
                 </p>
 
@@ -508,10 +510,16 @@ export default function AccomodationPage() {
         {selectedHotel.name}
       </h2>
 
-      <p><b>💰 Rate:</b> {selectedHotel.rate}</p>
-      <p><b>👥 Capacity:</b> {selectedHotel.capacity}</p>
-      <p><b>📍 Distance:</b> {selectedHotel.distance}</p>
-      <p>
+      <p style={{ color: "#334155" }}>
+        <b>💰 Rate:</b> {selectedHotel.rate}
+      </p>
+      <p style={{ color: "#334155" }}>
+        <b>👥 Capacity:</b> {selectedHotel.capacity}
+      </p>
+      <p style={{ color: "#334155" }}>
+        <b>📍 Distance:</b> {selectedHotel.distance}
+      </p>
+      <p style={{ color: "#334155" }}>
         <b>✨ Amenities:</b>{" "}
         {selectedHotel.amenities.join(", ")}
       </p>
