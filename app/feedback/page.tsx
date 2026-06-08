@@ -75,7 +75,7 @@ export default function AccomodationPage() {
   };
 
   // 🔥 GLOBAL TEXT STYLE FIX (THIS FIXES YOUR BLUR ISSUE)
-  const textBase = {
+  const textBase: CSSProperties = {
     WebkitFontSmoothing: "antialiased",
     MozOsxFontSmoothing: "grayscale",
     textRendering: "optimizeLegibility",
