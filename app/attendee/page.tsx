@@ -160,54 +160,53 @@ export default function AttendeePage() {
         </span>
       </div>
 
-      {/* Trip Rows */}
-      <div style={{ padding: "0 20px" }}>
-        {trips.map((trip, index) => (
-          <div
-            key={index}
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr 1fr",
-              gap: 8,
-              padding: "14px 0",
-              borderBottom:
-                index < trips.length - 1 ? "1px solid #F1F5F9" : "none",
-              transition: "background 0.2s",
-            }}
-          >
-            <p
-              style={{
-                color: "#0F172A",
-                fontSize: 15,
-                fontWeight: "700",
-                margin: 0,
-              }}
-            >
-              {trip.time}
-            </p>
-            <p
-              style={{
-                color: "#475569",
-                fontSize: 14,
-                fontWeight: "600",
-                margin: 0,
-              }}
-            >
-              {trip.vessel}
-            </p>
-            <p
-              style={{
-                color: "#0F172A",
-                fontSize: 15,
-                fontWeight: "700",
-                margin: 0,
-              }}
-            >
-              {trip.arrival}
-            </p>
-          </div>
-        ))}
+     {/* Trip Rows */}
+<div style={{ padding: "0 20px" }}>
+  {trips.map((trip, index) => (
+    <div
+      key={index}
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        gap: 10,
+        padding: "14px 0",
+        borderBottom:
+          index < trips.length - 1 ? "1px solid #F1F5F9" : "none",
+        flexWrap: "wrap", // 👈 key for mobile
+      }}
+    >
+      {/* Departure */}
+      <div style={{ minWidth: "30%" }}>
+        <p style={{ color: "#64748B", fontSize: 11, margin: 0 }}>
+          Departure
+        </p>
+        <p style={{ color: "#0F172A", fontSize: 15, fontWeight: 700, margin: 0 }}>
+          {trip.time}
+        </p>
       </div>
+
+      {/* Vessel */}
+      <div style={{ minWidth: "30%" }}>
+        <p style={{ color: "#64748B", fontSize: 11, margin: 0 }}>
+          Vessel
+        </p>
+        <p style={{ color: "#475569", fontSize: 14, fontWeight: 600, margin: 0, wordBreak: "break-word"}}>
+          {trip.vessel}
+        </p>
+      </div>
+
+      {/* Arrival */}
+      <div style={{ minWidth: "30%" }}>
+        <p style={{ color: "#64748B", fontSize: 11, margin: 0 }}>
+          Arrival
+        </p>
+        <p style={{ color: "#0F172A", fontSize: 15, fontWeight: 700, margin: 0 }}>
+          {trip.arrival}
+        </p>
+      </div>
+    </div>
+  ))}
+</div>
 
       {/* Trip Count Badge */}
       <div
@@ -238,7 +237,7 @@ export default function AttendeePage() {
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundAttachment: "fixed",
-        padding: 20,
+        padding: "clamp(12px, 3vw, 20px)",
         fontFamily: "Segoe UI, sans-serif",
         position: "relative",
         overflow: "hidden",
@@ -408,7 +407,7 @@ export default function AttendeePage() {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
+                gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
                 gap: 14,
               }}
             >
@@ -491,7 +490,7 @@ export default function AttendeePage() {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+                gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
                 gap: 12,
               }}
             >
@@ -548,7 +547,7 @@ export default function AttendeePage() {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+                gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
                 gap: 20,
               }}
             >
