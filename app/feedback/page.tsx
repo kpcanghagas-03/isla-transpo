@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, CSSProperties } from "react";
 
 const activityVenues = [
   {
