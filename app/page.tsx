@@ -108,6 +108,7 @@ export default function HomePage() {
                 alignItems: "flex-start",
                 cursor: "pointer",
                 fontSize: 13,
+                color: "#475569",
               }}
             >
               <input
