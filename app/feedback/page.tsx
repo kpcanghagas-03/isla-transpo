@@ -283,7 +283,7 @@ export default function AccomodationPage() {
                 >
                   <div style={{ fontSize: 40 }}>{venue.icon}</div>
                   <h3>{venue.name}</h3>
-                  <p style={{ color: "#64748B" }}>{venue.description}</p>
+                  <p style={{ color: "#475569" }}>{venue.description}</p>
                 </div>
               ))}
             </div>
