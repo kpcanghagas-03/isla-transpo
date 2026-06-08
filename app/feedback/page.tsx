@@ -97,41 +97,6 @@ const hotels = [
   },
 ];
 
-const hotels = [
-  {
-    name: "Nouveau Resort",
-    icon: "🏨",
-    rate: "₱3,500 / night",
-    capacity: "2 Guests",
-    distance: "5 mins from Convention Center",
-    amenities: ["WiFi", "Restaurant", "Pool"],
-  },
-  {
-    name: "Paras Beach Resort",
-    icon: "🌊",
-    rate: "₱4,800 / night",
-    capacity: "2-4 Guests",
-    distance: "8 mins from Convention Center",
-    amenities: ["Beachfront", "Pool", "Restaurant"],
-  },
-  {
-    name: "Bintana sa Paraiso",
-    icon: "🌅",
-    rate: "₱6,500 / night",
-    capacity: "2 Guests",
-    distance: "15 mins from Convention Center",
-    amenities: ["Infinity Pool", "Sea View", "WiFi"],
-  },
-  {
-    name: "GV Hotel Camiguin",
-    icon: "🏠",
-    rate: "₱1,200 / night",
-    capacity: "2 Guests",
-    distance: "10 mins from Convention Center",
-    amenities: ["WiFi", "Aircon"],
-  },
-];
-
 
 export default function AccomodationPage() {
   const router = useRouter();
@@ -139,11 +104,8 @@ export default function AccomodationPage() {
     (typeof activityVenues)[number] | null
   >(null);
   const [selectedHotel, setSelectedHotel] = useState<
-  (typeof hotels)[number] | null
->(null);
-
-  const [selectedHotel, setSelectedHotel] =
-  useState<(typeof hotels)[number] | null>(null);
+    (typeof hotels)[number] | null
+  >(null);
 
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
