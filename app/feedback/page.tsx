@@ -181,8 +181,8 @@ const venues = [
         "linear-gradient(90deg,#F27A35,#A61E22,#1F5AA6)",
       WebkitBackgroundClip: "text",
       WebkitTextFillColor: "transparent",
-      fontSize: "clamp(30px, 7vw, 60px)",
-      fontWeight: "600",
+      fontSize: "clamp(25px, 6vw, 50px)",
+      fontWeight: "650",
       marginBottom: 12,
       lineHeight: 1.1,
     }}
