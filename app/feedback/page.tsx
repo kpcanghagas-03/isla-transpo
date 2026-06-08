@@ -61,12 +61,11 @@ const transportationHubs = [
   { name: "Mambajao Airport", icon: "✈️" },
 ];
 
-const keySites = [
-  { name: "PSTO Camiguin", icon: "🔬" },
-];
+const keySites = [{ name: "PSTO Camiguin", icon: "🔬" }];
 
 export default function AccomodationPage() {
   const router = useRouter();
+
   const [selectedVenue, setSelectedVenue] = useState<
     (typeof activityVenues)[number] | null
   >(null);
@@ -83,7 +82,12 @@ export default function AccomodationPage() {
         background:
           "linear-gradient(180deg,#ffffff 0%,#f8fafc 50%,#ffffff 100%)",
         padding: 20,
-        fontFamily: "Segoe UI, sans-serif",
+        fontFamily:
+          'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif',
+        color: "#111827",
+        WebkitFontSmoothing: "antialiased",
+        MozOsxFontSmoothing: "grayscale",
+        textRendering: "optimizeLegibility",
         position: "relative",
         overflow: "hidden",
       }}
@@ -161,12 +165,18 @@ export default function AccomodationPage() {
                 marginBottom: 18,
               }}
             >
-              <span style={{ fontSize: 14, color: "#fff", fontWeight: 700 }}>
+              <span
+                style={{
+                  fontSize: 14,
+                  color: "rgba(255,255,255,0.95)",
+                  fontWeight: 700,
+                }}
+              >
                 🏨 Check Accommodation & Venue Here
               </span>
             </div>
 
-            {/* NAV BUTTONS */}
+            {/* NAV */}
             <div
               style={{
                 display: "flex",
@@ -176,23 +186,27 @@ export default function AccomodationPage() {
                 marginBottom: 30,
               }}
             >
-              {["Accommodations", "Activity Venues", "Transportation Hubs", "Key Sites"].map(
-                (item, i) => (
-                  <button
-                    key={i}
-                    onClick={() => scrollTo(item)}
-                    style={{
-                      padding: "8px 14px",
-                      borderRadius: 999,
-                      border: "1px solid #E2E8F0",
-                      background: "#fff",
-                      cursor: "pointer",
-                    }}
-                  >
-                    {item}
-                  </button>
-                )
-              )}
+              {[
+                "Accommodations",
+                "Activity Venues",
+                "Transportation Hubs",
+                "Key Sites",
+              ].map((item, i) => (
+                <button
+                  key={i}
+                  onClick={() => scrollTo(item)}
+                  style={{
+                    padding: "8px 14px",
+                    borderRadius: 999,
+                    border: "1px solid #E2E8F0",
+                    background: "#fff",
+                    cursor: "pointer",
+                    color: "#111827",
+                  }}
+                >
+                  {item}
+                </button>
+              ))}
             </div>
 
             <h1
@@ -210,9 +224,9 @@ export default function AccomodationPage() {
             </h1>
           </div>
 
-          {/* ================= ACCOMMODATIONS ================= */}
+          {/* ACCOMMODATIONS */}
           <section id="Accommodations" style={{ marginBottom: 50 }}>
-            <h2 style={{ color: "#1F5AA6", fontSize: 32, fontWeight: 900 }}>
+            <h2 style={{ color: "#111827", fontSize: 32, fontWeight: 900 }}>
               🏨 Accommodations
             </h2>
 
@@ -222,15 +236,16 @@ export default function AccomodationPage() {
                   "linear-gradient(135deg,#1F5AA6,#4C9FD6)",
                 borderRadius: 24,
                 padding: 24,
-                color: "#fff",
                 marginTop: 15,
+                color: "rgba(255,255,255,0.95)",
+                lineHeight: 1.6,
               }}
             >
               Accommodation assignments are currently being finalized.
             </div>
           </section>
 
-          {/* ================= VENUES ================= */}
+          {/* VENUES */}
           <section id="Activity Venues" style={{ marginBottom: 50 }}>
             <div
               style={{
@@ -240,7 +255,13 @@ export default function AccomodationPage() {
                 marginBottom: 25,
               }}
             >
-              <h2 style={{ color: "#1F5AA6", fontSize: 32, fontWeight: 900 }}>
+              <h2
+                style={{
+                  color: "#111827",
+                  fontSize: 32,
+                  fontWeight: 900,
+                }}
+              >
                 🎯 Activity Venues
               </h2>
 
@@ -248,7 +269,7 @@ export default function AccomodationPage() {
                 style={{
                   background:
                     "linear-gradient(135deg,#F27A35,#A61E22)",
-                  color: "#fff",
+                  color: "rgba(255,255,255,0.95)",
                   padding: "8px 14px",
                   borderRadius: 999,
                   fontSize: 13,
@@ -282,36 +303,47 @@ export default function AccomodationPage() {
                   }}
                 >
                   <div style={{ fontSize: 40 }}>{venue.icon}</div>
-                  <h3>{venue.name}</h3>
-                  <p style={{ color: "#475569" }}>{venue.description}</p>
+
+                  <h3 style={{ color: "#111827" }}>{venue.name}</h3>
+
+                  <p style={{ color: "#475569", lineHeight: 1.6 }}>
+                    {venue.description}
+                  </p>
                 </div>
               ))}
             </div>
           </section>
 
-          {/* ================= TRANSPORT ================= */}
+          {/* TRANSPORT */}
           <section id="Transportation Hubs" style={{ marginBottom: 50 }}>
-            <h2 style={{ color: "#1F5AA6", fontSize: 32, fontWeight: 900 }}>
+            <h2 style={{ color: "#111827", fontSize: 32, fontWeight: 900 }}>
               🚌 Transportation Hubs
             </h2>
 
-            <div style={{ display: "grid", gap: 20, marginTop: 20 }}>
+            <div style={{ marginTop: 20 }}>
               {transportationHubs.map((t, i) => (
-                <div key={i} style={{ padding: 20, border: "1px solid #E2E8F0" }}>
+                <div
+                  key={i}
+                  style={{
+                    padding: 20,
+                    border: "1px solid #E2E8F0",
+                    color: "#111827",
+                  }}
+                >
                   {t.icon} {t.name}
                 </div>
               ))}
             </div>
           </section>
 
-          {/* ================= KEY SITES ================= */}
+          {/* KEY SITES */}
           <section id="Key Sites" style={{ marginBottom: 50 }}>
-            <h2 style={{ color: "#A61E22", fontSize: 32, fontWeight: 900 }}>
+            <h2 style={{ color: "#111827", fontSize: 32, fontWeight: 900 }}>
               📍 Key Sites
             </h2>
 
             {keySites.map((k, i) => (
-              <div key={i} style={{ padding: 20 }}>
+              <div key={i} style={{ padding: 20, color: "#111827" }}>
                 {k.icon} {k.name}
               </div>
             ))}
@@ -337,10 +369,14 @@ export default function AccomodationPage() {
                   padding: 30,
                   borderRadius: 20,
                   maxWidth: 500,
+                  color: "#111827",
                 }}
               >
                 <h2>{selectedVenue.name}</h2>
-                <p>{selectedVenue.description}</p>
+                <p style={{ color: "#475569" }}>
+                  {selectedVenue.description}
+                </p>
+
                 <button onClick={() => setSelectedVenue(null)}>
                   Close
                 </button>
