@@ -221,7 +221,7 @@ export default function AccomodationPage() {
 
             <p
               style={{
-                color: "#475569",
+                color: "#1E293B",
                 fontSize: 14,
                 lineHeight: 1.6,
               }}
@@ -319,7 +319,7 @@ export default function AccomodationPage() {
 
       <p
         style={{
-          color: "#64748B",
+          color: "#334155",
           fontSize: 13,
         }}
       >
@@ -364,7 +364,7 @@ export default function AccomodationPage() {
                     {v.name}
                   </h3>
 
-                  <p style={{ fontSize: 13, color: "#475569" }}>
+                  <p style={{ fontSize: 13,color: "#1E293B" }}>
                     {v.description}
                   </p>
                 </div>
@@ -442,7 +442,7 @@ export default function AccomodationPage() {
                 }}
               >
                 <h2 style={{ color: "#1F5AA6" }}>{selectedVenue.name}</h2>
-                <p style={{ color: "#475569", fontSize: 14 }}>
+                <p style={{ color: "#1E293B", fontSize: 14 }}>
                   {selectedVenue.description}
                 </p>
 
@@ -525,7 +525,7 @@ export default function AccomodationPage() {
           border: "none",
           borderRadius: 10,
           background: "#F27A35",
-          color: "#fff",
+          color: "#0B3D91",
           fontWeight: 700,
           cursor: "pointer",
         }}
