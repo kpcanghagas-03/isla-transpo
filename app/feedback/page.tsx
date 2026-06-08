@@ -332,6 +332,7 @@ export default function AccomodationPage() {
       color: "#FFFFFF",
     }}
   >
+    <div id="Accommodations" style={{ marginBottom: 50, scrollMarginTop: "80px" }}></div>
     <p
       style={{
         margin: 0,
@@ -348,7 +349,6 @@ export default function AccomodationPage() {
 {/* Activity Venues */}
 
 <div style={{ marginBottom: 50 }}>
-   <div>
   <div
     style={{
       display: "flex",
@@ -358,6 +358,7 @@ export default function AccomodationPage() {
       marginBottom: 25,
     }}
   >
+    <div id="Activity Venues" style={{ marginBottom: 50, scrollMarginTop: "80px" }}></div>
     <h2
       style={{
         color: "#1F5AA6",
@@ -381,24 +382,10 @@ export default function AccomodationPage() {
     >
       ⭐ Main Venue: Convention Center
     </span>
-  </div>
-</div>
 
-  <span
-    style={{
-      background:
-        "linear-gradient(135deg,#F27A35,#A61E22)",
-      color: "white",
-      padding: "8px 14px",
-      borderRadius: 999,
-      fontSize: 13,
-      fontWeight: 700,
-    }}
-  >
-    ⭐ Main Venue: Convention Center
-  </span>
-</div>
-  </h2>
+
+
+  </div>
 
   <div
     style={{
@@ -414,6 +401,7 @@ export default function AccomodationPage() {
   onClick={() => setSelectedVenue(venue)}
   style={{
     background: venue.featured ? "#FFF7ED" : "#FFFFFF",
+
     borderRadius: 24,
     padding: 24,
     boxShadow: "0 10px 25px rgba(0,0,0,0.08)",
@@ -499,6 +487,7 @@ export default function AccomodationPage() {
       marginBottom: 25,
     }}
   >
+    <div id="Transportation Hubs" style={{ marginBottom: 50, scrollMarginTop: "80px" }}></div>
     🚌 Transportation Hubs
   </h2>
 
@@ -587,6 +576,7 @@ export default function AccomodationPage() {
       marginBottom: 25,
     }}
   >
+    <div id="Key Sites" style={{ marginBottom: 50, scrollMarginTop: "80px" }}></div>
     📍 Key Sites
   </h2>
 
