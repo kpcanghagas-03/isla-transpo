@@ -67,9 +67,11 @@ const keySites = [
 
 export default function AccomodationPage() {
   const router = useRouter();
-  const [selectedVenue, setSelectedVenue] = useState(null);
+  const [selectedVenue, setSelectedVenue] = useState<
+    (typeof activityVenues)[number] | null
+  >(null);
 
-  const scrollTo = (id) => {
+  const scrollTo = (id: string) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
