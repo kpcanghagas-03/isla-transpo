@@ -2,205 +2,51 @@
 
 import { useRouter } from "next/navigation";
 
-export default function ProgramPage() {
+export default function AccomodationPage() {
   const router = useRouter();
 
-  const programDays = [
-    {
-      day: "Day 1",
-      date: "July 22, 2026",
-      theme: "Opening & Exhibits",
-      color: "#0B3D91",
-      events: [
-        {
-          time: "7:00 AM - 8:00 AM",
-          title: "Registration & Welcome Kits",
-          location: "Main Lobby",
-          icon: "📝",
-        },
-        {
-          time: "8:00 AM - 9:30 AM",
-          title: "Opening Ceremony",
-          location: "Main Auditorium",
-          icon: "🎉",
-          highlight: true,
-        },
-        {
-          time: "9:30 AM - 10:00 AM",
-          title: "Ribbon Cutting & Photo Op",
-          location: "Exhibit Hall Entrance",
-          icon: "✂️",
-        },
-        {
-          time: "10:00 AM - 12:00 NN",
-          title: "Exhibits & Innovation Showcase Tour",
-          location: "Exhibit Hall A & B",
-          icon: "🔬",
-        },
-        {
-          time: "12:00 NN - 1:00 PM",
-          title: "Lunch Break",
-          location: "Dining Area",
-          icon: "🍽️",
-        },
-        {
-          time: "1:00 PM - 5:00 PM",
-          title: "Science Fair & Interactive Demos",
-          location: "Exhibit Hall",
-          icon: "🧪",
-        },
-        {
-          time: "5:00 PM - 6:00 PM",
-          title: "Networking Session",
-          location: "Garden Pavilion",
-          icon: "🤝",
-        },
-      ],
-    },
-    {
-      day: "Day 2",
-      date: "July 23, 2026",
-      theme: "Technical Sessions",
-      color: "#1E40AF",
-      events: [
-        {
-          time: "8:00 AM - 8:30 AM",
-          title: "Morning Assembly",
-          location: "Main Auditorium",
-          icon: "☀️",
-        },
-        {
-          time: "8:30 AM - 10:00 AM",
-          title: "Plenary Session: Future of Science in Region X",
-          location: "Main Auditorium",
-          icon: "🎤",
-          highlight: true,
-        },
-        {
-          time: "10:00 AM - 10:30 AM",
-          title: "Coffee Break",
-          location: "Lobby",
-          icon: "☕",
-        },
-        {
-          time: "10:30 AM - 12:00 NN",
-          title: "Parallel Technical Sessions",
-          location: "Breakout Rooms 1-4",
-          icon: "📊",
-        },
-        {
-          time: "12:00 NN - 1:00 PM",
-          title: "Lunch Break",
-          location: "Dining Area",
-          icon: "🍽️",
-        },
-        {
-          time: "1:00 PM - 3:00 PM",
-          title: "Workshop: Research Methodology",
-          location: "Workshop Room A",
-          icon: "📚",
-        },
-        {
-          time: "3:00 PM - 5:00 PM",
-          title: "Workshop: Data Visualization & Analysis",
-          location: "Computer Lab",
-          icon: "💻",
-        },
-      ],
-    },
-    {
-      day: "Day 3",
-      date: "July 24, 2026",
-      theme: "Competitions & Judging",
-      color: "#059669",
-      events: [
-        {
-          time: "7:30 AM - 8:00 AM",
-          title: "Participants Assembly",
-          location: "Competition Venue",
-          icon: "📋",
-        },
-        {
-          time: "8:00 AM - 12:00 NN",
-          title: "Science Quiz Bee - Elimination Round",
-          location: "Main Auditorium",
-          icon: "🧠",
-          highlight: true,
-        },
-        {
-          time: "8:00 AM - 12:00 NN",
-          title: "Research Paper Presentation",
-          location: "Breakout Rooms 1-3",
-          icon: "📄",
-        },
-        {
-          time: "12:00 NN - 1:00 PM",
-          title: "Lunch Break",
-          location: "Dining Area",
-          icon: "🍽️",
-        },
-        {
-          time: "1:00 PM - 3:00 PM",
-          title: "Science Quiz Bee - Finals",
-          location: "Main Auditorium",
-          icon: "🏆",
-          highlight: true,
-        },
-        {
-          time: "1:00 PM - 4:00 PM",
-          title: "Poster Judging",
-          location: "Exhibit Hall",
-          icon: "🖼️",
-        },
-        {
-          time: "4:00 PM - 5:00 PM",
-          title: "Judges Deliberation",
-          location: "Conference Room",
-          icon: "⚖️",
-        },
-      ],
-    },
-    {
-      day: "Day 4",
-      date: "July 25, 2026",
-      theme: "Awarding & Closing",
-      color: "#DC2626",
-      events: [
-        {
-          time: "8:00 AM - 9:00 AM",
-          title: "Assembly & Preparation",
-          location: "Main Auditorium",
-          icon: "👔",
-        },
-        {
-          time: "9:00 AM - 11:30 AM",
-          title: "Awarding Ceremony",
-          location: "Main Auditorium",
-          icon: "🏅",
-          highlight: true,
-        },
-        {
-          time: "11:30 AM - 12:00 NN",
-          title: "Closing Ceremony & Remarks",
-          location: "Main Auditorium",
-          icon: "🎊",
-          highlight: true,
-        },
-        {
-          time: "12:00 NN - 1:00 PM",
-          title: "Fellowship Lunch",
-          location: "Dining Area",
-          icon: "🥳",
-        },
-        {
-          time: "1:00 PM onwards",
-          title: "Departure / City Tour (Optional)",
-          location: "Main Entrance",
-          icon: "🚌",
-        },
-      ],
-    },
-  ];
+  const accommodations = [
+  {
+    name: "Nouveau Resort",
+    type: "Official Accommodation",
+    location: "Mambajao, Camiguin",
+    rooms: "Standard, Deluxe, Family",
+    contact: "(088) xxx-xxxx",
+    highlight: true,
+  },
+  {
+    name: "Paras Beach Resort",
+    type: "Beach Resort",
+    location: "Mambajao, Camiguin",
+    rooms: "Deluxe Rooms",
+    contact: "(088) xxx-xxxx",
+  },
+  {
+    name: "Balai sa Baibai",
+    type: "Boutique Resort",
+    location: "Camiguin",
+    rooms: "Ocean View Rooms",
+    contact: "(088) xxx-xxxx",
+  },
+];
+
+const venues = [
+  {
+    venue: "Camiguin Convention Center",
+    activity: "Opening Ceremony",
+    location: "Mambajao",
+  },
+  {
+    venue: "Exhibit Hall",
+    activity: "Science Exhibits",
+    location: "Convention Center",
+  },
+  {
+    venue: "Provincial Capitol Grounds",
+    activity: "Outdoor Activities",
+    location: "Mambajao",
+  },
+];
 
   return (
     <main
@@ -304,7 +150,7 @@ export default function ProgramPage() {
         fontWeight: 700,
       }}
     >
-      📅 July 23–24, 2026 | Camiguin Island
+      🏨 RSTW 2026 Accommodation Directory
     </span>
   </div>
 
@@ -320,7 +166,7 @@ export default function ProgramPage() {
       lineHeight: 1.1,
     }}
   >
-    Program of Activities
+    Accommodation & Venues Guide
   </h1>
 
   <p
@@ -332,236 +178,121 @@ export default function ProgramPage() {
       lineHeight: 1.6,
     }}
   >
-    Explore the complete lineup of events, exhibits,
-    workshops, competitions, and celebrations for the
+    Find accommodation assignments, venue locations,
+    contact information, and transportation details for
     Regional Science & Technology Week 2026.
   </p>
 </div>
 
-          {/* Navigation Pills */}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              flexWrap: "wrap",
-              gap: 12,
-              marginBottom: 35,
-            }}
-          >
-            {programDays.map((day, index) => (
-              <a
-                key={index}
-                href={`#${day.day.toLowerCase().replace(" ", "-")}`}
-                style={{
-                  background: "#ffffff",
-                  backdropFilter: "blur(10px)",
-                  color: "#1F5AA6",
-                  padding: "12px 22px",
-                  borderRadius: 50,
-                  fontWeight: 700,
-                  fontSize: 14,
-                  textDecoration: "none",
-                  border: "1px solid #E2E8F0",
-                  boxShadow: "0 4px 15px rgba(0,0,0,0.08)",
-                }}
-              >
-                {day.day}
-              </a>
-            ))}
-          </div>
+{/* Accommodation Section */}
 
-          {/* Program Days */}
-          {programDays.map((dayData, dayIndex) => (
-            <div
-              key={dayIndex}
-              id={dayData.day.toLowerCase().replace(" ", "-")}
-              style={{
-                marginBottom: 35,
-                scrollMarginTop: 20,
-              }}
-            >
-              {/* Day Header */}
-              <div
-                style={{
-                  background:
-                dayIndex % 3 === 0
-                  ? "linear-gradient(135deg,#F27A35,#A61E22)"
-                  : dayIndex % 3 === 1
-                  ? "linear-gradient(135deg,#1F5AA6,#4C9FD6)"
-                  : "linear-gradient(135deg,#A61E22,#F27A35)",
-                  borderRadius: "24px 24px 0 0",
-                  padding: "24px 28px",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  flexWrap: "wrap",
-                  gap: 15,
-                }}
-              >
-                <div>
-                  <h2
-                    style={{
-                      color: "white",
-                      fontSize: 30,
-                      fontWeight: 900,
-                      margin: 0,
-                      marginBottom: 5,
-                    }}
-                  >
-                    {dayData.day}
-                  </h2>
+<div style={{ marginBottom: 50 }}>
+  <h2
+    style={{
+      color: "#1F5AA6",
+      fontSize: 32,
+      fontWeight: 900,
+      marginBottom: 25,
+    }}
+  >
+    🏨 Accommodations
+  </h2>
 
-                  <p
-                    style={{
-                      color: "rgba(255,255,255,0.85)",
-                      fontSize: 15,
-                      margin: 0,
-                      fontWeight: 600,
-                    }}
-                  >
-                    {dayData.date}
-                  </p>
-                </div>
+  <div
+    style={{
+      display: "grid",
+      gridTemplateColumns:
+        "repeat(auto-fit,minmax(320px,1fr))",
+      gap: 20,
+    }}
+  >
+    {accommodations.map((hotel, index) => (
+      <div
+        key={index}
+        style={{
+          background: "#fff",
+          borderRadius: 24,
+          padding: 24,
+          boxShadow:
+            "0 10px 25px rgba(0,0,0,0.08)",
+          border:
+            hotel.highlight
+              ? "2px solid #F27A35"
+              : "1px solid #E2E8F0",
+        }}
+      >
+        <h3
+          style={{
+            color: "#0F172A",
+            marginBottom: 10,
+          }}
+        >
+          {hotel.name}
+        </h3>
 
-                <div
-                  style={{
-                    background: "rgba(255,255,255,0.2)",
-                    padding: "10px 18px",
-                    borderRadius: 50,
-                  }}
-                >
-                  <span
-                    style={{
-                      color: "white",
-                      fontWeight: 700,
-                      fontSize: 14,
-                    }}
-                  >
-                    🎯 {dayData.theme}
-                  </span>
-                </div>
-              </div>
+        <p>📍 {hotel.location}</p>
+        <p>🛏️ {hotel.rooms}</p>
+        <p>📞 {hotel.contact}</p>
 
-              {/* Events */}
-              <div
-                style={{
-                  background: "rgba(255,255,255,0.96)",
-                  borderRadius: "0 0 24px 24px",
-                  padding: "8px 0",
-                  boxShadow: "0 15px 40px rgba(0,0,0,0.15)",
-                }}
-              >
-                {dayData.events.map((event, eventIndex) => (
-                  <div
-                    key={eventIndex}
-                    style={{
-                      display: "flex",
-                      alignItems: "flex-start",
-                      padding: "20px 24px",
-                      borderBottom:
-                        eventIndex < dayData.events.length - 1
-                          ? "1px solid #F1F5F9"
-                          : "none",
-                       background:
-                        event.highlight
-                          ? "#FFF7ED"
-                          : "#FFFFFF",
-                      borderLeft: event.highlight
-                      ? "5px solid #F27A35"
-                        : "5px solid transparent",
-                    }}
-                  >
-                    {/* Icon */}
-                    <div
-                      style={{
-                        width: 55,
-                        height: 55,
-                        borderRadius: 16,
-                        background: event.highlight
-                          ? dayData.color
-                          : "#F1F5F9",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: 26,
-                        marginRight: 18,
-                        flexShrink: 0,
-                        boxShadow: "0 4px 15px rgba(0,0,0,0.08)",
-                      }}
-                    >
-                      {event.icon}
-                    </div>
+        <span
+          style={{
+            background:
+              "linear-gradient(135deg,#F27A35,#A61E22)",
+            color: "#fff",
+            padding: "8px 14px",
+            borderRadius: 999,
+            fontSize: 12,
+            fontWeight: 700,
+          }}
+        >
+          {hotel.type}
+        </span>
+      </div>
+    ))}
+  </div>
+</div>
 
-                    {/* Content */}
-                    <div style={{ flex: 1 }}>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          flexWrap: "wrap",
-                          gap: 10,
-                          marginBottom: 8,
-                        }}
-                      >
-                        <span
-                          style={{
-                            background: "#F1F5F9",
-                            color: "#475569",
-                            padding: "5px 12px",
-                            borderRadius: 20,
-                            fontSize: 12,
-                            fontWeight: 700,
-                          }}
-                        >
-                          🕐 {event.time}
-                        </span>
+{/* Venue Section */}
 
-                        {event.highlight && (
-                          <span
-                            style={{
-                              background: dayData.color,
-                              color: "white",
-                              padding: "5px 10px",
-                              borderRadius: 20,
-                              fontSize: 11,
-                              fontWeight: 700,
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            ⭐ Highlight
-                          </span>
-                        )}
-                      </div>
+<div>
+  <h2
+    style={{
+      color: "#1F5AA6",
+      fontSize: 32,
+      fontWeight: 900,
+      marginBottom: 25,
+    }}
+  >
+    📍 Event Venues
+  </h2>
 
-                      <h3
-                        style={{
-                          color: "#0F172A",
-                          fontSize: 18,
-                          fontWeight: 800,
-                          margin: "6px 0",
-                        }}
-                      >
-                        {event.title}
-                      </h3>
-
-                      <p
-                        style={{
-                          color: "#64748B",
-                          fontSize: 14,
-                          margin: 0,
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 6,
-                        }}
-                      >
-                        📍 {event.location}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
+  <div
+    style={{
+      display: "flex",
+      flexDirection: "column",
+      gap: 16,
+    }}
+  >
+    {venues.map((venue, index) => (
+      <div
+        key={index}
+        style={{
+          background: "#fff",
+          padding: 24,
+          borderRadius: 20,
+          boxShadow:
+            "0 8px 20px rgba(0,0,0,0.08)",
+          borderLeft:
+            "5px solid #1F5AA6",
+        }}
+      >
+        <h3>{venue.venue}</h3>
+        <p>🎯 {venue.activity}</p>
+        <p>📍 {venue.location}</p>
+      </div>
+    ))}
+  </div>
+</div>
 
           {/* Important Notes */}
           <div
@@ -584,7 +315,7 @@ export default function ProgramPage() {
                 gap: 10,
               }}
             >
-              📌 Important Reminders
+              📌 Accommodation & Venue Notes
             </h3>
 
             <div
@@ -594,28 +325,29 @@ export default function ProgramPage() {
                 gap: 16,
               }}
             >
-              {[
-                {
-                  icon: "👔",
-                  title: "Dress Code",
-                  text: "Smart casual for sessions and formal attire for ceremonies.",
-                },
-                {
-                  icon: "🪪",
-                  title: "ID Required",
-                  text: "Please wear your official event ID inside the venue.",
-                },
-                {
-                  icon: "⏰",
-                  title: "Be Punctual",
-                  text: "Arrive at least 15 minutes before each activity.",
-                },
-                {
-                  icon: "📱",
-                  title: "Silent Mode",
-                  text: "Keep devices on silent during talks and presentations.",
-                },
-              ].map((item, index) => (
+              [
+  {
+    icon: "🏨",
+    title: "Check-In Time",
+    text: "Please coordinate with hotel management for check-in schedules.",
+  },
+  {
+    icon: "🚌",
+    title: "Shuttle Service",
+    text: "Official shuttle routes will be announced before the event.",
+  },
+  {
+    icon: "📞",
+    title: "Contact Person",
+    text: "Keep your assigned focal person's contact information available.",
+  },
+  {
+    icon: "📍",
+    title: "Venue Transfers",
+    text: "Allow extra travel time between venues and accommodations.",
+  },
+]
+.map((item, index) => (
                 <div
                   key={index}
                   style={{
