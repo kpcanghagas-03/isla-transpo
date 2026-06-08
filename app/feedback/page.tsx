@@ -389,6 +389,7 @@ export default function AccomodationPage() {
                     marginBottom: 8,
                     fontSize: 14,
                     fontWeight: 600,
+                    color: "#334155",
                   }}
                 >
                   {t.icon} {t.name}
