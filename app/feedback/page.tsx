@@ -354,7 +354,7 @@ export default function AccomodationPage() {
                     padding: 16,
                     border: v.featured
                       ? "2px solid #F27A35"
-                      : "1px solid #E2E8F0",
+                      : "1px solid #0B3D91",
                     cursor: "pointer",
                   }}
                 >
@@ -364,7 +364,7 @@ export default function AccomodationPage() {
                     {v.name}
                   </h3>
 
-                  <p style={{ fontSize: 13,color: "#1E293B" }}>
+                  <p style={{ fontSize: 13,color:"#0B3D91" }}>
                     {v.description}
                   </p>
                 </div>
