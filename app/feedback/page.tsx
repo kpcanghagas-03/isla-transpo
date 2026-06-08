@@ -360,11 +360,11 @@ export default function AccomodationPage() {
                 >
                   <div style={{ fontSize: 30 }}>{v.icon}</div>
 
-                  <h3 style={{ fontSize: 16, fontWeight: 800 }}>
+                  <h3 style={{ fontSize: 16, fontWeight: 800, color:"#0F172A" }}>
                     {v.name}
                   </h3>
 
-                  <p style={{ fontSize: 13,color:"#0B3D91" }}>
+                  <p style={{ fontSize: 13,color: "#0B3D91" }}>
                     {v.description}
                   </p>
                 </div>
