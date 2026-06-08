@@ -219,13 +219,26 @@ const venues = [
 
   <div
     style={{
-      display: "grid",
-      gridTemplateColumns:
-        "repeat(auto-fit,minmax(320px,1fr))",
-      gap: 20,
+      background: "#F8FAFC",
+      borderRadius: 24,
+      padding: 24,
+      border: "1px solid #E2E8F0",
+      color: "#334155",
     }}
   >
-    {/* Activity Venues */}
+    <p
+      style={{
+        margin: 0,
+        fontSize: 15,
+        lineHeight: 1.7,
+      }}
+    >
+      Accommodation listings and hotel assignments will be shared once the organizing committee finalizes the arrangements.
+    </p>
+  </div>
+</div>
+
+{/* Activity Venues */}
 
 <div style={{ marginBottom: 50 }}>
   <h2
