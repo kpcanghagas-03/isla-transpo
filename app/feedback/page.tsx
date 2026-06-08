@@ -5,42 +5,49 @@ import { useRouter } from "next/navigation";
 export default function AccomodationPage() {
   const router = useRouter();
 
- const activityVenues = [
+const activityVenues = [
   {
     name: "Cong PPR Gym",
     type: "Competition Venue",
     icon: "🏟️",
+    description: "Venue for competitions, sports-related activities, and large group gatherings.",
   },
   {
     name: "Convention Center",
     type: "Main Venue",
     icon: "🏛️",
     featured: true,
+    description: "Primary venue for opening ceremonies, exhibits, and major RSTW activities.",
   },
   {
     name: "Mambajao Municipal Hall",
     type: "Government Venue",
     icon: "🏢",
+    description: "Official government venue for meetings and special engagements.",
   },
   {
     name: "Romualdos' Residence",
     type: "Special Venue",
     icon: "🏠",
+    description: "Special event venue for selected delegates and guests.",
   },
   {
     name: "Nouveau Hotel",
     type: "Event Venue",
     icon: "🏨",
+    description: "Venue for meetings, briefings, and event-related functions.",
   },
   {
     name: "Ugmad Activity Area",
     type: "Outdoor Venue",
     icon: "🌴",
+    description: "Open-air venue for outdoor activities and community events.",
   },
   {
     name: "CPSC",
     type: "Institutional Venue",
     icon: "🎓",
+    description: "Educational venue hosting selected RSTW activities.",
   },
 ];
 
@@ -311,7 +318,40 @@ const keySites = [
       marginBottom: 25,
     }}
   >
+    <div
+  style={{
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    flexWrap: "wrap",
+    marginBottom: 25,
+  }}
+>
+  <h2
+    style={{
+      color: "#1F5AA6",
+      fontSize: 32,
+      fontWeight: 900,
+      margin: 0,
+    }}
+  >
     🎯 Activity Venues
+  </h2>
+
+  <span
+    style={{
+      background:
+        "linear-gradient(135deg,#F27A35,#A61E22)",
+      color: "white",
+      padding: "8px 14px",
+      borderRadius: 999,
+      fontSize: 13,
+      fontWeight: 700,
+    }}
+  >
+    ⭐ Main Venue: Convention Center
+  </span>
+</div>
   </h2>
 
   <div
@@ -377,6 +417,18 @@ const keySites = [
 >
   {venue.type}
 </span>
+
+<p
+  style={{
+    marginTop: 14,
+    color: "#64748B",
+    fontSize: 14,
+    lineHeight: 1.6,
+  }}
+>
+  {venue.description}
+</p>
+
       </div>
     ))}
   </div>
@@ -438,6 +490,38 @@ const keySites = [
   </div>
 </div>
 
+<div
+  style={{
+    background: "#EFF6FF",
+    borderRadius: 24,
+    padding: 24,
+    marginBottom: 50,
+    border: "1px solid #BFDBFE",
+  }}
+>
+  <h3
+    style={{
+      color: "#1F5AA6",
+      marginBottom: 10,
+    }}
+  >
+    🚍 Travel Information
+  </h3>
+
+  <p
+    style={{
+      color: "#334155",
+      margin: 0,
+      lineHeight: 1.7,
+    }}
+  >
+    Delegates arriving through Benoni Port or
+    Mambajao Airport are encouraged to use
+    ISLA-Transpo for transportation assistance
+    between ports, accommodations, and event venues.
+  </p>
+</div>
+
 {/* Key Sites */}
 
 <div style={{ marginBottom: 50 }}>
@@ -497,28 +581,37 @@ const keySites = [
 <div
   style={{
     background:
-      "linear-gradient(135deg,#F27A35,#A61E22)",
+      "linear-gradient(135deg,#1F5AA6,#4C9FD6)",
     borderRadius: 24,
     padding: 30,
-    textAlign: "center",
     color: "white",
     marginBottom: 40,
   }}
 >
-  <h2 style={{ marginBottom: 10 }}>
-    🏨 Accommodation Information
+  <h2 style={{ marginTop: 0 }}>
+    🏨 Accommodation Assignment Portal
   </h2>
 
   <p
     style={{
-      margin: 0,
-      opacity: 0.9,
-      fontSize: 16,
+      lineHeight: 1.7,
+      opacity: 0.95,
     }}
   >
-    Hotel assignments and accommodation details
-    will be posted once finalized by the organizing
-    committee.
+    Accommodation assignments are currently being
+    finalized by the organizing committee.
+  </p>
+
+  <p
+    style={{
+      lineHeight: 1.7,
+      opacity: 0.95,
+      marginBottom: 0,
+    }}
+  >
+    Once available, this page will display assigned
+    hotels, room information, focal persons, and
+    accommodation details for delegates.
   </p>
 </div>
 
