@@ -325,7 +325,7 @@ const venues = [
                 gap: 16,
               }}
             >
-              [
+              {[
   {
     icon: "🏨",
     title: "Check-In Time",
@@ -346,8 +346,7 @@ const venues = [
     title: "Venue Transfers",
     text: "Allow extra travel time between venues and accommodations.",
   },
-]
-.map((item, index) => (
+].map((item, index) => (
                 <div
                   key={index}
                   style={{
