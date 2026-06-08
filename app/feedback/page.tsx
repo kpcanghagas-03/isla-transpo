@@ -5,28 +5,49 @@ import { useRouter } from "next/navigation";
 export default function AccomodationPage() {
   const router = useRouter();
 
-  const accommodations = [
+  const activityVenues = [
   {
-    name: "Nouveau Resort",
-    type: "Official Accommodation",
-    location: "Mambajao, Camiguin",
-    rooms: "Standard, Deluxe, Family",
-    contact: "(088) xxx-xxxx",
-    highlight: true,
+    name: "Cong PPR Gym",
+    icon: "🏟️",
   },
   {
-    name: "Paras Beach Resort",
-    type: "Beach Resort",
-    location: "Mambajao, Camiguin",
-    rooms: "Deluxe Rooms",
-    contact: "(088) xxx-xxxx",
+    name: "Convention Center",
+    icon: "🏛️",
   },
   {
-    name: "Balai sa Baibai",
-    type: "Boutique Resort",
-    location: "Camiguin",
-    rooms: "Ocean View Rooms",
-    contact: "(088) xxx-xxxx",
+    name: "Mambajao Municipal Hall",
+    icon: "🏢",
+  },
+  {
+    name: "Romualdos' Residence",
+    icon: "🏠",
+  },
+  {
+    name: "Nouveau Hotel",
+    icon: "🏨",
+  },
+  {
+    name: "Ugmad Activity Area",
+    icon: "🌴",
+  },
+  {
+    name: "CPSC",
+    icon: "🎓",
+  },
+];
+
+const keySites = [
+  {
+    name: "PSTO Camiguin",
+    icon: "🔬",
+  },
+  {
+    name: "Benoni Port",
+    icon: "⛴️",
+  },
+  {
+    name: "Mambajao Airport",
+    icon: "✈️",
   },
 ];
 
@@ -166,7 +187,7 @@ const venues = [
       lineHeight: 1.1,
     }}
   >
-    Accommodation & Venues Guide
+    RSTW Camiguin Venue Directory
   </h1>
 
   <p
@@ -178,9 +199,7 @@ const venues = [
       lineHeight: 1.6,
     }}
   >
-    Find accommodation assignments, venue locations,
-    contact information, and transportation details for
-    Regional Science & Technology Week 2026.
+    View activity venues, key locations, transportation hubs, and important event sites for the Regional Science and Technology Week 2026 in Camiguin.
   </p>
 </div>
 
@@ -206,7 +225,29 @@ const venues = [
       gap: 20,
     }}
   >
-    {accommodations.map((hotel, index) => (
+    {/* Activity Venues */}
+
+<div style={{ marginBottom: 50 }}>
+  <h2
+    style={{
+      color: "#1F5AA6",
+      fontSize: 32,
+      fontWeight: 900,
+      marginBottom: 25,
+    }}
+  >
+    🎯 Activity Venues
+  </h2>
+
+  <div
+    style={{
+      display: "grid",
+      gridTemplateColumns:
+        "repeat(auto-fit,minmax(280px,1fr))",
+      gap: 20,
+    }}
+  >
+    {activityVenues.map((venue, index) => (
       <div
         key={index}
         style={{
@@ -215,41 +256,113 @@ const venues = [
           padding: 24,
           boxShadow:
             "0 10px 25px rgba(0,0,0,0.08)",
-          border:
-            hotel.highlight
-              ? "2px solid #F27A35"
-              : "1px solid #E2E8F0",
+          border: "1px solid #E2E8F0",
         }}
       >
+        <div
+          style={{
+            fontSize: 40,
+            marginBottom: 12,
+          }}
+        >
+          {venue.icon}
+        </div>
+
         <h3
           style={{
             color: "#0F172A",
-            marginBottom: 10,
+            margin: 0,
           }}
         >
-          {hotel.name}
+          {venue.name}
         </h3>
-
-        <p>📍 {hotel.location}</p>
-        <p>🛏️ {hotel.rooms}</p>
-        <p>📞 {hotel.contact}</p>
-
-        <span
-          style={{
-            background:
-              "linear-gradient(135deg,#F27A35,#A61E22)",
-            color: "#fff",
-            padding: "8px 14px",
-            borderRadius: 999,
-            fontSize: 12,
-            fontWeight: 700,
-          }}
-        >
-          {hotel.type}
-        </span>
       </div>
     ))}
   </div>
+</div>
+
+{/* Key Sites */}
+
+<div style={{ marginBottom: 50 }}>
+  <h2
+    style={{
+      color: "#A61E22",
+      fontSize: 32,
+      fontWeight: 900,
+      marginBottom: 25,
+    }}
+  >
+    📍 Key Sites
+  </h2>
+
+  <div
+    style={{
+      display: "grid",
+      gridTemplateColumns:
+        "repeat(auto-fit,minmax(280px,1fr))",
+      gap: 20,
+    }}
+  >
+    {keySites.map((site, index) => (
+      <div
+        key={index}
+        style={{
+          background: "#fff",
+          borderRadius: 24,
+          padding: 24,
+          boxShadow:
+            "0 10px 25px rgba(0,0,0,0.08)",
+          border: "1px solid #E2E8F0",
+        }}
+      >
+        <div
+          style={{
+            fontSize: 40,
+            marginBottom: 12,
+          }}
+        >
+          {site.icon}
+        </div>
+
+        <h3
+          style={{
+            color: "#0F172A",
+            margin: 0,
+          }}
+        >
+          {site.name}
+        </h3>
+      </div>
+    ))}
+  </div>
+</div>
+
+<div
+  style={{
+    background:
+      "linear-gradient(135deg,#F27A35,#A61E22)",
+    borderRadius: 24,
+    padding: 30,
+    textAlign: "center",
+    color: "white",
+    marginBottom: 40,
+  }}
+>
+  <h2 style={{ marginBottom: 10 }}>
+    🏨 Accommodation Information
+  </h2>
+
+  <p
+    style={{
+      margin: 0,
+      opacity: 0.9,
+      fontSize: 16,
+    }}
+  >
+    Hotel assignments and accommodation details
+    will be posted once finalized by the organizing
+    committee.
+  </p>
 </div>
 
 {/* Venue Section */}
@@ -333,8 +446,8 @@ const venues = [
   },
   {
     icon: "🚌",
-    title: "Shuttle Service",
-    text: "Official shuttle routes will be announced before the event.",
+    title: "ISLA-Transpo",
+    text: "Don't forget to utilize ISLA-Transpo for your transportation needs during the event.",
   },
   {
     icon: "📞",
@@ -417,7 +530,7 @@ const venues = [
                 margin: 0,
               }}
             >
-              Schedule and activities may change depending on event operations.
+              Make yourself comfortable and enjoy the event!
             </p>
           </div>
         </div>
