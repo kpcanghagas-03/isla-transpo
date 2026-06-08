@@ -420,9 +420,9 @@ export default function HomePage() {
           />
 
           <Card
-            title="Program of Activities"
-            text="View official activities and event schedules for RSTW 2026."
-            buttonText="Program Activities"
+            title="Accommmodation & Venues"
+            text="View accommodation and venue information for RSTW 2026."
+            buttonText="Accommodation & Venues"
             onClick={() => router.push("/feedback")}
             color="#A61E22"
           />
