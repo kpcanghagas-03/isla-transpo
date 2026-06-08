@@ -5,42 +5,46 @@ import { useRouter } from "next/navigation";
 export default function AccomodationPage() {
   const router = useRouter();
 
-  const activityVenues = [
+ const activityVenues = [
   {
     name: "Cong PPR Gym",
+    type: "Competition Venue",
     icon: "🏟️",
   },
   {
     name: "Convention Center",
+    type: "Main Venue",
     icon: "🏛️",
+    featured: true,
   },
   {
     name: "Mambajao Municipal Hall",
+    type: "Government Venue",
     icon: "🏢",
   },
   {
     name: "Romualdos' Residence",
+    type: "Special Venue",
     icon: "🏠",
   },
   {
     name: "Nouveau Hotel",
+    type: "Event Venue",
     icon: "🏨",
   },
   {
     name: "Ugmad Activity Area",
+    type: "Outdoor Venue",
     icon: "🌴",
   },
   {
     name: "CPSC",
+    type: "Institutional Venue",
     icon: "🎓",
   },
 ];
 
-const keySites = [
-  {
-    name: "PSTO Camiguin",
-    icon: "🔬",
-  },
+const transportationHubs = [
   {
     name: "Benoni Port",
     icon: "⛴️",
@@ -51,21 +55,10 @@ const keySites = [
   },
 ];
 
-const venues = [
+const keySites = [
   {
-    venue: "Camiguin Convention Center",
-    activity: "Opening Ceremony",
-    location: "Mambajao",
-  },
-  {
-    venue: "Exhibit Hall",
-    activity: "Science Exhibits",
-    location: "Convention Center",
-  },
-  {
-    venue: "Provincial Capitol Grounds",
-    activity: "Outdoor Activities",
-    location: "Mambajao",
+    name: "PSTO Camiguin",
+    icon: "🔬",
   },
 ];
 
@@ -203,6 +196,74 @@ const venues = [
   </p>
 </div>
 
+<div
+  style={{
+    display: "grid",
+    gridTemplateColumns:
+      "repeat(auto-fit,minmax(180px,1fr))",
+    gap: 16,
+    marginBottom: 40,
+  }}
+>
+  {[
+    {
+      icon: "🎯",
+      value: "7",
+      label: "Activity Venues",
+    },
+    {
+      icon: "🚌",
+      value: "2",
+      label: "Transport Hubs",
+    },
+    {
+      icon: "📍",
+      value: "1",
+      label: "Key Site",
+    },
+    {
+      icon: "🏨",
+      value: "Soon",
+      label: "Accommodations",
+    },
+  ].map((item, index) => (
+    <div
+      key={index}
+      style={{
+        background: "#FFFFFF",
+        padding: 20,
+        borderRadius: 20,
+        textAlign: "center",
+        boxShadow:
+          "0 8px 20px rgba(0,0,0,0.08)",
+      }}
+    >
+      <div style={{ fontSize: 32 }}>
+        {item.icon}
+      </div>
+
+      <h3
+        style={{
+          margin: "10px 0 5px",
+          color: "#0F172A",
+        }}
+      >
+        {item.value}
+      </h3>
+
+      <p
+        style={{
+          margin: 0,
+          color: "#64748B",
+          fontSize: 13,
+        }}
+      >
+        {item.label}
+      </p>
+    </div>
+  ))}
+</div>
+
 {/* Accommodation Section */}
 
 <div style={{ marginBottom: 50 }}>
@@ -219,11 +280,11 @@ const venues = [
 
   <div
     style={{
-      background: "#F8FAFC",
+      background:"linear-gradient(135deg,#1F5AA6,#4C9FD6)",
       borderRadius: 24,
       padding: 24,
       border: "1px solid #E2E8F0",
-      color: "#334155",
+      color: "#FFFFFF",
     }}
   >
     <p
@@ -233,7 +294,8 @@ const venues = [
         lineHeight: 1.7,
       }}
     >
-      Accommodation listings and hotel assignments will be shared once the organizing committee finalizes the arrangements.
+      Accommodation assignments, room allocations, and hotel information are currently being finalized.
+      Once available, delegates may view their assigned hotel, accommodation details, and focal person information directly from this page.
     </p>
   </div>
 </div>
@@ -269,8 +331,14 @@ const venues = [
           padding: 24,
           boxShadow:
             "0 10px 25px rgba(0,0,0,0.08)",
-          border: "1px solid #E2E8F0",
-        }}
+          border: venue.featured
+          ? "2px solid #F27A35"
+          : "1px solid #E2E8F0",
+
+        background: venue.featured
+          ? "#FFF7ED"
+          : "#FFFFFF",
+                }}
       >
         <div
           style={{
@@ -282,12 +350,92 @@ const venues = [
         </div>
 
         <h3
+        style={{
+          color: "#0F172A",
+          marginBottom: 12,
+        }}
+      >
+        {venue.name}
+
+        {venue.featured && (
+          <span
+            style={{
+              marginLeft: 8,
+              color: "#F27A35",
+            }}
+          >
+            ⭐
+          </span>
+        )}
+      </h3>
+
+<span
+  style={{
+    background: "#EFF6FF",
+    color: "#1F5AA6",
+    padding: "6px 12px",
+    borderRadius: 999,
+    fontSize: 12,
+    fontWeight: 700,
+  }}
+>
+  {venue.type}
+</span>
+      </div>
+    ))}
+  </div>
+</div>
+
+{/* Transportation Hubs */}
+
+<div style={{ marginBottom: 50 }}>
+  <h2
+    style={{
+      color: "#1F5AA6",
+      fontSize: 32,
+      fontWeight: 900,
+      marginBottom: 25,
+    }}
+  >
+    🚌 Transportation Hubs
+  </h2>
+
+  <div
+    style={{
+      display: "grid",
+      gridTemplateColumns:
+        "repeat(auto-fit,minmax(280px,1fr))",
+      gap: 20,
+    }}
+  >
+    {transportationHubs.map((site, index) => (
+      <div
+        key={index}
+        style={{
+          background: "#fff",
+          borderRadius: 24,
+          padding: 24,
+          boxShadow:
+            "0 10px 25px rgba(0,0,0,0.08)",
+          border: "1px solid #E2E8F0",
+        }}
+      >
+        <div
+          style={{
+            fontSize: 40,
+            marginBottom: 12,
+          }}
+        >
+          {site.icon}
+        </div>
+
+        <h3
           style={{
             color: "#0F172A",
             margin: 0,
           }}
         >
-          {venue.name}
+          {site.name}
         </h3>
       </div>
     ))}
@@ -378,47 +526,6 @@ const venues = [
   </p>
 </div>
 
-{/* Venue Section */}
-
-<div>
-  <h2
-    style={{
-      color: "#1F5AA6",
-      fontSize: 32,
-      fontWeight: 900,
-      marginBottom: 25,
-    }}
-  >
-    📍 Event Venues
-  </h2>
-
-  <div
-    style={{
-      display: "flex",
-      flexDirection: "column",
-      gap: 16,
-    }}
-  >
-    {venues.map((venue, index) => (
-      <div
-        key={index}
-        style={{
-          background: "#fff",
-          padding: 24,
-          borderRadius: 20,
-          boxShadow:
-            "0 8px 20px rgba(0,0,0,0.08)",
-          borderLeft:
-            "5px solid #1F5AA6",
-        }}
-      >
-        <h3>{venue.venue}</h3>
-        <p>🎯 {venue.activity}</p>
-        <p>📍 {venue.location}</p>
-      </div>
-    ))}
-  </div>
-</div>
 
           {/* Important Notes */}
           <div
