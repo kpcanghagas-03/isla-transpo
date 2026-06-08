@@ -65,14 +65,23 @@ const keySites = [{ name: "PSTO Camiguin", icon: "🔬" }];
 
 export default function AccomodationPage() {
   const router = useRouter();
-
   const [selectedVenue, setSelectedVenue] = useState<
     (typeof activityVenues)[number] | null
   >(null);
 
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: "smooth" });
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  // 🔥 GLOBAL TEXT STYLE FIX (THIS FIXES YOUR BLUR ISSUE)
+  const textBase = {
+    WebkitFontSmoothing: "antialiased",
+    MozOsxFontSmoothing: "grayscale",
+    textRendering: "optimizeLegibility",
+    fontFamily:
+      "Segoe UI, Inter, system-ui, -apple-system, Arial, sans-serif",
+    color: "#0F172A",
   };
 
   return (
@@ -82,17 +91,12 @@ export default function AccomodationPage() {
         background:
           "linear-gradient(180deg,#ffffff 0%,#f8fafc 50%,#ffffff 100%)",
         padding: 20,
-        fontFamily:
-          'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif',
-        color: "#111827",
-        WebkitFontSmoothing: "antialiased",
-        MozOsxFontSmoothing: "grayscale",
-        textRendering: "optimizeLegibility",
         position: "relative",
         overflow: "hidden",
+        ...textBase,
       }}
     >
-      {/* LEFT DECOR */}
+      {/* DECOR */}
       <div
         style={{
           position: "fixed",
@@ -103,12 +107,10 @@ export default function AccomodationPage() {
           background:
             "linear-gradient(180deg,#F27A35,#A61E22,#1F5AA6)",
           opacity: 0.08,
-          clipPath:
-            "polygon(0 0,100% 0,70% 50%,100% 100%,0 100%)",
+          clipPath: "polygon(0 0,100% 0,70% 50%,100% 100%,0 100%)",
         }}
       />
 
-      {/* RIGHT DECOR */}
       <div
         style={{
           position: "fixed",
@@ -119,8 +121,7 @@ export default function AccomodationPage() {
           background:
             "linear-gradient(180deg,#1F5AA6,#F27A35,#A61E22)",
           opacity: 0.08,
-          clipPath:
-            "polygon(30% 0,100% 0,100% 100%,0 100%,30% 50%)",
+          clipPath: "polygon(30% 0,100% 0,100% 100%,0 100%,30% 50%)",
         }}
       />
 
@@ -132,12 +133,12 @@ export default function AccomodationPage() {
             marginBottom: 20,
             padding: "12px 20px",
             borderRadius: 12,
-            border: "none",
-            color: "#0B3D91",
-            background: "white",
-            fontWeight: "bold",
+            border: "1px solid #E2E8F0",
+            color: "#1F5AA6",
+            background: "#fff",
+            fontWeight: 700,
             cursor: "pointer",
-            boxShadow: "0 4px 15px rgba(0,0,0,0.2)",
+            boxShadow: "0 4px 15px rgba(0,0,0,0.08)",
           }}
         >
           ← Back to Home
@@ -150,7 +151,7 @@ export default function AccomodationPage() {
             borderRadius: 30,
             padding: "40px 35px",
             border: "1px solid #E2E8F0",
-            boxShadow: "0 25px 60px rgba(0,0,0,0.12)",
+            boxShadow: "0 25px 60px rgba(0,0,0,0.10)",
           }}
         >
           {/* HEADER */}
@@ -168,8 +169,8 @@ export default function AccomodationPage() {
               <span
                 style={{
                   fontSize: 14,
-                  color: "rgba(255,255,255,0.95)",
-                  fontWeight: 700,
+                  color: "#fff",
+                  fontWeight: 800,
                 }}
               >
                 🏨 Check Accommodation & Venue Here
@@ -200,8 +201,9 @@ export default function AccomodationPage() {
                     borderRadius: 999,
                     border: "1px solid #E2E8F0",
                     background: "#fff",
+                    fontWeight: 600,
+                    color: "#1F5AA6",
                     cursor: "pointer",
-                    color: "#111827",
                   }}
                 >
                   {item}
@@ -215,53 +217,60 @@ export default function AccomodationPage() {
                   "linear-gradient(90deg,#F27A35,#A61E22,#1F5AA6)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
-                fontSize: "clamp(25px, 6vw, 50px)",
-                fontWeight: 650,
+                fontSize: "clamp(26px, 5vw, 52px)",
+                fontWeight: 800,
                 marginBottom: 12,
               }}
             >
               Accommodation & Venue Directory
             </h1>
+
+            <p
+              style={{
+                color: "#475569",
+                fontSize: 16,
+                maxWidth: 650,
+                margin: "0 auto",
+                lineHeight: 1.6,
+              }}
+            >
+              View activity venues, transport hubs, and key event locations.
+            </p>
           </div>
 
-          {/* ACCOMMODATIONS */}
-          <section id="Accommodations" style={{ marginBottom: 50 }}>
-            <h2 style={{ color: "#111827", fontSize: 32, fontWeight: 900 }}>
+          {/* SECTIONS */}
+          <section id="Accommodations" style={{ marginBottom: 60 }}>
+            <h2 style={{ color: "#1F5AA6", fontSize: 30, fontWeight: 900 }}>
               🏨 Accommodations
             </h2>
 
             <div
               style={{
-                background:
-                  "linear-gradient(135deg,#1F5AA6,#4C9FD6)",
-                borderRadius: 24,
-                padding: 24,
                 marginTop: 15,
-                color: "rgba(255,255,255,0.95)",
-                lineHeight: 1.6,
+                background: "linear-gradient(135deg,#1F5AA6,#4C9FD6)",
+                padding: 24,
+                borderRadius: 24,
+                color: "#fff",
+                lineHeight: 1.7,
+                fontWeight: 500,
               }}
             >
-              Accommodation assignments are currently being finalized.
+              Accommodation assignments are being finalized.
             </div>
           </section>
 
           {/* VENUES */}
-          <section id="Activity Venues" style={{ marginBottom: 50 }}>
+          <section id="Activity Venues" style={{ marginBottom: 60 }}>
             <div
               style={{
                 display: "flex",
                 justifyContent: "space-between",
                 flexWrap: "wrap",
+                alignItems: "center",
                 marginBottom: 25,
               }}
             >
-              <h2
-                style={{
-                  color: "#111827",
-                  fontSize: 32,
-                  fontWeight: 900,
-                }}
-              >
+              <h2 style={{ color: "#1F5AA6", fontSize: 30, fontWeight: 900 }}>
                 🎯 Activity Venues
               </h2>
 
@@ -269,11 +278,11 @@ export default function AccomodationPage() {
                 style={{
                   background:
                     "linear-gradient(135deg,#F27A35,#A61E22)",
-                  color: "rgba(255,255,255,0.95)",
+                  color: "#fff",
                   padding: "8px 14px",
                   borderRadius: 999,
                   fontSize: 13,
-                  fontWeight: 700,
+                  fontWeight: 800,
                 }}
               >
                 ⭐ Main Venue: Convention Center
@@ -288,26 +297,29 @@ export default function AccomodationPage() {
                 gap: 20,
               }}
             >
-              {activityVenues.map((venue, i) => (
+              {activityVenues.map((v, i) => (
                 <div
                   key={i}
-                  onClick={() => setSelectedVenue(venue)}
+                  onClick={() => setSelectedVenue(v)}
                   style={{
-                    background: venue.featured ? "#FFF7ED" : "#fff",
+                    background: v.featured ? "#FFF7ED" : "#fff",
                     borderRadius: 24,
                     padding: 24,
-                    border: venue.featured
+                    border: v.featured
                       ? "2px solid #F27A35"
                       : "1px solid #E2E8F0",
                     cursor: "pointer",
+                    boxShadow: "0 10px 25px rgba(0,0,0,0.06)",
                   }}
                 >
-                  <div style={{ fontSize: 40 }}>{venue.icon}</div>
+                  <div style={{ fontSize: 40 }}>{v.icon}</div>
 
-                  <h3 style={{ color: "#111827" }}>{venue.name}</h3>
+                  <h3 style={{ color: "#0F172A", fontWeight: 800 }}>
+                    {v.name}
+                  </h3>
 
-                  <p style={{ color: "#475569", lineHeight: 1.6 }}>
-                    {venue.description}
+                  <p style={{ color: "#475569", lineHeight: 1.5 }}>
+                    {v.description}
                   </p>
                 </div>
               ))}
@@ -315,8 +327,8 @@ export default function AccomodationPage() {
           </section>
 
           {/* TRANSPORT */}
-          <section id="Transportation Hubs" style={{ marginBottom: 50 }}>
-            <h2 style={{ color: "#111827", fontSize: 32, fontWeight: 900 }}>
+          <section id="Transportation Hubs" style={{ marginBottom: 60 }}>
+            <h2 style={{ color: "#1F5AA6", fontSize: 30, fontWeight: 900 }}>
               🚌 Transportation Hubs
             </h2>
 
@@ -325,9 +337,13 @@ export default function AccomodationPage() {
                 <div
                   key={i}
                   style={{
-                    padding: 20,
+                    padding: 16,
                     border: "1px solid #E2E8F0",
-                    color: "#111827",
+                    borderRadius: 12,
+                    marginBottom: 10,
+                    background: "#fff",
+                    color: "#0F172A",
+                    fontWeight: 600,
                   }}
                 >
                   {t.icon} {t.name}
@@ -337,13 +353,20 @@ export default function AccomodationPage() {
           </section>
 
           {/* KEY SITES */}
-          <section id="Key Sites" style={{ marginBottom: 50 }}>
-            <h2 style={{ color: "#111827", fontSize: 32, fontWeight: 900 }}>
+          <section id="Key Sites" style={{ marginBottom: 60 }}>
+            <h2 style={{ color: "#A61E22", fontSize: 30, fontWeight: 900 }}>
               📍 Key Sites
             </h2>
 
             {keySites.map((k, i) => (
-              <div key={i} style={{ padding: 20, color: "#111827" }}>
+              <div
+                key={i}
+                style={{
+                  padding: 16,
+                  fontWeight: 600,
+                  color: "#0F172A",
+                }}
+              >
                 {k.icon} {k.name}
               </div>
             ))}
@@ -356,7 +379,7 @@ export default function AccomodationPage() {
               style={{
                 position: "fixed",
                 inset: 0,
-                background: "rgba(0,0,0,0.5)",
+                background: "rgba(0,0,0,0.55)",
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
@@ -368,16 +391,30 @@ export default function AccomodationPage() {
                   background: "#fff",
                   padding: 30,
                   borderRadius: 20,
-                  maxWidth: 500,
-                  color: "#111827",
+                  maxWidth: 520,
                 }}
               >
-                <h2>{selectedVenue.name}</h2>
-                <p style={{ color: "#475569" }}>
+                <h2 style={{ color: "#1F5AA6", fontWeight: 800 }}>
+                  {selectedVenue.name}
+                </h2>
+
+                <p style={{ color: "#475569", lineHeight: 1.6 }}>
                   {selectedVenue.description}
                 </p>
 
-                <button onClick={() => setSelectedVenue(null)}>
+                <button
+                  onClick={() => setSelectedVenue(null)}
+                  style={{
+                    marginTop: 12,
+                    padding: "10px 14px",
+                    borderRadius: 10,
+                    background: "#F27A35",
+                    color: "#fff",
+                    border: "none",
+                    fontWeight: 700,
+                    cursor: "pointer",
+                  }}
+                >
                   Close
                 </button>
               </div>
