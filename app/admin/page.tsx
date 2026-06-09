@@ -356,7 +356,18 @@ export default function AdminPage() {
 
       {/* ================= HEADER ================= */}
       <header className="header">
-        <h1>ISLA-TRANSPO ADMIN DASHBOARD</h1>
+        <h1
+        style={{
+          background:
+            "linear-gradient(90deg,#F27A35,#A61E22,#1F5AA6)",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+          fontWeight: 900,
+          fontSize: "clamp(28px,5vw,48px)",
+        }}
+      >
+        ISLA-TRANSPO ADMIN DASHBOARD
+      </h1>
         <p>Live Dispatch & Transport Monitoring</p>
       </header>
 
@@ -669,22 +680,62 @@ export default function AdminPage() {
 
       {/* ================= STYLES ================= */}
       <style jsx>{`
-        .container { min-height: 100vh; padding: 16px; font-family: Arial, sans-serif; color: white; }
-        .bg { position: fixed; inset: 0; background-image: url("/camiguin.jpg"); background-size: cover; background-position: center; z-index: -2; }
-        .overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.55); z-index: -1; }
+        .container {
+  min-height: 100vh;
+  padding: 16px;
+  max-width: 1400px;
+  margin: 0 auto;
+  font-family: "Segoe UI", sans-serif;
+}
+        .bg {
+  position: fixed;
+  inset: 0;
+  background:
+    linear-gradient(
+      180deg,
+      #ffffff 0%,
+      #f8fafc 50%,
+      #ffffff 100%
+    );
+  z-index: -2;
+}
 
-        .header { text-align: center; margin-bottom: 18px; }
-        .header h1 { font-size: clamp(22px, 4vw, 36px); margin-bottom: 4px; }
-        .header p { opacity: 0.9; }
+.overlay {
+  display: none;
+}
 
-        .mapSection { height: 320px; border-radius: 16px; overflow: hidden; margin-bottom: 20px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25); }
+  .header {
+  text-align: center;
+  margin-bottom: 24px;
+  background: white;
+  padding: 24px;
+  border-radius: 24px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.08);
+}
 
-        .section { margin-bottom: 28px; }
-        .sectionTitle { margin-bottom: 12px; font-size: 24px; font-weight: bold; }
+  .mapSection {
+  height: clamp(250px, 40vw, 450px);
+  border-radius: 24px;
+  overflow: hidden;
+  margin-bottom: 24px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.08);
+}
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px; }
+.section { margin-bottom: 28px; }
+.sectionTitle { margin-bottom: 12px; font-size: 24px; font-weight: bold; }
 
-        .statsGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
+  gap: 16px;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(180px,1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
 
         .card { background: white; color: #111827; border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15); }
 

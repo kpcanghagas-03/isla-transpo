@@ -63,3 +63,39 @@ body {
     opacity: 0.05;
   }
 }
+
+@media (max-width: 768px) {
+
+  .container {
+    padding: 12px;
+  }
+
+  .header {
+    padding: 18px;
+  }
+
+  .mapSection {
+    height: 240px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(2,1fr);
+  }
+
+  .card {
+    padding: 12px;
+  }
+
+  select,
+  input {
+    width: 100%;
+  }
+
+  .sectionTitle {
+    font-size: 20px;
+  }
+} 
