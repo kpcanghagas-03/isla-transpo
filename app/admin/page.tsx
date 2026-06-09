@@ -193,6 +193,18 @@ export default function AdminPage() {
   },
 };
 
+const vehicleOptions = [
+  "Toyota Hilux - SAA 6987",
+  "Toyota Van - SKB 5333",
+  "Toyota Innova - SHZ 943",
+  "Toyota Innova - SJS 302",
+  "Isuzu Pick-up - SKB 3028",
+  "Isuzu Pick-up - SKB 3030",
+  "Isuzu Pick-up - SKB 3029",
+  "Backup Vehicle - BKP 7777",
+];
+
+
   // ================= UPDATE FIELD =================
   const updateField = async (
   id: number,
@@ -242,11 +254,12 @@ export default function AdminPage() {
 
   if (shouldEmail) {
     try {
-      const vehicleInfo =
-        vehicleMap[request.assigned_vehicle || ""] || {
-          driver: "",
-          phone: "",
-        };
+      const vehicles = (request.assigned_vehicle || "")
+      .split(" | ")
+      .map((v) => vehicleMap[v])
+      .filter(Boolean);
+      const driverNames = vehicles.map((v) => v.driver).join(", ");
+      const driverPhones = vehicles.map((v) => v.phone).join(", ");
 
       const res = await fetch("/api/send_email", {
         method: "POST",
@@ -269,10 +282,10 @@ export default function AdminPage() {
           }`,
 
           vehicle: request.assigned_vehicle
-            ? `🚐 ${request.assigned_vehicle} - ${vehicleInfo.driver}`
+            ? `🚐 ${request.assigned_vehicle} - ${driverNames}`
             : "",
 
-          driver_number: vehicleInfo.phone,
+          driver_number: driverPhones,
 
           request_id: request.id,
         }),
@@ -586,61 +599,79 @@ export default function AdminPage() {
                     <option>Emergency</option>
                   </select>
 
-                  <label className="label">Assigned Vehicle</label>
-                  <select
-                    value={req.assigned_vehicle || ""}
-                   onChange={async (e) => {
-                                const vehicle = e.target.value;
+                  <label className="label">Assigned Vehicle(s)</label>
 
-                                // ✅ GET DRIVER INFO FROM VEHICLE MAP
-                                const vehicleInfo = vehicleMap[vehicle] || {
-                                  driver: "",
-                                  phone: "",
-                                };
+<div
+  style={{
+    display: "flex",
+    flexDirection: "column",
+    gap: "6px",
+    marginBottom: "10px",
+  }}
+>
+  {vehicleOptions.map((vehicle) => {
+    const selectedVehicles =
+      req.assigned_vehicle?.split(" | ") || [];
 
-                                // ✅ UPDATE VEHICLE
-                                await updateField(req.id, "assigned_vehicle", vehicle);
+    return (
+      <label
+        key={vehicle}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          fontSize: "13px",
+        }}
+      >
+        <input
+          type="checkbox"
+          checked={selectedVehicles.includes(vehicle)}
+          onChange={async (e) => {
+            let updatedVehicles = [...selectedVehicles];
 
-                                // ✅ UPDATE DRIVER NUMBER
-                                await updateField(req.id, "driver_number", vehicleInfo.phone);
-
-                                // SMALL DELAY
-                                await new Promise((resolve) => setTimeout(resolve, 300));
-
-                                // ✅ AUTO STATUS
-                                if (vehicle) {
-                                  await updateField(req.id, "status", "Approved");
-                                } else {
-                                  await updateField(req.id, "status", "Pending");
-                                }
-                              }}
-                  >
-                    <option value="">Unassigned</option>
-                    <option value="Toyota Hilux - SAA 6987">🚐 Toyota Hilux - SAA 6987 - Mr. Lino Gorres</option>
-                    <option value="Toyota Van - SKB 5333">🚐 Toyota Van - SKB 5333 - Mr. Ramil Caneda</option>
-                    <option value="Toyota Innova - SHZ 943">🚐 Toyota Innova - SHZ 943 - Mr. Ernie Soliva </option>
-                    <option value="Toyota Innova - SJS 302">🚐 Toyota Innova - SJS 302 - Mr. Abling Murrilo</option>
-                    <option value="Isuzu Pick-up - SKB 3028">🚐 Isuzu Pick-up - SKB 3028 - Mr. Francisco Talle</option>
-                    <option value="Isuzu Pick-up - SKB 3030">🚐 Isuzu Pick-up - SKB 3030 - Mr. Leonel Quidet</option>
-                    <option value="Isuzu Pick-up - SKB 3029">🚐 Isuzu Pick-up - SKB 3029 - Mr. Junve O. Barbadillo</option>
-                    <option value="Backup Vehicle - BKP 7777">🚨 Backup Vehicle - BKP 7777 - Mr. Carlos M. Dela Cruz</option>
-                  </select>
-
-                  <div className="vehicle">
-                    {req.assigned_vehicle ? `✅ ${req.assigned_vehicle}` : "🚨 No Vehicle Assigned"}
-                  </div>
-                  {req.driver_number && (
-                    <div className="info">
-                      📱 Driver Contact:
-                      <br />
-                      {req.driver_number}
-                    </div>
-                  )}
-                </div>
+            if (e.target.checked) {
+              updatedVehicles.push(vehicle);
+            } else {
+              updatedVehicles = updatedVehicles.filter(
+                (v) => v !== vehicle
               );
-            })}
-          </div>
-        )}
+            }
+
+            const vehicleString =
+              updatedVehicles.join(" | ");
+
+            await updateField(
+              req.id,
+              "assigned_vehicle",
+              vehicleString
+            );
+
+            if (vehicleString) {
+              await updateField(
+                req.id,
+                "status",
+                "Approved"
+              );
+            } else {
+              await updateField(
+                req.id,
+                "status",
+                "Pending"
+              );
+            }
+          }}
+        />
+
+        {vehicle}
+      </label>
+    );
+  })}
+</div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
       </section>
 
       {/* ================= COMPLETED ================= */}
