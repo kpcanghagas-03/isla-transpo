@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const activityVenues = [
   {
@@ -106,6 +106,16 @@ export default function AccomodationPage() {
   const [selectedHotel, setSelectedHotel] = useState<
     (typeof hotels)[number] | null
   >(null);
+
+  const [isMobile, setIsMobile] = useState(false);
+
+useEffect(() => {
+  const check = () => setIsMobile(window.innerWidth < 768);
+  check(); // run once
+  window.addEventListener("resize", check);
+
+  return () => window.removeEventListener("resize", check);
+}, []);
 
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
