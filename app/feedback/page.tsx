@@ -137,31 +137,35 @@ useEffect(() => {
       }}
     >
       {/* DECOR (hidden slightly on mobile feel) */}
-      <div
-        style={{
-          position: "fixed",
-          left: 0,
-          top: 0,
-          width: 80,
-          height: "100%",
-          background:
-            "linear-gradient(180deg,#F27A35,#A61E22,#1F5AA6)",
-          opacity: 0.06,
-        }}
-      />
+    {!isMobile && (
+  <>
+    <div
+      style={{
+        position: "fixed",
+        left: 0,
+        top: 0,
+        width: 80,
+        height: "100%",
+        background:
+          "linear-gradient(180deg,#F27A35,#A61E22,#1F5AA6)",
+        opacity: 0.06,
+      }}
+    />
 
-      <div
-        style={{
-          position: "fixed",
-          right: 0,
-          top: 0,
-          width: 80,
-          height: "100%",
-          background:
-            "linear-gradient(180deg,#1F5AA6,#F27A35,#A61E22)",
-          opacity: 0.06,
-        }}
-      />
+    <div
+      style={{
+        position: "fixed",
+        right: 0,
+        top: 0,
+        width: 80,
+        height: "100%",
+        background:
+          "linear-gradient(180deg,#1F5AA6,#F27A35,#A61E22)",
+        opacity: 0.00,
+      }}
+    />
+  </>
+)}
 
       <div
         style={{
