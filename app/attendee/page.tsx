@@ -47,6 +47,57 @@ export default function AttendeePage() {
     { time: "4:15 PM", vessel: "FRANCISCA 9", arrival: "5:00 PM" },
   ];
 
+  const routes = [
+  {
+    route: "Benoni → Balingoan",
+    trips: benoniToBalingoan,
+    icon: "🏝️",
+    gradientFrom: "#F27A35",
+    gradientTo: "#A61E22",
+  },
+  {
+    route: "Balingoan → Benoni",
+    trips: balingoanToBenoni,
+    icon: "⛴️",
+    gradientFrom: "#1F5AA6",
+    gradientTo: "#4C9FD6",
+  },
+  {
+    route: "Balingoan → Guinsiliban",
+    trips: balingoanToGuinsiliban,
+    icon: "🌊",
+    gradientFrom: "#A61E22",
+    gradientTo: "#F27A35",
+  },
+  {
+    route: "Guinsiliban → Balingoan",
+    trips: guinsilibanToBalingoan,
+    icon: "🚤",
+    gradientFrom: "#1F5AA6",
+    gradientTo: "#A61E22",
+  },
+];
+
+const [activeTab, setActiveTab] = React.useState(0);
+const [startX, setStartX] = React.useState(0);
+
+const handleTouchStart = (e: React.TouchEvent) => {
+  setStartX(e.touches[0].clientX);
+};
+
+const handleTouchEnd = (e: React.TouchEvent) => {
+  const endX = e.changedTouches[0].clientX;
+  const diff = startX - endX;
+
+  if (diff > 50 && activeTab < routes.length - 1) {
+    setActiveTab(activeTab + 1);
+  }
+
+  if (diff < -50 && activeTab > 0) {
+    setActiveTab(activeTab - 1);
+  }
+};
+
   // Fare rates
   const passengerFares = [
   { type: "Regular", price: "₱330.00", color: "#F27A35" },
@@ -308,6 +359,43 @@ className="hide-on-mobile"
     📞 0956 638 7141 | 📍 Benoni, Mahinog, Camiguin
   </p>
 </div>
+
+<div
+  style={{
+    position: "sticky",
+    top: 0,
+    zIndex: 100,
+    background: "rgba(255,255,255,0.95)",
+    backdropFilter: "blur(10px)",
+    borderBottom: "1px solid #E2E8F0",
+    padding: "10px 12px",
+  }}
+>
+  <div style={{ textAlign: "center", marginBottom: 8 }}>
+    <strong style={{ fontSize: 16 }}>⏰ Ferry Schedules</strong>
+  </div>
+
+  <div style={{ display: "flex", overflowX: "auto", gap: 8 }}>
+    {routes.map((r, i) => (
+      <button
+        key={i}
+        onClick={() => setActiveTab(i)}
+        style={{
+          padding: "8px 12px",
+          borderRadius: 20,
+          border: "none",
+          fontSize: 12,
+          fontWeight: 700,
+          background: i === activeTab ? "#F27A35" : "#E2E8F0",
+          color: i === activeTab ? "white" : "#475569",
+        }}
+      >
+        {r.icon} {r.route.split("→")[0].trim()}
+      </button>
+    ))}
+  </div>
+</div>
+
           {/* PASSENGER FARE RATES */}
           <div
             style={{
@@ -494,38 +582,34 @@ className="hide-on-mobile"
                 gap: 16,
               }}
             >
-             <TripCard
-              route="Benoni → Balingoan"
-              trips={benoniToBalingoan}
-              icon="🏝️"
-              gradientFrom="#F27A35"
-              gradientTo="#A61E22"
-            />
+             <div
+  onTouchStart={handleTouchStart}
+  onTouchEnd={handleTouchEnd}
+>
+  <TripCard
+    route={routes[activeTab].route}
+    trips={routes[activeTab].trips}
+    icon={routes[activeTab].icon}
+    gradientFrom={routes[activeTab].gradientFrom}
+    gradientTo={routes[activeTab].gradientTo}
+  />
+</div>
 
-            <TripCard
-              route="Balingoan → Benoni"
-              trips={balingoanToBenoni}
-              icon="⛴️"
-              gradientFrom="#1F5AA6"
-              gradientTo="#4C9FD6"
-            />
-
-            <TripCard
-              route="Balingoan → Guinsiliban"
-              trips={balingoanToGuinsiliban}
-              icon="🌊"
-              gradientFrom="#A61E22"
-              gradientTo="#F27A35"
-            />
-
-            <TripCard
-              route="Guinsiliban → Balingoan"
-              trips={guinsilibanToBalingoan}
-              icon="🚤"
-              gradientFrom="#1F5AA6"
-              gradientTo="#A61E22"
-            />
-            </div>
+<div style={{ textAlign: "center", marginTop: 10 }}>
+  {routes.map((_, i) => (
+    <span
+      key={i}
+      style={{
+        width: 8,
+        height: 8,
+        margin: 4,
+        borderRadius: "50%",
+        display: "inline-block",
+        background: i === activeTab ? "#F27A35" : "#CBD5E1",
+      }}
+    />
+  ))}
+</div>
           </div>
 
           {/* FOOTNOTE */}
@@ -559,6 +643,7 @@ className="hide-on-mobile"
             </p>
           </div>
         </div>
+      </div>
 
         {/* Footer */}
         <p
