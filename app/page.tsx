@@ -385,14 +385,12 @@ className="hide-on-mobile"
                 maxWidth: 1100,
                 margin: "0 auto 40px",
                 padding: "16px",
-                marginLeft: 15,
-                marginRight: 15,
-                background:
-                  "linear-gradient(90deg,#1F5AA6,#4C9FD6)",
+                background: "linear-gradient(90deg,#1F5AA6,#4C9FD6)",
                 color: "#fff",
                 borderRadius: 20,
                 position: "relative",
                 zIndex: 2,
+                textAlign: "center",
               }}
             >
               Welcome to the official transportation management system for
