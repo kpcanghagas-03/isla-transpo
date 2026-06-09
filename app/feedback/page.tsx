@@ -128,7 +128,7 @@ useEffect(() => {
         minHeight: "100vh",
         background:
           "linear-gradient(180deg,#ffffff 0%,#f8fafc 50%,#ffffff 100%)",
-        padding: 16,
+        padding: isMobile ? 10 : 16,
         fontFamily:
           "Segoe UI, Inter, system-ui, -apple-system, Arial, sans-serif",
         WebkitFontSmoothing: "antialiased",
@@ -243,13 +243,14 @@ useEffect(() => {
           {/* NAV BUTTONS (STACK ON MOBILE) */}
           <div
             style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: 8,
-              justifyContent: "center",
-              marginBottom: 30,
-            }}
-          >
+                display: "flex",
+                flexWrap: "wrap",
+                gap: isMobile ? 6 : 8,
+                justifyContent: "center",
+                marginBottom: 30,
+                padding: isMobile ? "0 6px" : 0,
+              }}
+            >
             {[
               "Accommodations",
               "Activity Venues",
@@ -298,7 +299,7 @@ useEffect(() => {
       style={{
         background: "#fff",
         borderRadius: 18,
-        padding: 18,
+        padding: isMobile ? 14 : 18,
         border: "1px solid #E2E8F0",
         cursor: "pointer",
         boxShadow:
@@ -360,8 +361,8 @@ useEffect(() => {
                   onClick={() => setSelectedVenue(v)}
                   style={{
                     background: v.featured ? "#FFF7ED" : "#fff",
-                    borderRadius: 18,
-                    padding: 16,
+                    borderRadius: isMobile ? 12 : 18,
+                    padding: isMobile ? 12 : 16,
                     border: v.featured
                       ? "2px solid #F27A35"
                       : "1px solid #0B3D91",
