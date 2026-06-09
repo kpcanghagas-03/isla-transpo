@@ -42,3 +42,24 @@ body {
 }
 
 }
+
+/* Hide heavy decorations on small screens */
+@media (max-width: 768px) {
+  .hide-on-mobile {
+    display: none !important;
+  }
+}
+
+/* Optional: reduce opacity instead of hiding */
+@media (max-width: 768px) {
+  .soften-on-mobile {
+    opacity: 0.03 !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .soften-on-mobile {
+    transform: scale(0.6);
+    opacity: 0.05;
+  }
+}

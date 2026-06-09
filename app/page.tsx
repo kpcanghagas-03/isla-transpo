@@ -162,20 +162,22 @@ export default function HomePage() {
 <div
   style={{
     position: "absolute",
-    top: 5,
-    left: 15,
+    top: 10,
+    left: 10,
     zIndex: 20,
     display: "flex",
-    alignItems: "center", // important fix
-    gap: 5,
+    alignItems: "center",
+    gap: 4,
+    flexWrap: "wrap",
+    maxWidth: "90%",
   }}
 >
   <img
     src="/bp_logo.png"
     alt="BP Logo"
     style={{
-      width: 68,
-      height: 90,
+      width: "clamp(40px,8vw,68px)",
+      height: "auto",
       objectFit: "contain",
     }}
   />
@@ -184,7 +186,7 @@ export default function HomePage() {
     src="/dost-normin.png"
     alt="DOST Logo"
     style={{
-      width: 190,
+      width: "clamp(100px,28vw,190px)",
       height: "auto",
       objectFit: "contain",
     }}
@@ -192,38 +194,37 @@ export default function HomePage() {
 </div>
         {/* LEFT DECORATION */}
         <div
-          style={{
-            position: "fixed",
-            left: 0,
-            top: 0,
-            width: 120,
-            height: "100%",
-            background:
-              "linear-gradient(180deg,#F27A35,#A61E22,#1F5AA6)",
-            opacity: 0.08,
-            clipPath:
-              "polygon(0 0,100% 0,70% 50%,100% 100%,0 100%)",
-          }}
-        />
+  className="hide-on-mobile"
+  style={{
+    position: "fixed",
+    left: 0,
+    top: 0,
+    width: 120,
+    height: "100%",
+    background: "linear-gradient(180deg,#F27A35,#A61E22,#1F5AA6)",
+    opacity: 0.08,
+    clipPath: "polygon(0 0,100% 0,70% 50%,100% 100%,0 100%)",
+  }}
+/>
 
         {/* RIGHT DECORATION */}
-        <div
-          style={{
-            position: "fixed",
-            right: 0,
-            top: 0,
-            width: 120,
-            height: "100%",
-            background:
-              "linear-gradient(180deg,#1F5AA6,#F27A35,#A61E22)",
-            opacity: 0.08,
-            clipPath:
-              "polygon(30% 0,100% 0,100% 100%,0 100%,30% 50%)",
-          }}
-        />
+       <div
+  className="hide-on-mobile"
+  style={{
+    position: "fixed",
+    right: 0,
+    top: 0,
+    width: 120,
+    height: "100%",
+    background: "linear-gradient(180deg,#1F5AA6,#F27A35,#A61E22)",
+    opacity: 0.08,
+    clipPath: "polygon(30% 0,100% 0,100% 100%,0 100%,30% 50%)",
+  }}
+/>
 
             {/* RSTW BACKGROUND DESIGN */}
 <div
+className="hide-on-mobile"
   style={{
     position: "absolute",
     inset: 0,
@@ -234,6 +235,7 @@ export default function HomePage() {
 ></div>
 
 <div
+className="hide-on-mobile"
   style={{
     position: "absolute",
     top: -80,
@@ -248,6 +250,7 @@ export default function HomePage() {
 />
 
 <div
+className="hide-on-mobile"
   style={{
     position: "absolute",
     bottom: -120,
@@ -262,6 +265,7 @@ export default function HomePage() {
 />
 
 <div
+className="hide-on-mobile"
   style={{
     position: "absolute",
     top: 220,
@@ -275,6 +279,7 @@ export default function HomePage() {
 />
 
 <div
+className="hide-on-mobile"
   style={{
     position: "absolute",
     top: 380,
@@ -288,6 +293,7 @@ export default function HomePage() {
 />
 
 <div
+className="hide-on-mobile"
   style={{
     position: "absolute",
     top: 150,
@@ -301,6 +307,7 @@ export default function HomePage() {
 />
 
 <div
+className="hide-on-mobile"
   style={{
     position: "absolute",
     bottom: 180,
@@ -346,7 +353,9 @@ export default function HomePage() {
         >
           <h1
             style={{
-              fontSize: "clamp(48px,8vw,84px)",
+              fontSize: "clamp(34px,10vw,84px)",
+              lineHeight: 1.1,
+              wordBreak: "break-word",
               fontWeight: 900,
               marginBottom: 10,
               background:
@@ -375,7 +384,9 @@ export default function HomePage() {
               style={{
                 maxWidth: 1100,
                 margin: "0 auto 40px",
-                padding: "20px 30px",
+                padding: "16px",
+                marginLeft: 15,
+                marginRight: 15,
                 background:
                   "linear-gradient(90deg,#1F5AA6,#4C9FD6)",
                 color: "#fff",
@@ -397,8 +408,7 @@ export default function HomePage() {
             margin: "0 auto",
             padding: "20px",
             display: "grid",
-            gridTemplateColumns:
-              "repeat(auto-fit,minmax(280px,1fr))",
+            gridTemplateColumns:"repeat(auto-fit,minmax(250px,1fr))",
             gap: 24,
             position: "relative",
             zIndex: 2,
@@ -508,7 +518,8 @@ export default function HomePage() {
       display: "flex",
       gap: 20,
       alignItems: "center",
-      justifyContent: "space-between",
+      justifyContent: "center",
+      textAlign: "center",
       flexWrap: "wrap",
     }}
   >
@@ -528,8 +539,9 @@ export default function HomePage() {
       src="/rstw_2026.jpg"
       alt="RSTW Banner"
       style={{
-        width: 500,
-        height: 100,
+        width: "100%",
+        maxWidth: 500,
+        height: "auto",
         objectFit: "cover",
         borderRadius: 30,
         boxShadow: "0 6px 18px rgba(0,0,0,0.12)",
@@ -571,10 +583,11 @@ function Card({
     <div
       style={{
         background: "#fff",
-        padding: 30,
+        padding: 20,
         borderRadius: 24,
         boxShadow: "0 12px 30px rgba(0,0,0,.08)",
         borderTop: `6px solid ${color}`,
+        wordBreak: "break-word",
       }}
     >
       <h2
