@@ -111,7 +111,7 @@ export default function AttendeePage() {
     </div>
 
     {/* Cards Stack */}
-    <div style={{ padding: 14 }}>
+    <div style={{ padding: "12px" }}>
       {trips.map((trip, index) => (
         <div
           key={index}
@@ -188,6 +188,7 @@ export default function AttendeePage() {
     >
       {/* LEFT DECORATION */}
 <div
+className="hide-on-mobile"
   style={{
     position: "fixed",
     left: 0,
@@ -204,6 +205,7 @@ export default function AttendeePage() {
 
 {/* RIGHT DECORATION */}
 <div
+className="hide-on-mobile"
   style={{
     position: "fixed",
     right: 0,
@@ -242,17 +244,15 @@ export default function AttendeePage() {
         </button>
 
         {/* MAIN CARD */}
-        <div
-          style={{
-            background: "#ffffff",
-            
-            borderRadius: 30,
-            padding: "40px 35px",
-            border: "1px solid rgba(255,255,255,0.25)",
-            boxShadow: "0 25px 60px rgba(0,0,0,0.4)",
-          }}
-        >
-          {/* Header Section */}
+       <div
+  style={{
+    background: "#ffffff",
+    borderRadius: 30,
+    padding: "clamp(18px, 4vw, 40px)",
+    boxShadow: "0 25px 60px rgba(0,0,0,0.4)",
+  }}
+>
+          
           {/* Header Section */}
 <div style={{ textAlign: "center", marginBottom: 35 }}>
   <div
@@ -350,7 +350,7 @@ export default function AttendeePage() {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+                gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
                 gap: 16,
               }}
             >
@@ -433,7 +433,7 @@ export default function AttendeePage() {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+                gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
                 gap: 16,
               }}
             >
@@ -490,7 +490,7 @@ export default function AttendeePage() {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+                gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
                 gap: 16,
               }}
             >
