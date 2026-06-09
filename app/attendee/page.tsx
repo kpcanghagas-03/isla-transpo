@@ -80,22 +80,34 @@ export default function AttendeePage() {
 
 const [activeTab, setActiveTab] = React.useState(0);
 const [startX, setStartX] = React.useState(0);
+const [currentX, setCurrentX] = React.useState(0);
+const [isDragging, setIsDragging] = React.useState(false);
 
 const handleTouchStart = (e: React.TouchEvent) => {
   setStartX(e.touches[0].clientX);
+  setIsDragging(true);
 };
 
-const handleTouchEnd = (e: React.TouchEvent) => {
-  const endX = e.changedTouches[0].clientX;
-  const diff = startX - endX;
+const handleTouchMove = (e: React.TouchEvent) => {
+  if (!isDragging) return;
 
-  if (diff > 50 && activeTab < routes.length - 1) {
-    setActiveTab(activeTab + 1);
+  setCurrentX(e.touches[0].clientX - startX);
+};
+
+const handleTouchEnd = () => {
+  setIsDragging(false);
+
+  const threshold = 60;
+
+  if (currentX < -threshold && activeTab < routes.length - 1) {
+    setActiveTab((prev) => prev + 1);
   }
 
-  if (diff < -50 && activeTab > 0) {
-    setActiveTab(activeTab - 1);
+  if (currentX > threshold && activeTab > 0) {
+    setActiveTab((prev) => prev - 1);
   }
+
+  setCurrentX(0);
 };
 
   // Fare rates
@@ -584,67 +596,46 @@ className="hide-on-mobile"
             >
              <div
   onTouchStart={handleTouchStart}
+  onTouchMove={handleTouchMove}
   onTouchEnd={handleTouchEnd}
+  style={{
+    overflow: "hidden",
+    borderRadius: 18,
+    cursor: "grab",
+    userSelect: "none",
+    WebkitUserSelect: "none",
+    touchAction: "pan-y",
+  }}
 >
-  <TripCard
-    route={routes[activeTab].route}
-    trips={routes[activeTab].trips}
-    icon={routes[activeTab].icon}
-    gradientFrom={routes[activeTab].gradientFrom}
-    gradientTo={routes[activeTab].gradientTo}
-  />
-</div>
-
-<div style={{ textAlign: "center", marginTop: 10 }}>
-  {routes.map((_, i) => (
-    <span
-      key={i}
-      style={{
-        width: 8,
-        height: 8,
-        margin: 4,
-        borderRadius: "50%",
-        display: "inline-block",
-        background: i === activeTab ? "#F27A35" : "#CBD5E1",
-      }}
-    />
-  ))}
-</div>
-          </div>
-
-          {/* FOOTNOTE */}
-          <div
-            style={{
-              marginTop: 30,
-              textAlign: "center",
-              background: "#FFF7ED",
-              border: "1px solid #FDBA74",
-              borderRadius: 16,
-              padding: 20,
-            }}
-          >
-            <p
-              style={{
-                color: "#EA580C",
-                fontSize: 14,
-                marginBottom: 8,
-              }}
-            >
-              ⚠️ Schedule may change depending on weather and ferry operations.
-            </p>
-            <p
-              style={{
-                color: "#475569",
-                fontSize: 13,
-              }}
-            >
-              Contact St. Benedict Ocean Shipping Lines at{" "}
-              <strong>0956 638 7141</strong> for updates.
-            </p>
-          </div>
-        </div>
+  <div
+    style={{
+      display: "flex",
+      transform: `translateX(calc(-${activeTab * 100}% + ${currentX}px))`,
+      transition: isDragging
+        ? "none"
+        : "transform 0.45s cubic-bezier(0.22, 1, 0.36, 1)",
+    }}
+  >
+    {routes.map((r, i) => (
+      <div
+        key={i}
+        style={{
+          minWidth: "100%",
+          flexShrink: 0,
+          padding: "0 6px",
+        }}
+      >
+        <TripCard
+          route={r.route}
+          trips={r.trips}
+          icon={r.icon}
+          gradientFrom={r.gradientFrom}
+          gradientTo={r.gradientTo}
+        />
       </div>
-
+    ))}
+  </div>
+</div>
         {/* Footer */}
         <p
           style={{
@@ -657,6 +648,9 @@ className="hide-on-mobile"
           © 2026 Regional Science & Technology Week — Camiguin
         </p>
       </div>
+    </div>
+  </div>
+</div>
     </main>
   );
 }
