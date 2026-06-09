@@ -159,33 +159,33 @@ export default function AdminPage() {
 
   // ================= DRIVER NUMBERS =================
   const vehicleMap: Record<string, { driver: string; phone: string }> = {
-  "Van 1 - ZAM 1023": {
-    driver: "Mr. Lino Gorres",
-    phone: "09171234567",
+  "Toyota Hilux - SAA 6987": {
+    driver: "Mr. Lino A. Gorres Jr.",
+    phone: "09178048369",
   },
-  "Van 2 - ZAM 1456": {
-    driver: "Mr. Ramil Caneda",
-    phone: "09181234567",
+  "Toyota Van - SKB 5333": {
+    driver: "Mr. Ramil M. Caneda",
+    phone: "09178036974",
   },
-  "Van 3 - ZAM 8831": {
-    driver: "Mr. Ernie Soliva",
-    phone: "09191234567",
+  "Toyota Innova - SHZ 943": {
+    driver: "Mr. Ernesto A. Soliva",
+    phone: "09178579321",
   },
-  "Van 4 - ZAM 1942": {
-    driver: "Mr. Abling Murillo",
+  "Toyota Innova - SJS 302": {
+    driver: "Mr. Pablito D. Murillo",
     phone: "09654661221",
   },
-  "Van 5 - ZAM 1952": {
-    driver: "Mr. Francisco Talle",
+  "Isuzu Pick-up - SKB 3028": {
+    driver: "Mr. Francisco F. Talle Jr.",
     phone: "09177097523",
   },
-  "Van 6 - ZAM 1962": {
+  "Isuzu Pick-up - SKB 3030": {
     driver: "Mr. Leonel Quidet",
     phone: "09178579197",
   },
-  "Van 7 - ZAM 5555": {
-    driver: "Driver 7",
-    phone: "09231234567",
+  "Isuzu Pick-up - SKB 3029": {
+    driver: "Mr. Junve O. Barbadillo",
+    phone: "09178579129",
   },
   "Backup Vehicle - BKP 7777": {
     driver: "Driver 8",
@@ -605,14 +605,14 @@ export default function AdminPage() {
                               }}
                   >
                     <option value="">Unassigned</option>
-                    <option value="Van 1 - ZAM 1023">🚐 Van 1 - ZAM 1023 - Mr. Lino Gorres</option>
-                    <option value="Van 2 - ZAM 1456">🚐 Van 2 - ZAM 1456 - Mr. Ramil Caneda</option>
-                    <option value="Van 3 - ZAM 8831">🚐 Van 3  - ZAM 8831 - Mr. Ernie Soliva </option>
-                    <option value="Van 4 - ZAM 1942">🚐 Van 4  - ZAM 1942 - Mr. Abling Murrilo</option>
-                    <option value="Van 5 - ZAM 1952">🚐 Van 5  - ZAM 1952 - Mr. Francisco Talle</option>
-                    <option value="Van 6 - ZAM 1962">🚐 Van 6  - ZAM 1962 - Mr. Leonel Quidet</option>
-                    <option value="Van 7 - ZAM 5555">🚐 Van 7 - ZAM 5555 - Driver 7</option>
-                    <option value="Backup Vehicle - BKP 7777">🚨 Backup Vehicle - BKP 7777 - Driver 8</option>
+                    <option value="Toyota Hilux - SAA 6987">🚐 Toyota Hilux - SAA 6987 - Mr. Lino Gorres</option>
+                    <option value="Toyota Van - SKB 5333">🚐 Toyota Van - SKB 5333 - Mr. Ramil Caneda</option>
+                    <option value="Toyota Innova - SHZ 943">🚐 Toyota Innova - SHZ 943 - Mr. Ernie Soliva </option>
+                    <option value="Toyota Innova - SJS 302">🚐 Toyota Innova - SJS 302 - Mr. Abling Murrilo</option>
+                    <option value="Isuzu Pick-up - SKB 3028">🚐 Isuzu Pick-up - SKB 3028 - Mr. Francisco Talle</option>
+                    <option value="Isuzu Pick-up - SKB 3030">🚐 Isuzu Pick-up - SKB 3030 - Mr. Leonel Quidet</option>
+                    <option value="Isuzu Pick-up - SKB 3029">🚐 Isuzu Pick-up - SKB 3029 - Mr. Junve O. Barbadillo</option>
+                    <option value="Backup Vehicle - BKP 7777">🚨 Backup Vehicle - BKP 7777 - Mr. Carlos M. Dela Cruz</option>
                   </select>
 
                   <div className="vehicle">
