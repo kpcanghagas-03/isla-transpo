@@ -387,7 +387,7 @@ className="hide-on-mobile"
                 padding: "16px",
                 background: "linear-gradient(90deg,#1F5AA6,#4C9FD6)",
                 color: "#fff",
-                borderRadius: 20,
+                borderRadius: 15,
                 position: "relative",
                 zIndex: 2,
                 textAlign: "center",
