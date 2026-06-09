@@ -140,6 +140,7 @@ useEffect(() => {
     {!isMobile && (
   <>
     <div
+    className="hide-on-mobile"
       style={{
         position: "fixed",
         left: 0,
@@ -153,6 +154,7 @@ useEffect(() => {
     />
 
     <div
+    className="hide-on-mobile"
       style={{
         position: "fixed",
         right: 0,
