@@ -433,7 +433,7 @@ className="hide-on-mobile"
                     textAlign: "center",
                     boxShadow: "0 6px 20px rgba(0,0,0,0.15)",
                     transition: "transform 0.2s",
-                    marginBottom: index === passengerFares.length - 1 ? 0 : 10,
+                    border: "1px solid rgba(0,0,0,0.1)",
                   }}
                 >
                   <p
