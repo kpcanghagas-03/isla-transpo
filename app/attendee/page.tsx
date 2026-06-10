@@ -489,31 +489,37 @@ className="hide-on-mobile"
             >
               ⏰ Daily Trip Schedules
             </h2>
+
+            <div
+  style={{
+    display: "flex",
+    overflowX: "auto",
+    gap: 8,
+    marginBottom: 20,
+    justifyContent: "center",
+    flexWrap: "wrap",
+  }}
+>
+  {routes.map((r, i) => (
+    <button
+      key={i}
+      onClick={() => setActiveTab(i)}
+      style={{
+        padding: "8px 12px",
+        borderRadius: 20,
+        border: "none",
+        fontSize: 12,
+        fontWeight: 700,
+        background: i === activeTab ? "#F27A35" : "#E2E8F0",
+        color: i === activeTab ? "white" : "#475569",
+        cursor: "pointer",
+      }}
+    >
+      {r.icon} {r.route.split("→")[0].trim()}
+    </button>
+  ))}
+</div>
               
-            <div
-            style={{
-              position: "sticky",
-              top: 0,
-              zIndex: 100,
-              background: "rgba(255,255,255,0.95)",
-              backdropFilter: "blur(10px)",
-              borderBottom: "1px solid #E2E8F0",
-              padding: "10px 12px",
-            }}
-          >
-            <div style={{ textAlign: "center", marginBottom: 8 }}>
-              <strong style={{ fontSize: 16, color: "#0B3D91" }}
-              >⏰ Ferry Schedules
-              </strong>
-            </div>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-                gap: 16,
-              }}
-            >
-             <div
   onTouchStart={handleTouchStart}
   onTouchMove={handleTouchMove}
   onTouchEnd={handleTouchEnd}
@@ -637,7 +643,7 @@ className="hide-on-mobile"
               ))}
             </div>
           </div>
-          
+
         {/* Footer */}
         <p
           style={{
