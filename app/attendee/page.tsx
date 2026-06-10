@@ -413,13 +413,7 @@ className="hide-on-mobile"
               Passenger Fare Rates (Benoni ↔ Balingoan)
             </h2>
 
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-                gap: 16,
-              }}
-            >
+            <div>
               {passengerFares.map((fare, index) => (
                 <div
                   key={index}
@@ -430,6 +424,7 @@ className="hide-on-mobile"
                     textAlign: "center",
                     boxShadow: "0 6px 20px rgba(0,0,0,0.15)",
                     transition: "transform 0.2s",
+                    wordBreak: "break-word",  
                   }}
                 >
                   <p
@@ -456,6 +451,21 @@ className="hide-on-mobile"
               ))}
             </div>
           </div>
+              
+          {/* TRIP SCHEDULES */}
+          <div style={{ marginBottom: 10 }}>
+            <h2
+              style={{
+                color: "#1F2937",
+                fontSize: 24,
+                fontWeight: "800",
+                marginBottom: 20,
+                textAlign: "center",
+              }}
+            >
+              ⏰ Daily Trip Schedules
+            </h2>
+            
                <div style={{ display: "flex", overflowX: "auto", gap: 8 }}>
     {routes.map((r, i) => (
       <button
@@ -480,20 +490,7 @@ className="hide-on-mobile"
       </button>
     ))}
   </div>
-          {/* TRIP SCHEDULES */}
-          <div style={{ marginBottom: 10 }}>
-            <h2
-              style={{
-                color: "#1F2937",
-                fontSize: 24,
-                fontWeight: "800",
-                marginBottom: 20,
-                textAlign: "center",
-              }}
-            >
-              ⏰ Daily Trip Schedules
-            </h2>
-              
+
 <div
   onTouchStart={handleTouchStart}
   onTouchMove={handleTouchMove}
