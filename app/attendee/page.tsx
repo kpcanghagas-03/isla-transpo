@@ -283,7 +283,15 @@ className="hide-on-mobile"
   }}
 />
 
-      <div style={{ maxWidth: 1000, margin: "0 auto" }}>
+              <div
+          style={{
+            maxWidth: 1000,
+            margin: "0 auto",
+            display: "flex",
+            flexDirection: "column",
+            gap: 16,
+          }}
+        >
         {/* Back Button */}
         <button
           onClick={() => router.push("/")}
