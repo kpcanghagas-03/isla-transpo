@@ -372,30 +372,6 @@ className="hide-on-mobile"
   </p>
 </div>
 
-  <div style={{ display: "flex", overflowX: "auto", gap: 8 }}>
-    {routes.map((r, i) => (
-      <button
-        key={i}
-        onClick={() => setActiveTab(i)}
-        style={{
-          padding: "8px 12px",
-          borderRadius: 20,
-          border: "none",
-          fontSize: 12,
-          fontWeight: 700,
-          background: i === activeTab ? "#F27A35" : "#E2E8F0",
-          color: i === activeTab ? "white" : "#475569",
-        }}
-      >
-        {
-          i === 0 ? "🏝️ Benoni-Balingoan" :
-          i === 1 ? "⛴️ Balingoan-Benoni" :
-          i === 2 ? "🌊 Balingoan-Guinsiliban" :
-          "🚤 Guinsiliban-Balingoan"
-        }
-      </button>
-    ))}
-  </div>
 </div>
 
           {/* PASSENGER FARE RATES */}
@@ -480,7 +456,30 @@ className="hide-on-mobile"
               ))}
             </div>
           </div>
-
+               <div style={{ display: "flex", overflowX: "auto", gap: 8 }}>
+    {routes.map((r, i) => (
+      <button
+        key={i}
+        onClick={() => setActiveTab(i)}
+        style={{
+          padding: "8px 12px",
+          borderRadius: 20,
+          border: "none",
+          fontSize: 12,
+          fontWeight: 700,
+          background: i === activeTab ? "#F27A35" : "#E2E8F0",
+          color: i === activeTab ? "white" : "#475569",
+        }}
+      >
+        {
+          i === 0 ? "🏝️ Benoni-Balingoan" :
+          i === 1 ? "⛴️ Balingoan-Benoni" :
+          i === 2 ? "🌊 Balingoan-Guinsiliban" :
+          "🚤 Guinsiliban-Balingoan"
+        }
+      </button>
+    ))}
+  </div>
           {/* TRIP SCHEDULES */}
           <div style={{ marginBottom: 10 }}>
             <h2
@@ -494,38 +493,6 @@ className="hide-on-mobile"
             >
               ⏰ Daily Trip Schedules
             </h2>
-
-            <div
-  style={{
-    display: "flex",
-    overflowX: "auto",
-    gap: 8,
-    marginBottom: 20,
-    justifyContent: "center",
-    flexWrap: "wrap",
-  }}
->
-  {routes.map((r, i) => (
-    <button
-      key={i}
-      onClick={() => setActiveTab(i)}
-     style={{
-        padding: "10px 14px",
-        borderRadius: 20,
-        border: "none",
-        fontSize: "clamp(10px, 2vw, 13px)",
-        fontWeight: 700,
-        background: i === activeTab ? "#F27A35" : "#E2E8F0",
-        color: i === activeTab ? "white" : "#475569",
-        cursor: "pointer",
-        whiteSpace: "nowrap",
-        flexShrink: 0,
-      }}
-    >
-      {r.icon} {r.route.split("→")[0].trim()}
-    </button>
-  ))}
-</div>
               
 <div
   onTouchStart={handleTouchStart}
