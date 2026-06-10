@@ -418,7 +418,7 @@ className="hide-on-mobile"
                 display: "grid",
                 gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
                 gap: 16,
-                marginBottom: 25,
+                marginBottom: 10,
               }}
             >
               {passengerFares.map((fare, index) => (
@@ -431,6 +431,7 @@ className="hide-on-mobile"
                     textAlign: "center",
                     boxShadow: "0 6px 20px rgba(0,0,0,0.15)",
                     transition: "transform 0.2s",
+                    marginBottom: index === passengerFares.length - 1 ? 0 : 10,
                   }}
                 >
                   <p
@@ -486,6 +487,7 @@ className="hide-on-mobile"
           background: i === activeTab ? "#F27A35" : "#E2E8F0",
           color: i === activeTab ? "white" : "#475569",
           marginBottom: 25,
+          alignItems: "center",
         }}
       >
         {
