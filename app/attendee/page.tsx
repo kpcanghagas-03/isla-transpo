@@ -372,21 +372,6 @@ className="hide-on-mobile"
   </p>
 </div>
 
-<div
-  style={{
-    position: "sticky",
-    top: 0,
-    zIndex: 100,
-    background: "rgba(255,255,255,0.95)",
-    backdropFilter: "blur(10px)",
-    borderBottom: "1px solid #E2E8F0",
-    padding: "10px 12px",
-  }}
->
-  <div style={{ textAlign: "center", marginBottom: 8 }}>
-    <strong style={{ fontSize: 16 }}>⏰ Ferry Schedules</strong>
-  </div>
-
   <div style={{ display: "flex", overflowX: "auto", gap: 8 }}>
     {routes.map((r, i) => (
       <button
@@ -491,7 +476,87 @@ className="hide-on-mobile"
             </div>
           </div>
 
-          {/* VEHICLE FARE RATES */}
+          {/* TRIP SCHEDULES */}
+          <div style={{ marginBottom: 10 }}>
+            <h2
+              style={{
+                color: "#1F2937",
+                fontSize: 24,
+                fontWeight: "800",
+                marginBottom: 20,
+                textAlign: "center",
+              }}
+            >
+              ⏰ Daily Trip Schedules
+            </h2>
+              
+            <div
+            style={{
+              position: "sticky",
+              top: 0,
+              zIndex: 100,
+              background: "rgba(255,255,255,0.95)",
+              backdropFilter: "blur(10px)",
+              borderBottom: "1px solid #E2E8F0",
+              padding: "10px 12px",
+            }}
+          >
+            <div style={{ textAlign: "center", marginBottom: 8 }}>
+              <strong style={{ fontSize: 16, color: "#0B3D91" }}
+              >⏰ Ferry Schedules
+              </strong>
+            </div>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+                gap: 16,
+              }}
+            >
+             <div
+  onTouchStart={handleTouchStart}
+  onTouchMove={handleTouchMove}
+  onTouchEnd={handleTouchEnd}
+  style={{
+    overflow: "hidden",
+    borderRadius: 18,
+    cursor: "grab",
+    userSelect: "none",
+    WebkitUserSelect: "none",
+    touchAction: "pan-y",
+  }}
+>
+  <div
+    style={{
+      display: "flex",
+      transform: `translateX(calc(-${activeTab * 100}% + ${currentX}px))`,
+      transition: isDragging
+        ? "none"
+        : "transform 0.45s cubic-bezier(0.22, 1, 0.36, 1)",
+    }}
+  >
+    {routes.map((r, i) => (
+      <div
+        key={i}
+        style={{
+          minWidth: "100%",
+          flexShrink: 0,
+          padding: "0 6px",
+        }}
+      >
+        <TripCard
+          route={r.route}
+          trips={r.trips}
+          icon={r.icon}
+          gradientFrom={r.gradientFrom}
+          gradientTo={r.gradientTo}
+        />
+      </div>
+    ))}
+  </div>
+</div>
+
+ {/* VEHICLE FARE RATES */}
           <div
             style={{
               background: "rgba(255,255,255,0.95)",
@@ -572,70 +637,7 @@ className="hide-on-mobile"
               ))}
             </div>
           </div>
-
-          {/* TRIP SCHEDULES */}
-          <div style={{ marginBottom: 10 }}>
-            <h2
-              style={{
-                color: "#1F2937",
-                fontSize: 24,
-                fontWeight: "800",
-                marginBottom: 20,
-                textAlign: "center",
-              }}
-            >
-              ⏰ Daily Trip Schedules
-            </h2>
-
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-                gap: 16,
-              }}
-            >
-             <div
-  onTouchStart={handleTouchStart}
-  onTouchMove={handleTouchMove}
-  onTouchEnd={handleTouchEnd}
-  style={{
-    overflow: "hidden",
-    borderRadius: 18,
-    cursor: "grab",
-    userSelect: "none",
-    WebkitUserSelect: "none",
-    touchAction: "pan-y",
-  }}
->
-  <div
-    style={{
-      display: "flex",
-      transform: `translateX(calc(-${activeTab * 100}% + ${currentX}px))`,
-      transition: isDragging
-        ? "none"
-        : "transform 0.45s cubic-bezier(0.22, 1, 0.36, 1)",
-    }}
-  >
-    {routes.map((r, i) => (
-      <div
-        key={i}
-        style={{
-          minWidth: "100%",
-          flexShrink: 0,
-          padding: "0 6px",
-        }}
-      >
-        <TripCard
-          route={r.route}
-          trips={r.trips}
-          icon={r.icon}
-          gradientFrom={r.gradientFrom}
-          gradientTo={r.gradientTo}
-        />
-      </div>
-    ))}
-  </div>
-</div>
+          
         {/* Footer */}
         <p
           style={{
