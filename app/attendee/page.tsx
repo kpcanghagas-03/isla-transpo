@@ -429,7 +429,7 @@ className="hide-on-mobile"
                   style={{
                     background: `linear-gradient(135deg, ${fare.color}, ${fare.color}dd)`,
                     borderRadius: 16,
-                    padding: 18,
+                    padding: 16,
                     textAlign: "center",
                     boxShadow: "0 6px 20px rgba(0,0,0,0.15)",
                     transition: "transform 0.2s",
@@ -450,7 +450,7 @@ className="hide-on-mobile"
                     style={{
                       color: "white",
                       fontSize: 22,
-                      fontWeight: 800,
+                      fontWeight: 600,
                       margin: 0,
                     }}
                   >
