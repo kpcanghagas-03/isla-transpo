@@ -345,7 +345,7 @@ className="hide-on-mobile"
       WebkitTextFillColor: "transparent",
       fontSize: "clamp(32px, 6vw, 52px)",
       fontWeight: "900",
-      marginBottom: 10,
+      marginBottom: 25,
       lineHeight: 1.1,
     }}
   >
@@ -366,6 +366,7 @@ className="hide-on-mobile"
     style={{
       color: "#475569",
       fontSize: 14,
+      marginBottom: 25,
     }}
   >
     📞 0956 638 7141 | 📍 Benoni, Mahinog, Camiguin
@@ -494,7 +495,7 @@ className="hide-on-mobile"
                   fontWeight: 700,
                   background: i === activeTab ? "#F27A35" : "#E2E8F0",
                   color: i === activeTab ? "white" : "#475569",
-                  marginBottom: 25,
+                  marginBottom: 10,
                   alignItems: "center",
                 }}
                >
