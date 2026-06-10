@@ -413,7 +413,13 @@ className="hide-on-mobile"
               Passenger Fare Rates (Benoni ↔ Balingoan)
             </h2>
 
-            <div>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+                gap: 16,
+              }}
+            >
               {passengerFares.map((fare, index) => (
                 <div
                   key={index}
@@ -424,7 +430,6 @@ className="hide-on-mobile"
                     textAlign: "center",
                     boxShadow: "0 6px 20px rgba(0,0,0,0.15)",
                     transition: "transform 0.2s",
-                    wordBreak: "break-word",  
                   }}
                 >
                   <p
@@ -490,7 +495,7 @@ className="hide-on-mobile"
       </button>
     ))}
   </div>
-
+  
 <div
   onTouchStart={handleTouchStart}
   onTouchMove={handleTouchMove}
