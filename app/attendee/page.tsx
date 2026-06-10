@@ -520,6 +520,7 @@ className="hide-on-mobile"
   ))}
 </div>
               
+<div
   onTouchStart={handleTouchStart}
   onTouchMove={handleTouchMove}
   onTouchEnd={handleTouchEnd}
@@ -657,8 +658,6 @@ className="hide-on-mobile"
         </p>
       </div>
     </div>
-  </div>
-</div>
     </main>
   );
 }
