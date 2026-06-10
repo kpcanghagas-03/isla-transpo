@@ -311,7 +311,7 @@ className="hide-on-mobile"
   style={{
     background: "#ffffff",
     borderRadius: 30,
-    padding: "clamp(18px, 4vw, 40px)",
+    padding: "clamp(16px, 4vw, 40px)",
     boxShadow: "0 25px 60px rgba(0,0,0,0.4)",
   }}
 >
@@ -343,9 +343,9 @@ className="hide-on-mobile"
       background: "linear-gradient(90deg,#F27A35,#A61E22,#1F5AA6)",
       WebkitBackgroundClip: "text",
       WebkitTextFillColor: "transparent",
-      fontSize: "clamp(30px, 6vw, 52px)",
-      fontWeight: "900",
-      marginBottom: 20,
+      fontSize: "clamp(25px, 6vw, 52px)",
+      fontWeight: "800",
+      marginBottom: 10,
       lineHeight: 1.0,
     }}
   >
