@@ -387,7 +387,12 @@ className="hide-on-mobile"
           color: i === activeTab ? "white" : "#475569",
         }}
       >
-        {r.icon} {r.route.split("→")[0].trim()}
+        {
+          i === 0 ? "🏝️ Benoni-Balingoan" :
+          i === 1 ? "⛴️ Balingoan-Benoni" :
+          i === 2 ? "🌊 Balingoan-Guinsiliban" :
+          "🚤 Guinsiliban-Balingoan"
+        }
       </button>
     ))}
   </div>
@@ -504,15 +509,17 @@ className="hide-on-mobile"
     <button
       key={i}
       onClick={() => setActiveTab(i)}
-      style={{
-        padding: "8px 12px",
+     style={{
+        padding: "10px 14px",
         borderRadius: 20,
         border: "none",
-        fontSize: 12,
+        fontSize: "clamp(10px, 2vw, 13px)",
         fontWeight: 700,
         background: i === activeTab ? "#F27A35" : "#E2E8F0",
         color: i === activeTab ? "white" : "#475569",
         cursor: "pointer",
+        whiteSpace: "nowrap",
+        flexShrink: 0,
       }}
     >
       {r.icon} {r.route.split("→")[0].trim()}
