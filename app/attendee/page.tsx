@@ -343,10 +343,10 @@ className="hide-on-mobile"
       background: "linear-gradient(90deg,#F27A35,#A61E22,#1F5AA6)",
       WebkitBackgroundClip: "text",
       WebkitTextFillColor: "transparent",
-      fontSize: "clamp(32px, 6vw, 52px)",
+      fontSize: "clamp(30px, 6vw, 52px)",
       fontWeight: "900",
       marginBottom: 10,
-      lineHeight: 1.1,
+      lineHeight: 1.0,
     }}
   >
     Barge Schedule & Trips
@@ -366,7 +366,7 @@ className="hide-on-mobile"
     style={{
       color: "#475569",
       fontSize: 14,
-      marginBottom: 25,
+      marginBottom: 10,
     }}
   >
     📞 0956 638 7141 | 📍 Benoni, Mahinog, Camiguin
