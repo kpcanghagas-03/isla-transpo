@@ -345,7 +345,7 @@ className="hide-on-mobile"
       WebkitTextFillColor: "transparent",
       fontSize: "clamp(30px, 6vw, 52px)",
       fontWeight: "900",
-      marginBottom: 10,
+      marginBottom: 20,
       lineHeight: 1.0,
     }}
   >
