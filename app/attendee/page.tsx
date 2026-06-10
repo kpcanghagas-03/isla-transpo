@@ -381,7 +381,7 @@ className="hide-on-mobile"
               background: "rgba(255,255,255,0.95)",
               borderRadius: 22,
               padding: 25,
-              marginTop: 25,
+              marginTop: "clamp(10px, 2vw, 20px)",
               marginBottom: 25,
               boxShadow: "0 10px 40px rgba(0,0,0,0.15)",
             }}
@@ -462,7 +462,7 @@ className="hide-on-mobile"
           </div>
               
           {/* TRIP SCHEDULES */}
-          <div style={{ marginBottom: 10 }}>
+          <div style={{ marginBottom: 5 }}>
             <h2
               style={{
                 color: "#1F2937",
