@@ -473,23 +473,31 @@ className="hide-on-mobile"
               ⏰ Daily Trip Schedules
             </h2>
             
-               <div style={{ display: "flex", overflowX: "auto", gap: 8 }}>
-    {routes.map((r, i) => (
-      <button
-        key={i}
-        onClick={() => setActiveTab(i)}
-        style={{
-          padding: "8px 12px",
-          borderRadius: 20,
-          border: "none",
-          fontSize: 12,
-          fontWeight: 700,
-          background: i === activeTab ? "#F27A35" : "#E2E8F0",
-          color: i === activeTab ? "white" : "#475569",
-          marginBottom: 25,
-          alignItems: "center",
-        }}
-      >
+               <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                flexWrap: "wrap",
+                gap: 8,
+                marginBottom: 25,
+              }}
+            >
+            {routes.map((r, i) => (
+              <button
+                key={i}
+                onClick={() => setActiveTab(i)}
+                style={{
+                  padding: "8px 12px",
+                  borderRadius: 20,
+                  border: "none",
+                  fontSize: 12,
+                  fontWeight: 700,
+                  background: i === activeTab ? "#F27A35" : "#E2E8F0",
+                  color: i === activeTab ? "white" : "#475569",
+                  marginBottom: 25,
+                  alignItems: "center",
+                }}
+               >
         {
           i === 0 ? "🏝️ Benoni-Balingoan" :
           i === 1 ? "⛴️ Balingoan-Benoni" :
