@@ -578,6 +578,28 @@ const vehicleOptions = [
                     {req.status}
                   </div>
 
+                  <button
+                      onClick={() =>
+                        setExpandedCard(
+                          expandedCard === req.id ? null : req.id
+                        )
+                      }
+                      style={{
+                        marginTop: 10,
+                        padding: "8px 12px",
+                        borderRadius: 8,
+                        border: "none",
+                        background: "#e2e8f0",
+                        color: "#111827",
+                        cursor: "pointer",
+                        fontWeight: 600,
+                      }}
+                    >
+                      {expandedCard === req.id
+                        ? "▲ Hide Details"
+                        : "▼ Show Details"}
+                    </button>
+                    
                   <label className="label">Priority</label>
                   <select
                     value={req.priority || "Attendee"}
