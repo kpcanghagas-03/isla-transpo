@@ -512,6 +512,8 @@ const vehicleOptions = [
                   </div>
 
                   <div className="info">🏢 {req.committee_unit || "N/A"}</div>
+                  {expandedCard === req.id && (
+                    <>
                   <div className="info">📧 {req.email || "N/A"}</div>
                   <div className="info">📞 {req.contact_number || "N/A"}</div>
 
@@ -572,8 +574,9 @@ const vehicleOptions = [
                       hour12: true,
                       timeZone: "Asia/Manila",
                     })}
-                  </div>
-
+                        </div>
+                      </>
+                    )}
                   <div className="statusBadge" style={{ background: statusColor(req.status) }}>
                     {req.status}
                   </div>
@@ -599,7 +602,7 @@ const vehicleOptions = [
                         ? "▲ Hide Details"
                         : "▼ Show Details"}
                     </button>
-                    
+
                   <label className="label">Priority</label>
                   <select
                     value={req.priority || "Attendee"}
