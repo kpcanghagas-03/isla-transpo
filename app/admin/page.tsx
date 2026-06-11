@@ -401,7 +401,7 @@ setTimeout(() => {
           background:
             "linear-gradient(90deg,#F27A35,#A61E22,#1F5AA6)",
           WebkitBackgroundClip: "text",
-          WebkitTextFillColor: "transparent",
+          WebkitTextFillColor: "#475569",
           fontWeight: 900,
           fontSize: "clamp(28px,5vw,48px)",
         }}
@@ -547,6 +547,7 @@ setTimeout(() => {
           top: 10,
           zIndex: 100,
           background: "white",
+          color:"#475569",
           padding: "10px 14px",
           borderRadius: 12,
           marginBottom: 15,
@@ -837,6 +838,7 @@ setTimeout(() => {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
+    color: "#475569",
     marginBottom: 12,
   }}
 >
@@ -851,6 +853,7 @@ setTimeout(() => {
       background: "#e2e8f0",
       fontWeight: 600,
       cursor: "pointer",
+      color: "#475569",
     }}
   >
     {showCompleted ? "Hide" : "Show"}
