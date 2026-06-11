@@ -2,12 +2,7 @@ export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
-import { createClient } from "@supabase/supabase-js";
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
 // ================= MESSAGE ENGINE =================
 function getStatusMessage(status, name,vehicle,driver_number,requestDetails = {}) {
   const { pickup, destination, schedule } = requestDetails;
@@ -310,19 +305,6 @@ export async function POST(request) {
       html,
     });
 
-    try {
-  await supabase.from("notification_logs").insert({
-    request_id: request_id || null,
-    email: email || null,
-    status,
-    message: `Email sent successfully for status: ${status}`,
-    success: true,
-    error: null,
-    created_at: new Date().toISOString(),
-  });
-} catch (logError) {
-  console.error("LOG ERROR:", logError);
-}
     return NextResponse.json({
       success: true,
       message: "Email sent successfully",
