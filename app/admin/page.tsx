@@ -436,6 +436,49 @@ const vehicleOptions = [
       </div>
 
       {/* ================= SEARCH & FILTER ================= */}
+            <div
+        style={{
+          display: "flex",
+          gap: 8,
+          overflowX: "auto",
+          marginBottom: 15,
+          paddingBottom: 5,
+        }}
+      >
+        {[
+          "All",
+          "Pending",
+          "Approved",
+          "On the way",
+          "Completed",
+        ].map((status) => (
+          <button
+            key={status}
+            onClick={() =>
+              setStatusFilter(status as any)
+            }
+            style={{
+              padding: "8px 14px",
+              borderRadius: 999,
+              border: "none",
+              whiteSpace: "nowrap",
+              cursor: "pointer",
+              fontWeight: 600,
+              background:
+                statusFilter === status
+                  ? "#F27A35"
+                  : "#E2E8F0",
+              color:
+                statusFilter === status
+                  ? "white"
+                  : "#334155",
+            }}
+          >
+            {status}
+          </button>
+        ))}
+      </div>
+      
       <div
         style={{
           display: "flex",
