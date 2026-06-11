@@ -399,9 +399,9 @@ setTimeout(() => {
         <h1
         style={{
           background:
-            "linear-gradient(90deg,#F27A35,#A61E22,#1F5AA6)",
+            "linear-gradient(90deg,#F27A35,#A61E22,#1F5AA6), color:#F27A35",
           WebkitBackgroundClip: "text",
-          WebkitTextFillColor: "#475569",
+          WebkitTextFillColor: "#F27A35",
           color: "#475569",
           fontWeight: 900,
           fontSize: "clamp(28px,5vw,48px)",
