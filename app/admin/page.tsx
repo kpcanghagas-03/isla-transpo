@@ -81,10 +81,10 @@ export default function AdminPage() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<"All" | Request["status"]>("All");
-  const [expandedCard, setExpandedCard] =
-  useState<number | null>(null);
-  const [vehicleExpanded, setVehicleExpanded] =
-  useState<number | null>(null);
+  const [activeTab, setActiveTab] = useState<"All" | "Pending" | "Approved" | "On the way" | "Completed">("All");
+  const [expandedCard, setExpandedCard] = useState<number | null>(null);
+  const [vehicleExpanded, setVehicleExpanded] = useState<number | null>(null);
+  const [showCompleted, setShowCompleted] = useState(false);
 
   // ================= FETCH REQUESTS =================
   const fetchRequests = async () => {
@@ -317,9 +317,22 @@ const vehicleOptions = [
     })
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
-  const activeRequests = sortedRequests.filter((r) =>
-    ["Pending", "Approved", "On the way", "Emergency"].includes(r.status)
-  );
+  const activeRequests = sortedRequests.filter((r) => {
+  const isActiveStatus = [
+    "Pending",
+    "Approved",
+    "On the way",
+    "Emergency",
+  ].includes(r.status);
+
+  if (!isActiveStatus) return false;
+
+  if (activeTab === "All") return true;
+
+  if (activeTab === "Completed") return r.status === "Completed";
+
+  return r.status === activeTab;
+});
 
   const completedRequests = sortedRequests.filter((r) =>
     ["Completed", "Disapproved"].includes(r.status)
@@ -436,49 +449,39 @@ const vehicleOptions = [
       </div>
 
       {/* ================= SEARCH & FILTER ================= */}
-            <div
+            {/* ACTIVE TABS */}
+<div
+  style={{
+    display: "flex",
+    gap: 8,
+    overflowX: "auto",
+    marginBottom: 15,
+    paddingBottom: 5,
+  }}
+>
+  {["All", "Pending", "Approved", "On the way", "Completed"].map(
+    (tab) => (
+      <button
+        key={tab}
+        onClick={() => setActiveTab(tab as any)}
         style={{
-          display: "flex",
-          gap: 8,
-          overflowX: "auto",
-          marginBottom: 15,
-          paddingBottom: 5,
+          padding: "8px 14px",
+          borderRadius: 999,
+          border: "none",
+          whiteSpace: "nowrap",
+          cursor: "pointer",
+          fontWeight: 600,
+          background:
+            activeTab === tab ? "#F27A35" : "#E2E8F0",
+          color: activeTab === tab ? "white" : "#334155",
         }}
       >
-        {[
-          "All",
-          "Pending",
-          "Approved",
-          "On the way",
-          "Completed",
-        ].map((status) => (
-          <button
-            key={status}
-            onClick={() =>
-              setStatusFilter(status as any)
-            }
-            style={{
-              padding: "8px 14px",
-              borderRadius: 999,
-              border: "none",
-              whiteSpace: "nowrap",
-              cursor: "pointer",
-              fontWeight: 600,
-              background:
-                statusFilter === status
-                  ? "#F27A35"
-                  : "#E2E8F0",
-              color:
-                statusFilter === status
-                  ? "white"
-                  : "#334155",
-            }}
-          >
-            {status}
-          </button>
-        ))}
-      </div>
-      
+        {tab}
+      </button>
+    )
+  )}
+</div>
+
       <div
         style={{
           display: "flex",
@@ -796,36 +799,63 @@ const vehicleOptions = [
 
       {/* ================= COMPLETED ================= */}
       <section className="section">
-        <h2 className="sectionTitle">Completed / Disapproved</h2>
+        <div
+  style={{
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 12,
+  }}
+>
+  <h2 className="sectionTitle">Completed / Disapproved</h2>
+
+  <button
+    onClick={() => setShowCompleted((prev) => !prev)}
+    style={{
+      padding: "6px 12px",
+      borderRadius: 8,
+      border: "none",
+      background: "#e2e8f0",
+      fontWeight: 600,
+      cursor: "pointer",
+    }}
+  >
+    {showCompleted ? "Hide" : "Show"}
+  </button>
+</div>
 
         <div className="grid">
-          {completedRequests.map((req) => (
-            <div key={req.id} className="card completedCard">
-              <div className="name">{req.requester_name}</div>
-              <div className="info">📍 {req.pickup_location || "N/A"}</div>
-              <div className="info">🎯 {req.destination || "N/A"}</div>
+          {showCompleted && (
+            <div className="grid">
+              {completedRequests.map((req) => (
+                <div key={req.id} className="card completedCard">
+                  <div className="name">{req.requester_name}</div>
+                  <div className="info">📍 {req.pickup_location || "N/A"}</div>
+                  <div className="info">🎯 {req.destination || "N/A"}</div>
 
-              <div className="statusBadge" style={{ background: statusColor(req.status) }}>
-                {req.status}
-              </div>
+                  <div className="statusBadge" style={{ background: statusColor(req.status) }}>
+                    {req.status}
+                  </div>
 
-              <button
-                onClick={() => updateField(req.id, "status", "Approved")}
-                style={{
-                  marginTop: 10,
-                  padding: "8px 10px",
-                  background: "#2563eb",
-                  color: "white",
-                  border: "none",
-                  borderRadius: 8,
-                  cursor: "pointer",
-                  fontWeight: "bold",
-                }}
-              >
-                Restore to Active
-              </button>
+                  <button
+                    onClick={() => updateField(req.id, "status", "Approved")}
+                    style={{
+                      marginTop: 10,
+                      padding: "8px 10px",
+                      background: "#2563eb",
+                      color: "white",
+                      border: "none",
+                      borderRadius: 8,
+                      cursor: "pointer",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Restore to Active
+                  </button>
+                </div>
+              ))}
             </div>
-          ))}
+          )}
         </div>
       </section>
 
