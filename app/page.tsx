@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import Sidebar from "@/components/Sidebar";
 
 export default function HomePage() {
   const router = useRouter();
@@ -192,6 +193,9 @@ export default function HomePage() {
     }}
   />
 </div>
+
+<Sidebar />
+
         {/* LEFT DECORATION */}
         <div
   className="hide-on-mobile"
