@@ -602,14 +602,15 @@ setTimeout(() => {
                   <span className="infoLabel">📧 Email</span>
                   <span className="infoValue">{req.email || "N/A"}</span>
                   </div>
-                  <div className="infoRow">
-                  <span className= "infoLabel">📞 Contact</span>
-                  <span className="infoValue">{req.contact_number || "N/A"}</span>
-                  </div>
-
+                  
                   <div className="infoRow">
                  <span className="infoLabel">👤 Contact Person</span>
                   <span className="infoValue">{req.contact_person || "N/A"}</span>
+                  </div>
+
+                  <div className="infoRow">
+                  <span className= "infoLabel">📞 Contact</span>
+                  <span className="infoValue">{req.contact_number || "N/A"}</span>
                   </div>
 
                   <div className="infoRow">
