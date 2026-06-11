@@ -567,7 +567,7 @@ setTimeout(() => {
        <h2 className="sectionTitle" style={{ color: "#475569" }}>
          Active Transport Requests
        </h2>
-       </section>
+
 
         {loading ? (
           <p className="loading">Loading...</p>
