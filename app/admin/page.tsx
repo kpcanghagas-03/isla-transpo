@@ -331,6 +331,9 @@ const vehicleOptions = [
   const onTheWayCount = requests.filter((r) => r.status === "On the way").length;
   const emergencyCount = requests.filter((r) => r.status === "Emergency").length;
   const disapprovedCount = requests.filter((r) => r.status === "Disapproved").length;
+  const completedCount = requests.filter(
+  (r) => r.status === "Completed"
+    ).length;
   const totalCount = requests.length;
 
    
@@ -485,6 +488,26 @@ const vehicleOptions = [
       </div>
 
       {/* ================= ACTIVE REQUESTS ================= */}
+            <div
+        style={{
+          position: "sticky",
+          top: 10,
+          zIndex: 100,
+          background: "white",
+          padding: "10px 14px",
+          borderRadius: 12,
+          marginBottom: 15,
+          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+          display: "flex",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: 10,
+        }}
+      >
+        <strong>⏳ {pendingCount} Pending</strong>
+        <strong>🚐 {approvedCount} Approved</strong>
+        <strong>✅ {completedCount} Completed</strong>
+      </div>
       <section className="section">
         <h2 className="sectionTitle">Active Transport Requests</h2>
 
