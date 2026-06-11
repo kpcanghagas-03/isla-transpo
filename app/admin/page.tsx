@@ -642,7 +642,7 @@ setTimeout(() => {
 
                   <div className="infoRow">
                     <span className="infoLabel"> 🕒 Pickup Schedule:</span>
-                  <span className="infoValue">🕒 Pickup Schedule:
+                  <span className="infoValue">
                     {toPHDate(req.pick_up_date) || "N/A"}{req.pick_up_time ? `, ${toPHTime(req.pick_up_time) || ""}` : ""}</span>
                   </div>
 
@@ -655,7 +655,7 @@ setTimeout(() => {
                   <div className="infoRow">
                     <span className="infoLabel">📅 Requested: </span>
                   <span className="infoValue">
-                    
+
                     {new Date(req.created_at).toLocaleString("en-PH", {
                       year: "numeric",
                       month: "short",
