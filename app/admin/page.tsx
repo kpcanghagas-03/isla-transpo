@@ -81,6 +81,8 @@ export default function AdminPage() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<"All" | Request["status"]>("All");
+  const [expandedCard, setExpandedCard] =
+  useState<number | null>(null);
 
   // ================= FETCH REQUESTS =================
   const fetchRequests = async () => {
