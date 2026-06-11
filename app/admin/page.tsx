@@ -83,6 +83,8 @@ export default function AdminPage() {
   const [statusFilter, setStatusFilter] = useState<"All" | Request["status"]>("All");
   const [expandedCard, setExpandedCard] =
   useState<number | null>(null);
+  const [vehicleExpanded, setVehicleExpanded] =
+  useState<number | null>(null);
 
   // ================= FETCH REQUESTS =================
   const fetchRequests = async () => {
@@ -626,16 +628,39 @@ const vehicleOptions = [
                     <option>Emergency</option>
                   </select>
 
-                  <label className="label">Assigned Vehicle(s)</label>
-
-<div
-  style={{
-    display: "flex",
-    flexDirection: "column",
-    gap: "6px",
-    marginBottom: "10px",
-  }}
->
+                  <button
+                      onClick={() =>
+                        setVehicleExpanded(
+                          vehicleExpanded === req.id
+                            ? null
+                            : req.id
+                        )
+                      }
+                      style={{
+                        marginTop: 8,
+                        padding: "10px",
+                        borderRadius: 8,
+                        border: "none",
+                        background: "#dbeafe",
+                        color: "#1e3a8a",
+                        fontWeight: 700,
+                        cursor: "pointer",
+                      }}
+                    >
+                      {vehicleExpanded === req.id
+                        ? "🚐 Hide Vehicle Assignment"
+                        : "🚐 Assign Vehicle"}
+                    </button>
+                    {vehicleExpanded === req.id && (
+                    <>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "6px",
+                      marginBottom: "10px",
+                    }}
+                  >
   {vehicleOptions.map((vehicle) => {
     const selectedVehicles =
       req.assigned_vehicle?.split(" | ") || [];
@@ -694,6 +719,8 @@ const vehicleOptions = [
     );
   })}
 </div>
+  </>
+)}
                   </div>
                 );
               })}
