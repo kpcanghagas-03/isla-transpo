@@ -583,7 +583,7 @@ setTimeout(() => {
                         ? "6px solid #2563eb"
                         : "6px solid #9ca3af",
 
-                    transition: "all 0.3s ease",
+                    transition: "all 0.5s ease",
                     boxShadow:
                       highlightedId === req.id
                         ? "0 0 0 3px #F27A35, 0 8px 20px rgba(0,0,0,0.2)"
@@ -598,34 +598,41 @@ setTimeout(() => {
                   <div className="info">🏢 {req.committee_unit || "N/A"}</div>
                   {expandedCard === req.id && (
                     <>
-                  <div className="info">📧 {req.email || "N/A"}</div>
-                  <div className="info">📞 {req.contact_number || "N/A"}</div>
-
-                  <div className="info">
-                    👤 Contact Person:
-                    <br />
-                    {req.contact_person || "N/A"}
+                  <div className="infoRow">
+                  <span className="infoLabel">📧 Email</span>
+                  <span className="infoValue">{req.email || "N/A"}</span>
+                  </div>
+                  <div className="infoRow">
+                  <span className= "infoLabel">📞 Contact</span>
+                  <span className="infoValue">📞 {req.contact_number || "N/A"}</span>
                   </div>
 
-                  <div className="info">
-                    👥 Passengers:
-                    <br />
-                    {req.passengers || "0"}
+                  <div className="infoRow">
+                 <span className="infoLabel">👤 Contact Person</span>
+                  <span className="inValue">👤 Contact Person:{req.contact_person || "N/A"}</span>
                   </div>
 
-                  <div className="info">
-                    🧍 Passenger Names:
-                    <br />
-                    {req.passenger_names || "N/A"}
+                  <div className="infoRow">
+                    <span className="infoLabel"> 👥 Passengers </span>
+                    <span className="infoValue">👥 Passengers:{req.passengers || "0"} </span>
                   </div>
 
-                  <div className="info">📍 {req.pickup_location || "N/A"}</div>
-                  <div className="info">🎯 {req.destination || "N/A"}</div>
+                  <div className="infoRow">
+                    <span className="infoLabel"> 🧍 Passenger Names</span>
+                  <span className="infoValue">🧍 Passenger Names{req.passenger_names || "N/A"}</span>
+                  </div>
 
-                  {(req.flight_no || req.flight_arrival_date || req.flight_arrival_time) && (
-                    <div className="info">
-                      ✈️ Flight Details:
-                      <br />
+                  <div className="infoRow">
+                    <span className="infoLabel">📍Location </span>
+                  <span className="infoValue">📍 {req.pickup_location || "N/A"}</span>  </div>
+
+                  <div className="infoRow">
+                    <span className="infoLabel">🎯Destination </span>
+                  <span className="infoValue">🎯 {req.destination || "N/A"} </span>
+                  </div>
+
+                     {(req.flight_no || req.flight_arrival_date || req.flight_arrival_time) && (
+                    <div className="info">✈️ Flight Details:
                       Flight No: {req.flight_no || "N/A"}
                       <br />
                       Arrival: {toPHDate(req.flight_arrival_date) || "N/A"}
@@ -633,20 +640,21 @@ setTimeout(() => {
                     </div>
                   )}
 
-                  <div className="info">
-                    🕒 Pickup Schedule:
-                    <br />
-                    {toPHDate(req.pick_up_date) || "N/A"}
-                    {req.pick_up_time ? `, ${toPHTime(req.pick_up_time) || ""}` : ""}
+                  <div className="infoRow">
+                    <span className="infoLabel"> 🕒 Pickup Schedule:</span>
+                  <span className="infoValue">🕒 Pickup Schedule:
+                    {toPHDate(req.pick_up_date) || "N/A"}{req.pick_up_time ? `, ${toPHTime(req.pick_up_time) || ""}` : ""}</span>
                   </div>
 
-                  <div className="info">
-                    📝 Notes / Remarks:
-                    <br />
-                    {req.notes_remarks || "None"}
+                  <div className="infoRow">
+                      <span className="infoLabel">📝 Notes / Remarks:</span>
+                  <span className="infoValue">📝 Notes / Remarks:{req.notes_remarks || "None"}</span>
+
                   </div>
 
-                  <div className="info">
+                  <div className="infoRow">
+                    <span className="infoLabel">📅 Requested: </span>
+                  <span className="infoValue">
                     📅 Requested:
                     <br />
                     {new Date(req.created_at).toLocaleString("en-PH", {
@@ -657,7 +665,7 @@ setTimeout(() => {
                       minute: "2-digit",
                       hour12: true,
                       timeZone: "Asia/Manila",
-                    })}
+                    })} </span>
                         </div>
                       </>
                     )}
@@ -953,7 +961,36 @@ setTimeout(() => {
         .nameRow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         .name { font-size: 18px; font-weight: bold; }
         .vipBadge { background: #dc2626; color: white; font-size: 11px; padding: 4px 8px; border-radius: 999px; font-weight: bold; }
-        .info { font-size: 13px; line-height: 1.5; }
+        .info {
+          font-size: 13px;
+          line-height: 1.4;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 4px;
+          color: #111827;
+        }
+          .infoRow {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          gap: 10px;
+          font-size: 12.5px;
+          padding: 4px 0;
+          border-bottom: 1px dashed #e5e7eb;
+        }
+
+        .infoLabel {
+          font-weight: 600;
+          color: #64748b;
+          min-width: 110px;
+        }
+
+        .infoValue {
+          flex: 1;
+          text-align: right;
+          word-break: break-word;
+          color: #111827;
+        }
         .label { font-size: 12px; font-weight: bold; margin-top: 4px; }
         .statusBadge { color: white; padding: 6px 10px; border-radius: 999px; font-size: 12px; width: fit-content; font-weight: bold; }
         .vehicle { font-weight: bold; font-size: 14px; }
