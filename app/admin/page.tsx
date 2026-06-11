@@ -85,6 +85,7 @@ export default function AdminPage() {
   const [expandedCard, setExpandedCard] = useState<number | null>(null);
   const [vehicleExpanded, setVehicleExpanded] = useState<number | null>(null);
   const [showCompleted, setShowCompleted] = useState(false);
+  const [highlightedId, setHighlightedId] = useState<number | null>(null);
 
   // ================= FETCH REQUESTS =================
   const fetchRequests = async () => {
@@ -242,6 +243,12 @@ const vehicleOptions = [
   }
 
   console.log("UPDATED SUCCESSFULLY");
+
+  setHighlightedId(id);
+
+setTimeout(() => {
+  setHighlightedId(null);
+}, 4000);
 
   // ================= AUTO EMAIL =================
   const shouldEmail =
@@ -575,6 +582,12 @@ const vehicleOptions = [
                         : req.priority === "Staff"
                         ? "6px solid #2563eb"
                         : "6px solid #9ca3af",
+
+                    transition: "all 0.3s ease",
+                    boxShadow:
+                      highlightedId === req.id
+                        ? "0 0 0 3px #F27A35, 0 8px 20px rgba(0,0,0,0.2)"
+                        : undefined,
                   }}
                 >
                   <div className="nameRow">
