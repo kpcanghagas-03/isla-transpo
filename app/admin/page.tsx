@@ -402,6 +402,7 @@ setTimeout(() => {
             "linear-gradient(90deg,#F27A35,#A61E22,#1F5AA6)",
           WebkitBackgroundClip: "text",
           WebkitTextFillColor: "#475569",
+          color: "#475569",
           fontWeight: 900,
           fontSize: "clamp(28px,5vw,48px)",
         }}
@@ -563,7 +564,10 @@ setTimeout(() => {
         <strong>✅ {completedCount} Completed</strong>
       </div>
       <section className="section">
-        <h2 className="sectionTitle">Active Transport Requests</h2>
+       <h2 className="sectionTitle" style={{ color: "#475569" }}>
+         Active Transport Requests
+       </h2>
+       </section>
 
         {loading ? (
           <p className="loading">Loading...</p>
