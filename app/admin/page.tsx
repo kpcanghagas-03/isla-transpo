@@ -604,31 +604,31 @@ setTimeout(() => {
                   </div>
                   <div className="infoRow">
                   <span className= "infoLabel">📞 Contact</span>
-                  <span className="infoValue">📞 {req.contact_number || "N/A"}</span>
+                  <span className="infoValue">{req.contact_number || "N/A"}</span>
                   </div>
 
                   <div className="infoRow">
                  <span className="infoLabel">👤 Contact Person</span>
-                  <span className="inValue">👤 Contact Person:{req.contact_person || "N/A"}</span>
+                  <span className="inValue">{req.contact_person || "N/A"}</span>
                   </div>
 
                   <div className="infoRow">
                     <span className="infoLabel"> 👥 Passengers </span>
-                    <span className="infoValue">👥 Passengers:{req.passengers || "0"} </span>
+                    <span className="infoValue">{req.passengers || "0"} </span>
                   </div>
 
                   <div className="infoRow">
                     <span className="infoLabel"> 🧍 Passenger Names</span>
-                  <span className="infoValue">🧍 Passenger Names{req.passenger_names || "N/A"}</span>
+                  <span className="infoValue">{req.passenger_names || "N/A"}</span>
                   </div>
 
                   <div className="infoRow">
                     <span className="infoLabel">📍Location </span>
-                  <span className="infoValue">📍 {req.pickup_location || "N/A"}</span>  </div>
+                  <span className="infoValue">{req.pickup_location || "N/A"}</span>  </div>
 
                   <div className="infoRow">
                     <span className="infoLabel">🎯Destination </span>
-                  <span className="infoValue">🎯 {req.destination || "N/A"} </span>
+                  <span className="infoValue">{req.destination || "N/A"} </span>
                   </div>
 
                      {(req.flight_no || req.flight_arrival_date || req.flight_arrival_time) && (
@@ -648,15 +648,14 @@ setTimeout(() => {
 
                   <div className="infoRow">
                       <span className="infoLabel">📝 Notes / Remarks:</span>
-                  <span className="infoValue">📝 Notes / Remarks:{req.notes_remarks || "None"}</span>
+                  <span className="infoValue">{req.notes_remarks || "None"}</span>
 
                   </div>
 
                   <div className="infoRow">
                     <span className="infoLabel">📅 Requested: </span>
                   <span className="infoValue">
-                    📅 Requested:
-                    <br />
+                    
                     {new Date(req.created_at).toLocaleString("en-PH", {
                       year: "numeric",
                       month: "short",
