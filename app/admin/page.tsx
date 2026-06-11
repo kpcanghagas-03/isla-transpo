@@ -609,8 +609,20 @@ setTimeout(() => {
 
                   <div className="infoRow">
                  <span className="infoLabel">👤 Contact Person</span>
-                  <span className="inValue">{req.contact_person || "N/A"}</span>
+                  <span className="infoValue">{req.contact_person || "N/A"}</span>
                   </div>
+
+                  <div className="infoRow">
+                  <span className="infoLabel">📞 Alternate Contact Person</span>
+                  <span className="infoValue">{req.alternate_contact_person || "N/A"}
+                  </span>
+                </div>
+
+                <div className="infoRow">
+                  <span className="infoLabel">📱 Alternate Contact Number</span>
+                  <span className="infoValue">{req.alternate_contact_number || "N/A"}
+                  </span>
+                </div>
 
                   <div className="infoRow">
                     <span className="infoLabel"> 👥 Passengers </span>
