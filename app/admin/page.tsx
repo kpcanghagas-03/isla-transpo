@@ -251,21 +251,21 @@ setTimeout(() => {
 }, 4000);
 
   // ================= AUTO EMAIL =================
-  const shouldEmail =
-    field === "status" &&
-    request.status !== value &&
-    [
-      "Pending",
-      "Approved",
-      "On the way",
-      "Disapproved",
-      "Completed",
-      "Emergency",
-    ].includes(value);
+const shouldEmail =
+  field === "status" &&
+  request.status !== value &&
+  [
+    "Pending",
+    "Approved",
+    "On the way",
+    "Disapproved",
+    "Completed",
+    "Emergency",
+  ].includes(value);
 
-  if (shouldEmail) {
-    try {
-      const vehicles = (request.assigned_vehicle || "")
+if (shouldEmail) {
+  try {
+    const vehicles = (request.assigned_vehicle || "")
       .split(" | ")
       .map((v) => {
         const key = Object.keys(vehicleMap).find((k) =>
@@ -278,24 +278,18 @@ setTimeout(() => {
         (v): v is { driver: string; phone: string } => v !== null
       );
 
-      const vehicleDetails = vehicles.map((v, i) => {
-  const vehicleName =
-    request.assigned_vehicle?.split(" | ")[i] || "";
+    const vehicleDetails = vehicles.map((v, i) => ({
+      vehicle: request.assigned_vehicle?.split(" | ")[i] || "",
+      driver: v.driver,
+      phone: v.phone,
+    }));
 
-  return {
-    vehicle: vehicleName,
-    driver: v.driver,
-    phone: v.phone,
-  };
-});
-
-      const res = await fetch("/api/send_email", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        
-        body: JSON.stringify({
+    const res: Response = await fetch("/api/send_email", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
         email: request.email || undefined,
         name: request.requester_name,
         status: value,
@@ -309,18 +303,17 @@ setTimeout(() => {
             : ""
         }`,
 
-        vehicles: vehicleDetails, // 👈 NEW SAFE FORMAT
-
+        vehicles: vehicleDetails,
         request_id: request.id,
       }),
+    });
 
-      const data = await res.json();
-
-      console.log("EMAIL RESPONSE:", data);
-    } catch (err) {
-      console.log("EMAIL ERROR:", err);
-    }
+    const data = await res.json();
+    console.log("EMAIL RESPONSE:", data);
+  } catch (err) {
+    console.log("EMAIL ERROR:", err);
   }
+}
 };
 
   // ================= FILTERED + SORTED =================
