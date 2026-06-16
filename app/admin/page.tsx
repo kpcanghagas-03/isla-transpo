@@ -271,17 +271,20 @@ setTimeout(() => {
         const key = Object.keys(vehicleMap).find((k) =>
           v.startsWith(k)
         );
+
         return key ? vehicleMap[key] : null;
       })
-      .filter(Boolean);
-
-      console.log("Vehicles:", vehicles);
-      console.log("Driver Names:", driverNames);
-      console.log("Driver Phones:", driverPhones);
+      .filter(
+        (v): v is { driver: string; phone: string } => v !== null
+      );
 
       const driverNames = vehicles.map((v) => v.driver).join(", ");
       const driverPhones = vehicles.map((v) => v.phone).join(", ");
 
+      console.log("Vehicles:", vehicles);
+      console.log("Driver Names:", driverNames);
+      console.log("Driver Phones:", driverPhones);
+      
       const res = await fetch("/api/send_email", {
         method: "POST",
         headers: {
