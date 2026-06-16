@@ -76,42 +76,28 @@ function getStatusMessage(status, name, vehicles = [], requestDetails = {}) {
     <th style="text-align:left;padding:6px;border-bottom:1px solid #ddd;">Phone</th>
   </tr>
 
- ${Array.isArray(vehicles) && vehicles.length > 0
-  ? vehicles.map((v) => {
-      const vehicle =
-        typeof v.vehicle === "object"
-          ? v.vehicle?.name || v.vehicle?.plate || "N/A"
-          : v.vehicle || "N/A";
-
-      const driver =
-        typeof v.driver === "object"
-          ? v.driver?.name || "N/A"
-          : v.driver || "N/A";
-
-      const phone = v.phone || "N/A";
-
-      return `
+  ${Array.isArray(vehicles) && vehicles.length > 0
+    ? vehicles.map((v) => `
         <tr>
           <td style="padding:6px;border-bottom:1px solid #eee;">
-            ${vehicle}
+            ${v.vehicle || "N/A"}
           </td>
           <td style="padding:6px;border-bottom:1px solid #eee;">
-            ${driver}
+            ${v.driver || "N/A"}
           </td>
           <td style="padding:6px;border-bottom:1px solid #eee;">
-            ${phone}
+            ${v.phone || "N/A"}
           </td>
         </tr>
-      `;
-    }).join("")
-  : `
-    <tr>
-      <td colspan="3" style="padding:6px;">
-        Not yet assigned
-      </td>
-    </tr>
-  `
-}
+      `).join("")
+    : `
+      <tr>
+        <td colspan="3" style="padding:6px;">
+          Not yet assigned
+        </td>
+      </tr>
+    `
+  }
 </table>
 `)}
   
