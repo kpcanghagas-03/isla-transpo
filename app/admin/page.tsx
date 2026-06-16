@@ -267,8 +267,18 @@ setTimeout(() => {
     try {
       const vehicles = (request.assigned_vehicle || "")
       .split(" | ")
-      .map((v) => vehicleMap[v])
+      .map((v) => {
+        const key = Object.keys(vehicleMap).find((k) =>
+          v.startsWith(k)
+        );
+        return key ? vehicleMap[key] : null;
+      })
       .filter(Boolean);
+
+      console.log("Vehicles:", vehicles);
+      console.log("Driver Names:", driverNames);
+      console.log("Driver Phones:", driverPhones);
+
       const driverNames = vehicles.map((v) => v.driver).join(", ");
       const driverPhones = vehicles.map((v) => v.phone).join(", ");
 
