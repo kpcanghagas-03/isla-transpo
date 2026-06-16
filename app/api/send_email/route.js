@@ -68,48 +68,38 @@ function getStatusMessage(status, name, vehicles = [], requestDetails = {}) {
     ${section("Pickup Location", pickup || "Not specified")}
     ${section("Destination", destination || "Not specified")}
     ${section("Schedule", schedule || "Not specified")}
-   ${section("Assigned Vehicles & Drivers",
-`
-<table
-  style="
-    width:100%;
-    border-collapse:collapse;
-    margin-top:8px;
-    font-size:13px;
-  "
->
+   ${section("Assigned Vehicles & Drivers", `
+<table style="width:100%; border-collapse:collapse; margin-top:8px; font-size:13px;">
   <tr>
-    <th style="text-align:left;padding:6px;border-bottom:1px solid #ddd;">
-      Vehicle
-    </th>
-    <th style="text-align:left;padding:6px;border-bottom:1px solid #ddd;">
-      Contact
-    </th>
+    <th style="text-align:left;padding:6px;border-bottom:1px solid #ddd;">Vehicle</th>
+    <th style="text-align:left;padding:6px;border-bottom:1px solid #ddd;">Driver</th>
+    <th style="text-align:left;padding:6px;border-bottom:1px solid #ddd;">Phone</th>
   </tr>
 
   ${Array.isArray(vehicles) && vehicles.length > 0
     ? vehicles.map((v) => `
         <tr>
-          <td style="padding:6px; border-bottom:1px solid #eee;">
+          <td style="padding:6px;border-bottom:1px solid #eee;">
             ${v.vehicle || "N/A"}
           </td>
-          <td style="padding:6px; border-bottom:1px solid #eee;">
-            ${v.driver || "N/A"} <br/>
+          <td style="padding:6px;border-bottom:1px solid #eee;">
+            ${v.driver || "N/A"}
+          </td>
+          <td style="padding:6px;border-bottom:1px solid #eee;">
             ${v.phone || "N/A"}
           </td>
         </tr>
       `).join("")
     : `
       <tr>
-        <td colspan="2" style="padding:6px;">
+        <td colspan="3" style="padding:6px;">
           Not yet assigned
         </td>
       </tr>
     `
   }
 </table>
-`
-)}
+`)}
   
   `;
 
