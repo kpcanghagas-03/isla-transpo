@@ -199,13 +199,13 @@ export default function AdminPage() {
 };
 
 const vehicleOptions = [
-  "Toyota Hilux - SAA 6987 - Lino A. Gorres Jr. (09178048369)",
-  "Toyota Van - SKB 5333 - Ramil M. Caneda (09178036974)",
-  "Toyota Innova - SHZ 943 - Ernesto A. Soliva (09178579321)",
-  "Toyota Innova - SJS 302 - Pablito D. Murillo (09654661221)",
-  "Isuzu Pick-up - SKB 3028 - Francisco F. Talle Jr. (09177097523)",
-  "Isuzu Pick-up - SKB 3030 - Leonel Quidet (09178579197)",
-  "Isuzu Pick-up - SKB 3029 - Junve O. Barbadillo (09178579129)",
+  "Toyota Hilux - SAA 6987",
+  "Toyota Van - SKB 5333",
+  "Toyota Innova - SHZ 943",
+  "Toyota Innova - SJS 302",
+  "Isuzu Pick-up - SKB 3028",
+  "Isuzu Pick-up - SKB 3030",
+  "Isuzu Pick-up - SKB 3029",
   "Backup Vehicle - BKP 7777",
 ];
 
@@ -845,7 +845,15 @@ if (shouldEmail) {
           }}
         />
 
-        {vehicle}
+        <div style={{ display: "flex", flexDirection: "column" }}>
+  <span style={{ fontWeight: 600 }}>{vehicle}</span>
+
+  {vehicleMap[vehicle] && (
+    <span style={{ fontSize: 11, color: "#64748b" }}>
+      👤 {vehicleMap[vehicle].driver} • 📞 {vehicleMap[vehicle].phone}
+    </span>
+  )}
+</div>
       </label>
     );
   })}
