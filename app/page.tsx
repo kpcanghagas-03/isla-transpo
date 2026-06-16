@@ -430,12 +430,14 @@ className="hide-on-mobile"
             color="#1F5AA6"
           />
 
-          <Card
+          
+            <Card
             title="Accommmodation & Venues"
-            text="View accommodation and venue information for RSTW 2026."
-            buttonText="Accommodation & Venues"
-            onClick={() => router.push("/feedback")}
+            text="Accommodation details will be available soon."
+            buttonText="Coming Soon"
+            onClick={() => {}}
             color="#A61E22"
+            disabled
           />
         </section>
 
@@ -566,18 +568,20 @@ className="hide-on-mobile"
   );
 }
 
-function Card({
+  function Card({
   title,
   text,
   buttonText,
   onClick,
   color,
+  disabled = false,
 }: {
   title: string;
   text: string;
   buttonText: string;
   onClick: () => void;
   color: string;
+  disabled?: boolean;
 }) {
   return (
     <div
@@ -610,20 +614,22 @@ function Card({
       </p>
 
       <button
-        onClick={onClick}
-        style={{
-          width: "100%",
-          padding: 16,
-          border: "none",
-          borderRadius: 16,
-          color: "#fff",
-          fontWeight: 700,
-          cursor: "pointer",
-          background: color,
-        }}
-      >
-        {buttonText}
-      </button>
+  onClick={disabled ? undefined : onClick}
+  disabled={disabled}
+  style={{
+    width: "100%",
+    padding: 16,
+    border: "none",
+    borderRadius: 16,
+    color: "#fff",
+    fontWeight: 700,
+    cursor: disabled ? "not-allowed" : "pointer",
+    background: disabled ? "#CBD5E1" : color,
+    opacity: disabled ? 0.8 : 1,
+  }}
+>
+  {buttonText}
+</button>
     </div>
   );
 }
