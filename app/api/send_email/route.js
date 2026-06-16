@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
 // ================= MESSAGE ENGINE =================
-function getStatusMessage(status, name,vehicle,driver_number,requestDetails = {}) {
+function getStatusMessage(status, name, vehicles = [], requestDetails = {}) {
   const { pickup, destination, schedule } = requestDetails;
 
   // 🌤 Warm greeting intro (NEW)
@@ -68,29 +68,27 @@ function getStatusMessage(status, name,vehicle,driver_number,requestDetails = {}
     ${section("Pickup Location", pickup || "Not specified")}
     ${section("Destination", destination || "Not specified")}
     ${section("Schedule", schedule || "Not specified")}
-    ${section("Assigned Vehicles & Drivers",
-  `
-    <table
-      style="
-        width:100%;
-        border-collapse:collapse;
-        margin-top:8px;
-        font-size:13px;
-      "
-    >
-      <tr>
-        <th style="text-align:left;padding:6px;border-bottom:1px solid #ddd;">
-          Vehicle
-        </th>
-        <th style="text-align:left;padding:6px;border-bottom:1px solid #ddd;">
-          Contact
-        </th>
-      </tr>
+   ${section("Assigned Vehicles & Drivers",
+`
+<table
+  style="
+    width:100%;
+    border-collapse:collapse;
+    margin-top:8px;
+    font-size:13px;
+  "
+>
+  <tr>
+    <th style="text-align:left;padding:6px;border-bottom:1px solid #ddd;">
+      Vehicle
+    </th>
+    <th style="text-align:left;padding:6px;border-bottom:1px solid #ddd;">
+      Contact
+    </th>
+  </tr>
 
-      ${Array.isArray(vehicle)
-  ? vehicle
-      .map(
-        (v) => `
+  ${Array.isArray(vehicles) && vehicles.length > 0
+    ? vehicles.map((v) => `
         <tr>
           <td style="padding:6px; border-bottom:1px solid #eee;">
             ${v.vehicle || "N/A"}
@@ -100,17 +98,17 @@ function getStatusMessage(status, name,vehicle,driver_number,requestDetails = {}
             ${v.phone || "N/A"}
           </td>
         </tr>
-      `
-      )
-      .join("")
-  : `
-    <tr>
-      <td colspan="2" style="padding:6px;">Not yet assigned</td>
-    </tr>
-  `
-}
-    </table>
-  `
+      `).join("")
+    : `
+      <tr>
+        <td colspan="2" style="padding:6px;">
+          Not yet assigned
+        </td>
+      </tr>
+    `
+  }
+</table>
+`
 )}
   
   `;
