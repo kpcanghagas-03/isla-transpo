@@ -199,13 +199,13 @@ export default function AdminPage() {
 };
 
 const vehicleOptions = [
-  "Toyota Hilux - SAA 6987",
-  "Toyota Van - SKB 5333",
-  "Toyota Innova - SHZ 943",
-  "Toyota Innova - SJS 302",
-  "Isuzu Pick-up - SKB 3028",
-  "Isuzu Pick-up - SKB 3030",
-  "Isuzu Pick-up - SKB 3029",
+  "Toyota Hilux - SAA 6987 - Lino A. Gorres Jr. (09178048369)",
+  "Toyota Van - SKB 5333 - Ramil M. Caneda (09178036974)",
+  "Toyota Innova - SHZ 943 - Ernesto A. Soliva (09178579321)",
+  "Toyota Innova - SJS 302 - Pablito D. Murillo (09654661221)",
+  "Isuzu Pick-up - SKB 3028 - Francisco F. Talle Jr. (09177097523)",
+  "Isuzu Pick-up - SKB 3030 - Leonel Quidet (09178579197)",
+  "Isuzu Pick-up - SKB 3029 - Junve O. Barbadillo (09178579129)",
   "Backup Vehicle - BKP 7777",
 ];
 
@@ -386,7 +386,7 @@ if (shouldEmail) {
     notes_remarks: req.notes_remarks || "",
     status: req.status,
     priority: req.priority || "Attendee",
-    assigned_vehicle: req.assigned_vehicle || "",
+    assigned_vehicle: req.assigned_vehicle ? req.assigned_vehicle.split(" - ").slice(0, 2).join(" - ") : "N/A",
     driver_number: vehicleMap[req.assigned_vehicle || ""]?.phone || "",
     created_at: req.created_at,
     driver_lat: req.driver_lat ?? null,
@@ -792,7 +792,9 @@ if (shouldEmail) {
                   >
   {vehicleOptions.map((vehicle) => {
     const selectedVehicles =
-      req.assigned_vehicle?.split(" | ") || [];
+      req.assigned_vehicle
+        ? req.assigned_vehicle.split(" | ")
+        : [];
 
     return (
       <label
