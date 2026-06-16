@@ -68,14 +68,50 @@ function getStatusMessage(status, name,vehicle,driver_number,requestDetails = {}
     ${section("Pickup Location", pickup || "Not specified")}
     ${section("Destination", destination || "Not specified")}
     ${section("Schedule", schedule || "Not specified")}
-    ${section(
-  "Vehicle Assignment",
+    ${section("Assigned Vehicles & Drivers",
   `
-    ${vehicle || "Not yet assigned"}
-    <br/>
-    <span style="color:#555;">
-      Driver Contact: ${driver_number || "Not available"}
-    </span>
+    <table
+      style="
+        width:100%;
+        border-collapse:collapse;
+        margin-top:8px;
+        font-size:13px;
+      "
+    >
+      <tr>
+        <th style="text-align:left;padding:6px;border-bottom:1px solid #ddd;">
+          Vehicle
+        </th>
+        <th style="text-align:left;padding:6px;border-bottom:1px solid #ddd;">
+          Contact
+        </th>
+      </tr>
+
+      ${
+        vehicle && driver_number
+          ? vehicle
+              .split(" | ")
+              .map((v, i) => {
+                const phones = driver_number.split(", ");
+                return `
+                  <tr>
+                    <td style="padding:6px;">
+                      ${v}
+                    </td>
+                    <td style="padding:6px;">
+                      ${phones[i] || ""}
+                    </td>
+                  </tr>
+                `;
+              })
+              .join("")
+          : `
+            <tr>
+              <td colspan="2">Not yet assigned</td>
+            </tr>
+          `
+      }
+    </table>
   `
 )}
   
