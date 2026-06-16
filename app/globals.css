@@ -24,80 +24,99 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* ✅ IMPORTANT FIX */
+}
+
+/* Smooth animation helper (optional use later) */
 @keyframes fadeIn {
   from {
     opacity: 0;
     transform: translateY(12px);
   }
-
-  
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-html,
-body {
-  margin: 0;
-  padding: 0;
-}
-
-
-
-/* Hide heavy decorations on small screens */
+/* =========================
+   MOBILE RESPONSIVE FIXES
+========================= */
 @media (max-width: 768px) {
-  .hide-on-mobile {
-    display: none !important;
+
+  /* prevent horizontal overflow everywhere */
+  * {
+    box-sizing: border-box;
   }
-}
 
-/* Optional: reduce opacity instead of hiding */
-@media (max-width: 768px) {
-  .soften-on-mobile {
-    opacity: 0.03 !important;
-  }
-}
-
-@media (max-width: 768px) {
-  .soften-on-mobile {
-    transform: scale(0.6);
-    opacity: 0.05;
-  }
-}
-
-@media (max-width: 768px) {
-
+  /* containers */
   .container {
-    padding: 12px;
+    padding: 12px !important;
   }
 
-  .header {
-    padding: 18px;
+  /* modal safety */
+  .modal {
+    width: 95% !important;
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 16px !important;
   }
 
-  .mapSection {
-    height: 240px;
+  /* hero text scaling safety */
+  h1 {
+    line-height: 1.1;
+    word-break: break-word;
   }
 
+  /* grid fallback */
   .grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
   }
 
+  /* stats fallback */
   .statsGrid {
-    grid-template-columns: repeat(2,1fr);
+    grid-template-columns: repeat(2, 1fr) !important;
   }
 
+  /* card spacing */
   .card {
-    padding: 12px;
+    padding: 14px !important;
   }
 
+  /* form elements */
   select,
-  input {
+  input,
+  button {
     width: 100%;
   }
 
+  /* section spacing */
   .sectionTitle {
-    font-size: 20px;
+    font-size: 20px !important;
   }
-} 
+
+  /* hide heavy visuals */
+  .hide-on-mobile {
+    display: none !important;
+  }
+
+  /* soften decorations instead of removing (optional) */
+  .soften-on-mobile {
+    opacity: 0.05 !important;
+    transform: scale(0.7);
+  }
+}
+
+/* =========================
+   TABLET FIX (optional but useful)
+========================= */
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+}
