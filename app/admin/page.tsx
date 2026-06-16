@@ -395,6 +395,7 @@ setTimeout(() => {
       <div className="overlay" />
 
       {/* ================= HEADER ================= */}
+     
       <header className="header">
         <h1
         style={{
@@ -408,6 +409,7 @@ setTimeout(() => {
         }}
       >
         ISLA-TRANSPO ADMIN DASHBOARD
+
       </h1>
         <p>Live Dispatch & Transport Monitoring</p>
       </header>
@@ -636,9 +638,24 @@ setTimeout(() => {
                   </div>
 
                   <div className="infoRow">
-                    <span className="infoLabel"> 🧍 Passenger Names</span>
-                  <span className="infoValue">{req.passenger_names || "N/A"}</span>
-                  </div>
+                      <span className="infoLabel">🧍 Passenger Names</span>
+
+                      <div
+                        style={{
+                          flex: 1,
+                          maxHeight: 80,
+                          overflowY: "auto",
+                          background: "#f8fafc",
+                          padding: 8,
+                          borderRadius: 8,
+                          border: "1px solid #e2e8f0",
+                          fontSize: 12,
+                          textAlign: "left",
+                        }}
+                      >
+                        {req.passenger_names || "N/A"}
+                      </div>
+                    </div>
 
                   <div className="infoRow">
                     <span className="infoLabel">📍Location </span>
