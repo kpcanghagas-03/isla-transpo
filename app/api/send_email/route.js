@@ -299,8 +299,7 @@ export async function POST(request) {
       email,
       name,
       status,
-      vehicle,
-      driver_number,
+      vehicles,
       pickup,
       destination,
       schedule,
@@ -314,11 +313,16 @@ export async function POST(request) {
       );
     }
 
-    const { subject, html } = getStatusMessage(status, name, vehicle, driver_number, {
-      pickup,
-      destination,
-      schedule,
-    });
+    const { subject, html } = getStatusMessage(
+      status,
+      name,
+      vehicles || [],
+      {
+        pickup,
+        destination,
+        schedule,
+      }
+    );
 
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
@@ -341,7 +345,6 @@ export async function POST(request) {
       success: true,
       message: "Email sent successfully",
     });
-
   } catch (error) {
     console.error("EMAIL ERROR:", error);
 
