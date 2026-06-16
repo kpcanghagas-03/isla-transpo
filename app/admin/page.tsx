@@ -265,28 +265,24 @@ const shouldEmail =
 
 if (shouldEmail) {
   try {
-    // Get latest vehicle assignment from database
-    const { data: latestRequest } = await supabase
-      .from("transport_requests")
-      .select("assigned_vehicle")
-      .eq("id", id)
-      .single();
-
-    const latestAssignedVehicle =
-      latestRequest?.assigned_vehicle || "";
-
-    const vehicleDetails = latestAssignedVehicle
+    const vehicles = (request.assigned_vehicle || "")
       .split(" | ")
-      .filter(Boolean)
-      .map((vehicle: string) => {
-        const info = vehicleMap[vehicle];
+      .map((v) => {
+        const key = Object.keys(vehicleMap).find((k) =>
+          v.startsWith(k)
+        );
 
-        return {
-          vehicles: vehicle,
-          driver: info?.driver || "N/A",
-          phone: info?.phone || "N/A",
-        };
-      });
+        return key ? vehicleMap[key] : null;
+      })
+      .filter(
+        (v): v is { driver: string; phone: string } => v !== null
+      );
+
+    const vehicleDetails = vehicles.map((v, i) => ({
+      vehicle: request.assigned_vehicle?.split(" | ")[i] || "",
+      driver: v.driver,
+      phone: v.phone,
+    }));
 
     const res: Response = await fetch("/api/send_email", {
       method: "POST",
