@@ -278,13 +278,17 @@ setTimeout(() => {
         (v): v is { driver: string; phone: string } => v !== null
       );
 
-      const driverNames = vehicles.map((v) => v.driver).join(", ");
-      const driverPhones = vehicles.map((v) => v.phone).join(", ");
+      const vehicleDetails = vehicles.map((v, i) => {
+  const vehicleName =
+    request.assigned_vehicle?.split(" | ")[i] || "";
 
-      console.log("Vehicles:", vehicles);
-      console.log("Driver Names:", driverNames);
-      console.log("Driver Phones:", driverPhones);
-      
+  return {
+    vehicle: vehicleName,
+    driver: v.driver,
+    phone: v.phone,
+  };
+});
+
       const res = await fetch("/api/send_email", {
         method: "POST",
         headers: {
@@ -292,28 +296,23 @@ setTimeout(() => {
         },
         
         body: JSON.stringify({
-          email: request.email || undefined,
-          name: request.requester_name,
-          status: value,
+        email: request.email || undefined,
+        name: request.requester_name,
+        status: value,
 
-          pickup: request.pickup_location || "",
-          destination: request.destination || "",
+        pickup: request.pickup_location || "",
+        destination: request.destination || "",
 
-          schedule: `${toPHDate(request.pick_up_date) || ""}${
-            request.pick_up_time
-              ? `, ${toPHTime(request.pick_up_time) || ""}`
-              : ""
-          }`,
+        schedule: `${toPHDate(request.pick_up_date) || ""}${
+          request.pick_up_time
+            ? `, ${toPHTime(request.pick_up_time) || ""}`
+            : ""
+        }`,
 
-          vehicle: request.assigned_vehicle
-            ? `🚐 ${request.assigned_vehicle} - ${driverNames}`
-            : "",
+        vehicles: vehicleDetails, // 👈 NEW SAFE FORMAT
 
-          driver_number: driverPhones,
-
-          request_id: request.id,
-        }),
-      });
+        request_id: request.id,
+      }),
 
       const data = await res.json();
 

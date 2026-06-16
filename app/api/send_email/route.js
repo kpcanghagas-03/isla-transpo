@@ -87,30 +87,28 @@ function getStatusMessage(status, name,vehicle,driver_number,requestDetails = {}
         </th>
       </tr>
 
-      ${
-        vehicle && driver_number
-          ? vehicle
-              .split(" | ")
-              .map((v, i) => {
-                const phones = driver_number.split(", ");
-                return `
-                  <tr>
-                    <td style="padding:6px;">
-                      ${v}
-                    </td>
-                    <td style="padding:6px;">
-                      ${phones[i] || ""}
-                    </td>
-                  </tr>
-                `;
-              })
-              .join("")
-          : `
-            <tr>
-              <td colspan="2">Not yet assigned</td>
-            </tr>
-          `
-      }
+      ${Array.isArray(vehicle)
+  ? vehicle
+      .map(
+        (v) => `
+        <tr>
+          <td style="padding:6px; border-bottom:1px solid #eee;">
+            ${v.vehicle || "N/A"}
+          </td>
+          <td style="padding:6px; border-bottom:1px solid #eee;">
+            ${v.driver || "N/A"} <br/>
+            ${v.phone || "N/A"}
+          </td>
+        </tr>
+      `
+      )
+      .join("")
+  : `
+    <tr>
+      <td colspan="2" style="padding:6px;">Not yet assigned</td>
+    </tr>
+  `
+}
     </table>
   `
 )}
