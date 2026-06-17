@@ -160,6 +160,7 @@ export default function HomePage() {
 
 {/* Logos - Upper Left */}
 <div
+className="safe-top"
   style={{
     position: "absolute",
     top: 10,
