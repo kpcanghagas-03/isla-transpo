@@ -109,4 +109,81 @@ export default function ContactAdminPage() {
     </div>
   </main>
 );
+const pageStyle = {
+  minHeight: "100vh",
+  padding: "30px 16px",
+  fontFamily: "Segoe UI, sans-serif",
+  background:
+    "linear-gradient(180deg, #FFF7ED 0%, #FFE7D1 40%, #FFFFFF 100%)",
+  position: "relative" as const,
+};
+
+const leftAccent = {
+  position: "fixed" as const,
+  left: 0,
+  top: 0,
+  width: 120,
+  height: "100%",
+  background: "linear-gradient(180deg,#F27A35,#A61E22,#1F5AA6)",
+  opacity: 0.08,
+  clipPath: "polygon(0 0,100% 0,70% 50%,100% 100%,0 100%)",
+};
+
+const rightAccent = {
+  position: "fixed" as const,
+  right: 0,
+  top: 0,
+  width: 120,
+  height: "100%",
+  background: "linear-gradient(180deg,#1F5AA6,#F27A35,#A61E22)",
+  opacity: 0.08,
+  clipPath: "polygon(30% 0,100% 0,100% 100%,0 100%,30% 50%)",
+};
+
+const card = {
+  maxWidth: 520,
+  margin: "0 auto",
+  background: "rgba(255,255,255,0.95)",
+  padding: 25,
+  borderRadius: 16,
+  boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
+  backdropFilter: "blur(8px)",
+};
+
+const title = {
+  color: "#0B3D91",
+  fontSize: 28,
+  fontWeight: 900,
+  marginBottom: 5,
+};
+
+const subtitle = {
+  color: "#475569",
+  fontSize: 13,
+  marginBottom: 20,
+};
+
+const inputStyle = {
+  width: "100%",
+  padding: 14,
+  borderRadius: 12,
+  border: "2px solid #cbd5e1",
+  marginBottom: 12,
+  fontSize: 15,
+  color: "#0f172a",
+  backgroundColor: "#ffffff",
+  outline: "none",
+  boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+};
+
+const buttonStyle = {
+  width: "100%",
+  padding: 12,
+  borderRadius: 10,
+  border: "none",
+  background: "linear-gradient(135deg, #0B3D91, #2563EB)",
+  color: "white",
+  fontWeight: 700,
+  cursor: "pointer",
+};
 }
