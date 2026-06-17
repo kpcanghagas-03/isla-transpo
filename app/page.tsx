@@ -177,7 +177,7 @@ className="safe-top"
     src="/bp_logo.png"
     alt="BP Logo"
     style={{
-      width: "clamp(40px,8vw,68px)",
+      width: "clamp(32px,6vw,56px)",
       height: "auto",
       objectFit: "contain",
     }}
@@ -187,7 +187,7 @@ className="safe-top"
     src="/dost-normin.png"
     alt="DOST Logo"
     style={{
-      width: "clamp(100px,28vw,190px)",
+      width: "clamp(90px,22vw,160px)",
       height: "auto",
       objectFit: "contain",
     }}
@@ -349,7 +349,7 @@ className="hide-on-mobile"
         <section
           style={{
             textAlign: "center",
-            padding: "70px 20px 50px",
+            padding: "40px 16px 20px",
             position: "relative",
             zIndex: 2,
           }}
@@ -386,7 +386,7 @@ className="hide-on-mobile"
             <div
               style={{
                 maxWidth: 1100,
-                margin: "0 auto 40px",
+                margin: "0 auto 20px",
                 padding: "16px",
                 background: "linear-gradient(90deg,#1F5AA6,#4C9FD6)",
                 color: "#fff",
@@ -410,7 +410,7 @@ className="hide-on-mobile"
             padding: "20px",
             display: "grid",
             gridTemplateColumns:"repeat(auto-fit,minmax(250px,1fr))",
-            gap: 24,
+            gap: 16,
             position: "relative",
             zIndex: 2,
           }}
