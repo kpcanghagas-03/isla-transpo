@@ -403,20 +403,18 @@ if (shouldEmail) {
      
       <header className="header">
         <h1
-        style={{
-          background:
-            "linear-gradient(90deg,#F27A35,#A61E22,#1F5AA6), color:#F27A35",
-          WebkitBackgroundClip: "text",
-          WebkitTextFillColor: "#F27A35",
-          color: "#475569",
-          fontWeight: 900,
-          fontSize: "clamp(28px,5vw,48px)",
-        }}
-      >
-        ISLA-TRANSPO ADMIN DASHBOARD
-
-      </h1>
-        <p>Live Dispatch & Transport Monitoring</p>
+          style={{
+            background: "linear-gradient(90deg,#F27A35,#A61E22,#1F5AA6)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            fontWeight: 900,
+            fontSize: "clamp(28px,5vw,48px)",
+          }}
+        >
+          ISLA-TRANSPO ADMIN DASHBOARD
+        </h1>
+        <p style={{ color: "#475569", fontWeight: 500 }}>
+          Live Dispatch & Transport Monitoring</p>
       </header>
 
       {/* ================= MAP ================= */}
