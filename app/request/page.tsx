@@ -420,7 +420,7 @@ const requiredTextStyle = {
                 fontWeight: "bold",
               }}
             >
-              Arrival Date
+              Date
             </label>
 
             <input
@@ -440,7 +440,7 @@ const requiredTextStyle = {
                 fontWeight: "bold",
               }}
             >
-              Arrival Time
+              Time
             </label>
 
             <input
