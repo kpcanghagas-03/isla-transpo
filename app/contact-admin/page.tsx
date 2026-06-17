@@ -43,7 +43,7 @@ export default function ContactAdminPage() {
 };
 
   return (
-  <div className="min-h-screen bg-background px-4 py-10 flex justify-center">
+  <div className="min-h-screen bg-slate-50 dark:bg-slate-900 px-4 py-10 flex justify-center">
     
     <div className="w-full max-w-2xl">
 
@@ -58,7 +58,7 @@ export default function ContactAdminPage() {
       </div>
 
       {/* CARD */}
-      <div className="bg-card border border-border rounded-2xl shadow-sm p-6 space-y-5">
+      <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
 
         {/* REQUEST CODE */}
         <div>
@@ -70,7 +70,7 @@ export default function ContactAdminPage() {
             placeholder="ISLA-123456"
             value={requestCode}
             onChange={(e) => setRequestCode(e.target.value)}
-            className="w-full mt-2 px-3 py-2 rounded-lg border border-border bg-background text-foreground
+            className="w-full mt-2 px-3 py-2 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white border-slate-200 dark:border-slate-700
                        focus:outline-none focus:ring-2 focus:ring-primary"
           />
         </div>
@@ -95,7 +95,7 @@ export default function ContactAdminPage() {
           onClick={sendMessage}
           disabled={loading}
           className="w-full py-2.5 rounded-lg font-medium transition
-                     bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50"
+                     bg-blue-600 hover:bg-blue-700 text-white hover:opacity-90 disabled:opacity-50"
         >
           {loading ? "Sending request..." : "Send to Admin"}
         </button>
