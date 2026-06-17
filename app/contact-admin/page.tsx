@@ -43,87 +43,70 @@ export default function ContactAdminPage() {
 };
 
   return (
-  <div className="min-h-screen bg-slate-50 dark:bg-slate-900 px-4 py-10 flex justify-center">
-    
-    <div className="w-full max-w-2xl">
+  <main style={pageStyle}>
+    {/* Background accents (same as Track page) */}
+    <div style={leftAccent} />
+    <div style={rightAccent} />
 
-      {/* PAGE HEADER (SYSTEM STYLE) */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-semibold tracking-tight">
-          Contact Admin
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          ISLA-Transpo Support System — submit concerns regarding your transport request.
-        </p>
-      </div>
-
-      {/* CARD */}
-      <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-
-        {/* REQUEST CODE */}
-        <div>
-          <label className="text-xs font-medium text-muted-foreground">
-            REQUEST CODE
-          </label>
-
-          <input
-            placeholder="ISLA-123456"
-            value={requestCode}
-            onChange={(e) => setRequestCode(e.target.value)}
-            className="w-full mt-2 px-3 py-2 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white border-slate-200 dark:border-slate-700
-                       focus:outline-none focus:ring-2 focus:ring-primary"
-          />
-        </div>
-
-        {/* MESSAGE */}
-        <div>
-          <label className="text-xs font-medium text-muted-foreground">
-            MESSAGE
-          </label>
-
-          <textarea
-            placeholder="Describe your concern (cancellation, delay, vehicle issue, etc.)"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            className="w-full mt-2 h-36 px-3 py-2 rounded-lg border border-border bg-background text-foreground
-                       resize-none focus:outline-none focus:ring-2 focus:ring-primary"
-          />
-        </div>
-
-        {/* ACTION BUTTON */}
-        <button
-          onClick={sendMessage}
-          disabled={loading}
-          className="w-full py-2.5 rounded-lg font-medium transition
-                     bg-blue-600 hover:bg-blue-700 text-white hover:opacity-90 disabled:opacity-50"
-        >
-          {loading ? "Sending request..." : "Send to Admin"}
-        </button>
-
-        {/* STATUS BAR (SYSTEM FEEDBACK STYLE) */}
-        {status && (
-          <div className="text-center">
-            <span
-              className={`text-sm px-3 py-1 rounded-full border ${
-                status.includes("success")
-                  ? "text-green-600 border-green-200 bg-green-50"
-                  : status.includes("Failed")
-                  ? "text-red-600 border-red-200 bg-red-50"
-                  : "text-muted-foreground border-border bg-muted/20"
-              }`}
-            >
-              {status}
-            </span>
-          </div>
-        )}
-      </div>
-
-      {/* FOOTER NOTE (SYSTEM FEEL) */}
-      <p className="text-xs text-muted-foreground text-center mt-6">
-        All messages are logged under your request code for tracking and support.
+    <div style={card}>
+      <h1 style={title}>ISLA-TRANSPO</h1>
+      <p style={subtitle}>
+        Contact admin regarding your transport request
       </p>
 
+      {/* REQUEST CODE */}
+      <input
+        placeholder="Enter Request Code (ISLA-XXXXXX)"
+        value={requestCode}
+        onChange={(e) => setRequestCode(e.target.value)}
+        style={inputStyle}
+      />
+
+      {/* MESSAGE */}
+      <textarea
+        placeholder="Write your concern (cancellation, change schedule, issue, etc.)"
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+        style={{
+          ...inputStyle,
+          height: 120,
+          resize: "none",
+        }}
+      />
+
+      {/* BUTTON */}
+      <button
+        onClick={sendMessage}
+        disabled={loading}
+        style={{
+          ...buttonStyle,
+          background: "linear-gradient(135deg, #F27A35, #0B3D91)",
+          marginTop: 5,
+        }}
+      >
+        {loading ? "Sending..." : "Send to Admin"}
+      </button>
+
+      {/* STATUS */}
+      {status && (
+        <p
+          style={{
+            marginTop: 15,
+            textAlign: "center",
+            fontSize: 13,
+            color:
+              status.includes("success")
+                ? "#16a34a"
+                : status.includes("Failed")
+                ? "#dc2626"
+                : "#64748b",
+            fontWeight: 600,
+          }}
+        >
+          {status}
+        </p>
+      )}
     </div>
-  </div>
+  </main>
 );
 }
