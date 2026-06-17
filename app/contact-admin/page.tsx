@@ -43,116 +43,52 @@ export default function ContactAdminPage() {
 };
 
   return (
-  <div
-    style={{
-      minHeight: "100vh",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      padding: 20,
-      background:
-        "linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)",
-    }}
-  >
-    <div
-      style={{
-        width: "100%",
-        maxWidth: 520,
-        background: "rgba(255, 255, 255, 0.08)",
-        backdropFilter: "blur(12px)",
-        borderRadius: 16,
-        padding: 24,
-        boxShadow: "0 10px 30px rgba(0,0,0,0.4)",
-        border: "1px solid rgba(255,255,255,0.1)",
-        color: "white",
-      }}
-    >
+  <div className="min-h-screen flex items-center justify-center bg-background px-4">
+    <div className="w-full max-w-lg bg-card text-foreground border border-border shadow-xl rounded-2xl p-6">
+      
       {/* HEADER */}
-      <h2
-        style={{
-          fontSize: 22,
-          fontWeight: "bold",
-          marginBottom: 6,
-        }}
-      >
+      <h2 className="text-2xl font-semibold tracking-tight">
         Contact Admin
       </h2>
 
-      <p style={{ fontSize: 13, opacity: 0.7, marginBottom: 20 }}>
-        Send a message regarding your transport request (cancellation, issues, or updates).
+      <p className="text-sm text-muted-foreground mt-1 mb-6">
+        Send concerns regarding your transport request (cancellation, changes, or issues).
       </p>
 
       {/* REQUEST CODE */}
-      <label style={{ fontSize: 12, opacity: 0.8 }}>Request Code</label>
+      <label className="text-xs font-medium text-muted-foreground">
+        Request Code
+      </label>
       <input
         placeholder="e.g. ISLA-123456"
         value={requestCode}
         onChange={(e) => setRequestCode(e.target.value)}
-        style={{
-          width: "100%",
-          padding: 12,
-          marginTop: 6,
-          marginBottom: 16,
-          borderRadius: 10,
-          border: "1px solid rgba(255,255,255,0.15)",
-          background: "rgba(255,255,255,0.07)",
-          color: "white",
-          outline: "none",
-        }}
+        className="w-full mt-2 mb-4 px-3 py-2 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
       />
 
       {/* MESSAGE */}
-      <label style={{ fontSize: 12, opacity: 0.8 }}>Message</label>
+      <label className="text-xs font-medium text-muted-foreground">
+        Message
+      </label>
       <textarea
-        placeholder="Write your concern here..."
+        placeholder="Write your message..."
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        style={{
-          width: "100%",
-          padding: 12,
-          marginTop: 6,
-          height: 140,
-          borderRadius: 10,
-          border: "1px solid rgba(255,255,255,0.15)",
-          background: "rgba(255,255,255,0.07)",
-          color: "white",
-          outline: "none",
-          resize: "none",
-        }}
+        className="w-full mt-2 h-32 px-3 py-2 rounded-lg border border-border bg-background text-foreground resize-none focus:outline-none focus:ring-2 focus:ring-primary"
       />
 
       {/* BUTTON */}
       <button
         onClick={sendMessage}
         disabled={loading}
-        style={{
-          marginTop: 18,
-          width: "100%",
-          padding: 12,
-          borderRadius: 10,
-          border: "none",
-          fontWeight: "bold",
-          cursor: "pointer",
-          background: loading
-            ? "rgba(59,130,246,0.5)"
-            : "linear-gradient(90deg, #3b82f6, #2563eb)",
-          color: "white",
-          transition: "0.2s",
-        }}
+        className="w-full mt-5 py-2 rounded-lg font-medium transition bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50"
       >
         {loading ? "Sending..." : "Send Message"}
       </button>
 
       {/* STATUS */}
       {status && (
-        <p
-          style={{
-            marginTop: 14,
-            fontSize: 13,
-            opacity: 0.85,
-            textAlign: "center",
-          }}
-        >
+        <p className="text-sm text-center mt-4 text-muted-foreground">
           {status}
         </p>
       )}
