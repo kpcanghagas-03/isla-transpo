@@ -43,55 +43,86 @@ export default function ContactAdminPage() {
 };
 
   return (
-  <div className="min-h-screen flex items-center justify-center bg-background px-4">
-    <div className="w-full max-w-lg bg-card text-foreground border border-border shadow-xl rounded-2xl p-6">
-      
-      {/* HEADER */}
-      <h2 className="text-2xl font-semibold tracking-tight">
-        Contact Admin
-      </h2>
+  <div className="min-h-screen bg-background px-4 py-10 flex justify-center">
+    
+    <div className="w-full max-w-2xl">
 
-      <p className="text-sm text-muted-foreground mt-1 mb-6">
-        Send concerns regarding your transport request (cancellation, changes, or issues).
+      {/* PAGE HEADER (SYSTEM STYLE) */}
+      <div className="mb-6">
+        <h1 className="text-3xl font-semibold tracking-tight">
+          Contact Admin
+        </h1>
+        <p className="text-sm text-muted-foreground mt-1">
+          ISLA-Transpo Support System — submit concerns regarding your transport request.
+        </p>
+      </div>
+
+      {/* CARD */}
+      <div className="bg-card border border-border rounded-2xl shadow-sm p-6 space-y-5">
+
+        {/* REQUEST CODE */}
+        <div>
+          <label className="text-xs font-medium text-muted-foreground">
+            REQUEST CODE
+          </label>
+
+          <input
+            placeholder="ISLA-123456"
+            value={requestCode}
+            onChange={(e) => setRequestCode(e.target.value)}
+            className="w-full mt-2 px-3 py-2 rounded-lg border border-border bg-background text-foreground
+                       focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+        </div>
+
+        {/* MESSAGE */}
+        <div>
+          <label className="text-xs font-medium text-muted-foreground">
+            MESSAGE
+          </label>
+
+          <textarea
+            placeholder="Describe your concern (cancellation, delay, vehicle issue, etc.)"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            className="w-full mt-2 h-36 px-3 py-2 rounded-lg border border-border bg-background text-foreground
+                       resize-none focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+        </div>
+
+        {/* ACTION BUTTON */}
+        <button
+          onClick={sendMessage}
+          disabled={loading}
+          className="w-full py-2.5 rounded-lg font-medium transition
+                     bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50"
+        >
+          {loading ? "Sending request..." : "Send to Admin"}
+        </button>
+
+        {/* STATUS BAR (SYSTEM FEEDBACK STYLE) */}
+        {status && (
+          <div className="text-center">
+            <span
+              className={`text-sm px-3 py-1 rounded-full border ${
+                status.includes("success")
+                  ? "text-green-600 border-green-200 bg-green-50"
+                  : status.includes("Failed")
+                  ? "text-red-600 border-red-200 bg-red-50"
+                  : "text-muted-foreground border-border bg-muted/20"
+              }`}
+            >
+              {status}
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* FOOTER NOTE (SYSTEM FEEL) */}
+      <p className="text-xs text-muted-foreground text-center mt-6">
+        All messages are logged under your request code for tracking and support.
       </p>
 
-      {/* REQUEST CODE */}
-      <label className="text-xs font-medium text-muted-foreground">
-        Request Code
-      </label>
-      <input
-        placeholder="e.g. ISLA-123456"
-        value={requestCode}
-        onChange={(e) => setRequestCode(e.target.value)}
-        className="w-full mt-2 mb-4 px-3 py-2 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-      />
-
-      {/* MESSAGE */}
-      <label className="text-xs font-medium text-muted-foreground">
-        Message
-      </label>
-      <textarea
-        placeholder="Write your message..."
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        className="w-full mt-2 h-32 px-3 py-2 rounded-lg border border-border bg-background text-foreground resize-none focus:outline-none focus:ring-2 focus:ring-primary"
-      />
-
-      {/* BUTTON */}
-      <button
-        onClick={sendMessage}
-        disabled={loading}
-        className="w-full mt-5 py-2 rounded-lg font-medium transition bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50"
-      >
-        {loading ? "Sending..." : "Send Message"}
-      </button>
-
-      {/* STATUS */}
-      {status && (
-        <p className="text-sm text-center mt-4 text-muted-foreground">
-          {status}
-        </p>
-      )}
     </div>
   </div>
 );
