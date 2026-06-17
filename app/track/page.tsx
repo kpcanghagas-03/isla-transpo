@@ -171,11 +171,15 @@ const subtitle = {
 
 const inputStyle = {
   width: "100%",
-  padding: 12,
-  borderRadius: 10,
-  border: "1px solid #cbd5e1",
-  marginBottom: 10,
-  fontSize: 14,
+  padding: 14,
+  borderRadius: 12,
+  border: "2px solid #cbd5e1",
+  marginBottom: 12,
+  fontSize: 15,
+  color: "#0f172a",
+  backgroundColor: "#ffffff",
+  outline: "none",
+  boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
 };
 
 const buttonStyle = {
