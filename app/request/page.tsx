@@ -700,6 +700,3 @@ const requiredTextStyle = {
   );
 }
 
-function useEffect(arg0: () => void, arg1: never[]) {
-  throw new Error("Function not implemented.");
-}
