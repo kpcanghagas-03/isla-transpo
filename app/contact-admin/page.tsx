@@ -1,4 +1,48 @@
-return (
+"use client";
+
+import { useState } from "react";
+import { supabase } from "@/lib/supabase";
+
+export default function ContactAdminPage() {
+  const [requestCode, setRequestCode] = useState("");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState("");
+
+  const sendMessage = async () => {
+  if (!requestCode.trim() || !message.trim()) {
+    setStatus("Please fill all fields");
+    return;
+  }
+
+  setLoading(true);
+  setStatus("Sending...");
+
+  const { error } = await supabase.from("admin_messages").insert([
+    {
+      request_code: requestCode.trim(),
+      sender: "requester",
+      message: message.trim(),
+      status: "open",
+      created_at: new Date().toISOString(),
+    },
+  ]);
+
+  setLoading(false);
+
+  if (error) {
+    console.log(error);
+    setStatus("Failed to send message ❌");
+    return;
+  }
+
+  setStatus("Message sent successfully ✅");
+
+  setRequestCode("");
+  setMessage("");
+};
+
+  return (
   <div
     style={{
       minHeight: "100vh",
@@ -115,3 +159,4 @@ return (
     </div>
   </div>
 );
+}
