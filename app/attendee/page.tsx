@@ -340,14 +340,14 @@ className="hide-on-mobile"
 
   <h1
     style={{
-      background: "linear-gradient(90deg,#F27A35,#A61E22,#1F5AA6)",
-      WebkitBackgroundClip: "text",
-      WebkitTextFillColor: "transparent",
-      fontSize: "clamp(25px, 6vw, 52px)",
-      fontWeight: "800",
-      marginBottom: 10,
-      lineHeight: 1.0,
-    }}
+  background: "linear-gradient(90deg,#F27A35,#A61E22,#1F5AA6)",
+  WebkitBackgroundClip: "text",
+  WebkitTextFillColor: "transparent",
+  fontSize: "clamp(22px, 5vw, 40px)",
+  fontWeight: "800",
+  marginBottom: 12,
+  lineHeight: 1.2,
+}}
   >
     Barge Schedule & Trips
   </h1>
@@ -387,33 +387,34 @@ className="hide-on-mobile"
             }}
           >
             <h2
+            style={{
+              color: "#0B3D91",
+              fontSize: 20,
+              fontWeight: "800",
+              marginBottom: 20,
+              lineHeight: 1.4,
+            }}
+          >
+            <span
               style={{
-                color: "#0B3D91",
-                fontSize: 20,
-                fontWeight: "800",
-                marginBottom: 20,
-                display: "flex",
+                background: "#0B3D91",
+                color: "white",
+                width: 36,
+                height: 36,
+                borderRadius: 10,
+                display: "inline-flex",
                 alignItems: "center",
-                gap: 10,
+                justifyContent: "center",
+                fontSize: 18,
+                marginRight: 10,
+                verticalAlign: "middle",
               }}
             >
-              <span
-                style={{
-                  background: "#0B3D91",
-                  color: "white",
-                  width: 36,
-                  height: 36,
-                  borderRadius: 10,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 18,
-                }}
-              >
-                🎫
-              </span>
-              Passenger Fare Rates (Benoni ↔ Balingoan)
-            </h2>
+              🎫
+            </span>
+
+            Passenger Fare Rates (Benoni ↔ Balingoan)
+          </h2>
 
             <div
               style={{
