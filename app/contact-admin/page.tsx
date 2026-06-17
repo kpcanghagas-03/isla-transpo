@@ -44,11 +44,11 @@ export default function ContactAdminPage() {
 
   setLoading(false);
 
-  if (error) {
-    console.log(error);
-    setStatus("Failed to send message ❌");
-    return;
-  }
+ if (error) {
+  console.log("INSERT ERROR:", error);
+  setStatus(error.message || "Failed to send message ❌");
+  return;
+}
 
   setStatus("Message sent successfully ✅");
 
