@@ -8,6 +8,7 @@ export default function RequestPage() {
   const router = useRouter();
 
   const [formData, setFormData] = useState({
+    
     requester_name: "",
     email: "",
     committee_unit: "",
@@ -34,7 +35,11 @@ export default function RequestPage() {
 
 
     notes_remarks: "",
+
   });
+
+  const [errors, setErrors] = useState<Record<string, boolean>>({});
+  const [submitted, setSubmitted] = useState(false);
 
   // ================= HANDLE INPUT CHANGE =================
 
@@ -49,6 +54,15 @@ export default function RequestPage() {
     });
   };
 
+  const requiredFields = [
+  "requester_name",
+  "email",
+  "pickup_location",
+  "destination",
+  "pick_up_date",
+  "pick_up_time",
+  "contact_number",
+];
 // ================= HANDLE SUBMIT =================
 const handleSubmit = async () => {
   const cleanEmail = formData.email
@@ -83,25 +97,28 @@ const handleSubmit = async () => {
   console.log("STAFF EMAIL:", staff_email);
 
   // ================= VALIDATION =================
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+ // ================= VALIDATION =================
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  if (
-    !formData.requester_name ||
-    !formData.email ||
-    !formData.pickup_location ||
-    !formData.destination ||
-    !formData.pick_up_date ||
-    !formData.pick_up_time ||
-    !formData.contact_number
-  ) {
-    alert("Please fill in all required fields.");
-    return;
-  }
+const newErrors: Record<string, boolean> = {};
 
-  if (!emailRegex.test(cleanEmail)) {
-    alert("Please enter a valid email address.");
-    return;
+requiredFields.forEach((field) => {
+  if (!formData[field as keyof typeof formData]) {
+    newErrors[field] = true;
   }
+});
+
+if (!emailRegex.test(cleanEmail)) {
+  newErrors.email = true;
+}
+
+setErrors(newErrors);
+setSubmitted(true);
+
+if (Object.keys(newErrors).length > 0) {
+  alert("Please fill in all required fields correctly.");
+  return;
+}
  
    // ================= INSERT REQUEST =================
     const payload = {
@@ -189,21 +206,17 @@ const handleSubmit = async () => {
   overflow: "hidden",
 };
 
-  const inputStyle = {
-    padding: 10,
-    borderRadius: 8,
-    border: "1px solid black",
-    width: "100%",
-    marginBottom: 12,
-    outline: "none",
-    fontSize: 14,
-
-    // FIX WHITE TEXT
-    color: "black",
-
-    // FIX WHITE INPUT BACKGROUND
-    backgroundColor: "white",
-  };
+  const inputStyle = (hasError?: boolean) => ({
+  padding: 10,
+  borderRadius: 8,
+  border: hasError ? "2px solid red" : "1px solid black",
+  width: "100%",
+  marginBottom: 12,
+  outline: "none",
+  fontSize: 14,
+  color: "black",
+  backgroundColor: "white",
+});
 
   const formBox = {
     background: "rgba(255,255,255,0.95)",
@@ -285,7 +298,7 @@ const handleSubmit = async () => {
           placeholder="Name of Requester"
           value={formData.requester_name}
           onChange={handleChange}
-          style={inputStyle}
+          style={inputStyle(submitted && errors.requester_name)}
         />
 
         <input
@@ -293,7 +306,7 @@ const handleSubmit = async () => {
           placeholder="Email Address"
           value={formData.email}
           onChange={handleChange}
-          style={inputStyle}
+          style={inputStyle(submitted && errors.email)}
         />
 
         <input
@@ -335,7 +348,7 @@ const handleSubmit = async () => {
           placeholder="Pick Up Point"
           value={formData.pickup_location}
           onChange={handleChange}
-          style={inputStyle}
+          style={inputStyle(submitted && errors.pickup_location)}
         />
 
         <input
@@ -343,7 +356,7 @@ const handleSubmit = async () => {
           placeholder="Destination"
           value={formData.destination}
           onChange={handleChange}
-          style={inputStyle}
+          style={inputStyle(submitted && errors.destination)}
         />
 
         {/* ================= FLIGHT DETAILS ================= */}
@@ -435,7 +448,7 @@ const handleSubmit = async () => {
               name="pick_up_date"
               value={formData.pick_up_date}
               onChange={handleChange}
-              style={inputStyle}
+              style={inputStyle(submitted && errors.pick_up_date)}
             />
           </div>
 
@@ -455,7 +468,7 @@ const handleSubmit = async () => {
               name="pick_up_time"
               value={formData.pick_up_time}
               onChange={handleChange}
-              style={inputStyle}
+              style={inputStyle(submitted && errors.pick_up_time)}
             />
           </div>
         </div>
@@ -479,7 +492,7 @@ const handleSubmit = async () => {
           placeholder="Contact Number"
           value={formData.contact_number}
           onChange={handleChange}
-          style={inputStyle}
+          style={inputStyle(submitted && errors.contact_number)}
         />
 
         <input
