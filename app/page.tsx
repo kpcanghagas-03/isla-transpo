@@ -384,21 +384,21 @@ className="hide-on-mobile"
           </p>
         </section>
             <div
-              style={{
-                maxWidth: 1100,
-                margin: "0 auto 20px",
-                padding: "16px",
-                background: "linear-gradient(90deg,#1F5AA6,#4C9FD6)",
-                color: "#fff",
-                borderRadius: 15,
-                position: "relative",
-                zIndex: 2,
-                textAlign: "center",
-              }}
-            >
-              Welcome to the official transportation management system for
-              Regional Science, Technology and Innovation Week 2026.
-            </div>
+                style={{
+                  maxWidth: 1100,
+                  width: "95%",
+                  margin: "0 auto 20px",
+                  padding: "10px 14px",
+                  background: "linear-gradient(90deg,#1F5AA6,#4C9FD6)",
+                  color: "#fff",
+                  borderRadius: 15,
+                  textAlign: "center",
+                  fontSize: "clamp(14px,3vw,16px)",
+                  lineHeight: 1.4,
+                }}
+              >
+                Welcome to the official transportation system of RSTW 2026.
+              </div>
 
         {/* CARDS */}
         <section
