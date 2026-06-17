@@ -174,20 +174,20 @@ className="safe-top"
   }}
 >
   <img
-    src="/bp_logo.png"
-    alt="BP Logo"
+    src="/dost-normin.png"
+    alt="DOST Logo"
     style={{
-      width: "clamp(32px,6vw,56px)",
+      width: "clamp(90px,22vw,160px)",
       height: "auto",
       objectFit: "contain",
     }}
   />
 
   <img
-    src="/dost-normin.png"
-    alt="DOST Logo"
+    src="/bp_logo.png"
+    alt="BP Logo"
     style={{
-      width: "clamp(90px,22vw,160px)",
+      width: "clamp(32px,6vw,56px)",
       height: "auto",
       objectFit: "contain",
     }}
