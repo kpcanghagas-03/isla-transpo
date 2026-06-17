@@ -392,6 +392,66 @@ const requiredTextStyle = {
         {submitted && errors.requester_name && (
             <p style={requiredTextStyle}>Required</p>
           )}
+
+           {/* ================= PICKUP SCHEDULE ================= */}
+
+        <div style={sectionTitleStyle}>
+          🕒 Pickup Schedule
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            gap: 20,
+          }}
+        >
+          <div style={{ flex: 1 }}>
+            <label
+              style={{
+                color: "#334155",
+                fontSize: 14,
+                fontWeight: "bold",
+              }}
+            >
+              Pick Up Date
+            </label>
+
+            <input
+              type="date"
+              name="pick_up_date"
+              value={formData.pick_up_date}
+              onChange={handleChange}
+              style={inputStyle(submitted && errors.pick_up_date)}
+            />
+            {submitted && errors.requester_name && (
+              <p style={requiredTextStyle}>Required</p>
+            )}
+          </div>
+
+          <div style={{ flex: 1 }}>
+            <label
+              style={{
+                color: "#334155",
+                fontSize: 14,
+                fontWeight: "bold",
+              }}
+            >
+              Pick Up Time
+            </label>
+
+            <input
+              type="time"
+              name="pick_up_time"
+              value={formData.pick_up_time}
+              onChange={handleChange}
+              style={inputStyle(submitted && errors.pick_up_time)}
+            />
+            {submitted && errors.requester_name && (
+            <p style={requiredTextStyle}>Required</p>
+          )}
+          </div>
+        </div>
+        
         {/* ================= FLIGHT DETAILS ================= */}
 
         <div style={sectionTitleStyle}>
@@ -450,65 +510,6 @@ const requiredTextStyle = {
               onChange={handleChange}
               style={inputStyle(submitted && errors.flight_arrival_time)}
             />
-          </div>
-        </div>
-
-        {/* ================= PICKUP SCHEDULE ================= */}
-
-        <div style={sectionTitleStyle}>
-          🕒 Pickup Schedule
-        </div>
-
-        <div
-          style={{
-            display: "flex",
-            gap: 20,
-          }}
-        >
-          <div style={{ flex: 1 }}>
-            <label
-              style={{
-                color: "#334155",
-                fontSize: 14,
-                fontWeight: "bold",
-              }}
-            >
-              Pick Up Date
-            </label>
-
-            <input
-              type="date"
-              name="pick_up_date"
-              value={formData.pick_up_date}
-              onChange={handleChange}
-              style={inputStyle(submitted && errors.pick_up_date)}
-            />
-            {submitted && errors.requester_name && (
-              <p style={requiredTextStyle}>Required</p>
-            )}
-          </div>
-
-          <div style={{ flex: 1 }}>
-            <label
-              style={{
-                color: "#334155",
-                fontSize: 14,
-                fontWeight: "bold",
-              }}
-            >
-              Pick Up Time
-            </label>
-
-            <input
-              type="time"
-              name="pick_up_time"
-              value={formData.pick_up_time}
-              onChange={handleChange}
-              style={inputStyle(submitted && errors.pick_up_time)}
-            />
-            {submitted && errors.requester_name && (
-            <p style={requiredTextStyle}>Required</p>
-          )}
           </div>
         </div>
 
