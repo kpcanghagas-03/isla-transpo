@@ -347,7 +347,7 @@ if (Object.keys(newErrors).length > 0) {
           value={formData.passenger_names}
           onChange={handleChange}
           style={{
-            ...inputStyle,
+            ...inputStyle(),
             height: 90,
             resize: "none",
           }}
@@ -534,8 +534,7 @@ if (Object.keys(newErrors).length > 0) {
           value={formData.notes_remarks}
           onChange={handleChange}
           style={{
-            ...inputStyle,
-
+            ...inputStyle(),
             height: 100,
             resize: "none",
           }}
