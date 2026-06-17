@@ -40,6 +40,13 @@ export default function RequestPage() {
 
   const [errors, setErrors] = useState<Record<string, boolean>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);  
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  useEffect(() => {const saved = localStorage.getItem("request_draft");
+  if (saved) {
+    setFormData(JSON.parse(saved));
+  }
+}, []);
 
   // ================= HANDLE INPUT CHANGE =================
 
@@ -75,9 +82,10 @@ const isFormValid =
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim().toLowerCase());
 // ================= HANDLE SUBMIT =================
 const handleSubmit = async () => {
-  const cleanEmail = formData.email
-    .trim()
-    .toLowerCase();
+  const cleanEmail = formData.email.trim().toLowerCase();
+  if (isSubmitting) return;
+
+  setIsSubmitting(true);
 
   const {
     data: staffList,
@@ -106,7 +114,6 @@ const handleSubmit = async () => {
 
   console.log("STAFF EMAIL:", staff_email);
 
-  // ================= VALIDATION =================
  // ================= VALIDATION =================
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -181,6 +188,8 @@ if (Object.keys(newErrors).length > 0) {
       console.log("AUTO EMAIL ERROR:", err);
     }
     alert("Transport Request Submitted Successfully!");
+    setIsSubmitting(false);
+
     setFormData({
       requester_name: "",
       email: "",
@@ -318,8 +327,9 @@ const requiredTextStyle = {
           onChange={handleChange}
           style={inputStyle(submitted && errors.requester_name)}
         />
-        {submitted && errors.requester_name && (
-          <p style={requiredTextStyle}>Required</p>)}
+       {submitted && errors.requester_name && (
+  <p style={requiredTextStyle}>Required</p>
+)}
 
         <input
           name="email"
@@ -328,9 +338,9 @@ const requiredTextStyle = {
           onChange={handleChange}
           style={inputStyle(submitted && errors.email)}
         />
-        {submitted && errors.requester_name && (
-        <p style={requiredTextStyle}>Required</p>
-      )}
+        {submitted && errors.email && (
+  <p style={requiredTextStyle}>Required</p>
+)}
 
         <input
           name="committee_unit"
@@ -339,9 +349,9 @@ const requiredTextStyle = {
           onChange={handleChange}
           style={inputStyle(submitted && errors.commmittee_unit)}
         />
-        {submitted && errors.requester_name && (
-         <p style={requiredTextStyle}>Required</p>
-          )}
+        {submitted && errors.committee_unit && (
+  <p style={requiredTextStyle}>Required</p>
+)}
 
         {/* ================= TRANSPORT DETAILS ================= */}
 
@@ -356,9 +366,9 @@ const requiredTextStyle = {
           onChange={handleChange}
           style={inputStyle(submitted && errors.passengers)}
         />
-        {submitted && errors.requester_name && (
-          <p style={requiredTextStyle}>Required</p>
-        )}
+        {submitted && errors.passengers && (
+  <p style={requiredTextStyle}>Required</p>
+)}
 
         <textarea
           name="passenger_names"
@@ -379,9 +389,9 @@ const requiredTextStyle = {
           onChange={handleChange}
           style={inputStyle(submitted && errors.pickup_location)}
         />
-        {submitted && errors.requester_name && (
-          <p style={requiredTextStyle}>Required</p>
-        )}
+        {submitted && errors.pickup_location && (
+  <p style={requiredTextStyle}>Required</p>
+)}
         <input
           name="destination"
           placeholder="Destination"
@@ -389,10 +399,9 @@ const requiredTextStyle = {
           onChange={handleChange}
           style={inputStyle(submitted && errors.destination)}
         />
-        {submitted && errors.requester_name && (
-            <p style={requiredTextStyle}>Required</p>
-          )}
-
+        {submitted && errors.destination && (
+  <p style={requiredTextStyle}>Required</p>
+)}
            {/* ================= PICKUP SCHEDULE ================= */}
 
         <div style={sectionTitleStyle}>
@@ -423,9 +432,9 @@ const requiredTextStyle = {
               onChange={handleChange}
               style={inputStyle(submitted && errors.pick_up_date)}
             />
-            {submitted && errors.requester_name && (
-              <p style={requiredTextStyle}>Required</p>
-            )}
+            {submitted && errors.pick_up_date && (
+  <p style={requiredTextStyle}>Required</p>
+)}
           </div>
 
           <div style={{ flex: 1 }}>
@@ -446,12 +455,12 @@ const requiredTextStyle = {
               onChange={handleChange}
               style={inputStyle(submitted && errors.pick_up_time)}
             />
-            {submitted && errors.requester_name && (
-            <p style={requiredTextStyle}>Required</p>
-          )}
+            {submitted && errors.pick_up_time && (
+  <p style={requiredTextStyle}>Required</p>
+)}
           </div>
         </div>
-        
+
         {/* ================= FLIGHT DETAILS ================= */}
 
         <div style={sectionTitleStyle}>
@@ -526,9 +535,9 @@ const requiredTextStyle = {
           onChange={handleChange}
           style={inputStyle(submitted && errors.conatact_person)}
         />
-        {submitted && errors.requester_name && (
-          <p style={requiredTextStyle}>Required</p>
-        )}
+        {submitted && errors.contact_person && (
+  <p style={requiredTextStyle}>Required</p>
+)}
         <input
           name="contact_number"
           placeholder="Contact Number"
@@ -536,9 +545,9 @@ const requiredTextStyle = {
           onChange={handleChange}
           style={inputStyle(submitted && errors.contact_number)}
         />
-          {submitted && errors.requester_name && (
-            <p style={requiredTextStyle}>Required</p>
-          )}
+          {submitted && errors.contact_number && (
+  <p style={requiredTextStyle}>Required</p>
+)}
         <input
           name="alternate_contact_person"
           placeholder="Alternate Contact Person"
@@ -572,8 +581,8 @@ const requiredTextStyle = {
             height: 100,
             resize: "none",
           }}
-        />
 
+/>
         {/* ================= BUTTONS ================= */}
 
         <div
@@ -601,29 +610,92 @@ const requiredTextStyle = {
             Back
           </button>
 
-          <button
-          onClick={handleSubmit}
-          disabled={!isFormValid}
-          style={{
-            flex: 2,
-            background: !isFormValid
-              ? "#94a3b8"
-              : "linear-gradient(135deg, #0B3D91, #2563EB)",
-            color: "white",
-            padding: "12px",
-            border: "none",
-            borderRadius: 10,
-            cursor: !isFormValid ? "not-allowed" : "pointer",
-            fontWeight: "bold",
-            fontSize: 14,
-            whiteSpace: "nowrap",
-            opacity: !isFormValid ? 0.6 : 1,
-          }}
-        >
-          Submit Request
-        </button>
+         <button
+  onClick={() => setShowConfirm(true)}
+  disabled={isSubmitting || !isFormValid}
+  style={{
+    flex: 2,
+    background:
+      isSubmitting || !isFormValid
+        ? "#94a3b8"
+        : "linear-gradient(135deg, #0B3D91, #2563EB)",
+    color: "white",
+    padding: "12px",
+    border: "none",
+    borderRadius: 10,
+    cursor: isSubmitting ? "not-allowed" : "pointer",
+    fontWeight: "bold",
+    fontSize: 14,
+    whiteSpace: "nowrap",
+    opacity: isSubmitting ? 0.6 : 1,
+  }}
+>
+  {isSubmitting ? "Submitting..." : "Submit Request"}
+</button>
         </div>
       </div>
+      {showConfirm && (
+  <div
+    style={{
+      position: "fixed",
+      inset: 0,
+      background: "rgba(0,0,0,0.6)",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 9999,
+    }}
+  >
+    <div
+      style={{
+        background: "#fff",
+        padding: 25,
+        borderRadius: 16,
+        maxWidth: 400,
+        width: "90%",
+        textAlign: "center",
+      }}
+    >
+      <h3 style={{ marginBottom: 10 }}>Confirm Submission</h3>
+
+      <p style={{ fontSize: 14, color: "#475569" }}>
+        Submit this transportation request?
+      </p>
+
+      <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
+        <button
+          onClick={() => setShowConfirm(false)}
+          style={{
+            flex: 1,
+            padding: 10,
+            background: "#E2E8F0",
+            border: "none",
+            borderRadius: 8,
+          }}
+        >
+          Cancel
+        </button>
+
+        <button
+          onClick={async () => {
+            setShowConfirm(false);
+            await handleSubmit();
+          }}
+          style={{
+            flex: 1,
+            padding: 10,
+            background: "#0B3D91",
+            color: "#fff",
+            border: "none",
+            borderRadius: 8,
+          }}
+        >
+          Confirm
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </main>
   );
 }
