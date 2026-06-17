@@ -83,6 +83,12 @@ const isFormValid =
 // ================= HANDLE SUBMIT =================
 const handleSubmit = async () => {
   const cleanEmail = formData.email.trim().toLowerCase();
+  
+  const requestCode =
+  "ISLA-" +
+  Date.now().toString().slice(-6) +
+  Math.floor(Math.random() * 1000);
+  
   if (isSubmitting) return;
 
   setIsSubmitting(true);
@@ -139,6 +145,7 @@ if (Object.keys(newErrors).length > 0) {
  
    // ================= INSERT REQUEST =================
     const payload = {
+      request_code: requestCode,
       requester_name: formData.requester_name,
       email: cleanEmail,
       staff_email: staff_email,
@@ -187,7 +194,8 @@ if (Object.keys(newErrors).length > 0) {
     } catch (err) {
       console.log("AUTO EMAIL ERROR:", err);
     }
-    alert("Transport Request Submitted Successfully!");
+    alert(
+  `Transport Request Submitted Successfully!\n\nRequest Code:\n${requestCode}\n\nPlease save this code for tracking your request.`);
     setIsSubmitting(false);
 
     setFormData({
