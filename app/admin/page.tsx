@@ -14,6 +14,8 @@ import { request } from "https";
 type Request = {
   id: number;
 
+  request_code: string | null;
+
   requester_name: string;
   email: string | null;
   staff_email?: string | null;
@@ -366,6 +368,7 @@ if (shouldEmail) {
   // Normalize shape for LiveMap (no nulls, no extra keys)
   const liveMapRequests: LiveMapRequest[] = requests.map((req) => ({
     id: req.id,
+    request_code: req.request_code || "",
     requester_name: req.requester_name || "",
     email: req.email || "",
     staff_email: req.staff_email || "",
@@ -602,6 +605,22 @@ if (shouldEmail) {
                 >
                   <div className="nameRow">
                     <span className="name">{req.requester_name}</span>
+
+                    {req.request_code && (
+                      <span
+                        style={{
+                          fontSize: 11,
+                          background: "#0B3D91",
+                          color: "white",
+                          padding: "3px 8px",
+                          borderRadius: 999,
+                          fontWeight: 600,
+                        }}
+                      >
+                        {req.request_code}
+                      </span>
+                    )}
+
                     {req.priority === "VIP" && <span className="vipBadge">VIP</span>}
                   </div>
 
