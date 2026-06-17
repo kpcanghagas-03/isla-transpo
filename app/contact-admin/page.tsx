@@ -9,38 +9,52 @@ export default function ContactAdminPage() {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState("");
 
-  const sendMessage = async () => {
-    if (!requestCode.trim() || !message.trim()) {
-      setStatus("Please fill all fields");
-      return;
-    }
+ const sendMessage = async () => {
+  if (!requestCode.trim() || !message.trim()) {
+    setStatus("Please fill all fields");
+    return;
+  }
 
-    setLoading(true);
-    setStatus("Sending...");
+  setLoading(true);
+  setStatus("Sending...");
 
-    const { error } = await supabase.from("admin_messages").insert([
-      {
-        request_code: requestCode.trim(),
-        sender: "requester",
-        message: message.trim(),
-        status: "open",
-        created_at: new Date().toISOString(),
-      },
-    ]);
+  // 🔥 STEP 1: get real request ID
+  const { data: requestData, error: requestError } = await supabase
+    .from("transport_requests")
+    .select("id")
+    .eq("request_code", requestCode.trim())
+    .maybeSingle();
 
+  if (requestError || !requestData) {
     setLoading(false);
+    setStatus("Invalid request code ❌");
+    return;
+  }
 
-    if (error) {
-      console.log(error);
-      setStatus("Failed to send message ❌");
-      return;
-    }
+  // 🔥 STEP 2: insert message with request_id
+  const { error } = await supabase.from("admin_messages").insert([
+    {
+      request_id: requestData.id,
+      request_code: requestCode.trim(),
+      sender: "requester",
+      message: message.trim(),
+      status: "open",
+    },
+  ]);
 
-    setStatus("Message sent successfully ✅");
+  setLoading(false);
 
-    setRequestCode("");
-    setMessage("");
-  };
+  if (error) {
+    console.log(error);
+    setStatus("Failed to send message ❌");
+    return;
+  }
+
+  setStatus("Message sent successfully ✅");
+
+  setRequestCode("");
+  setMessage("");
+};
 
   return (
     <main style={pageStyle}>
