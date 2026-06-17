@@ -313,11 +313,12 @@ className="hide-on-mobile"
     borderRadius: 30,
     padding: "clamp(16px, 4vw, 40px)",
     boxShadow: "0 25px 60px rgba(0,0,0,0.4)",
+    lineHeight: 1.5,
   }}
 >
           
           {/* Header Section */}
-<div style={{ textAlign: "center", marginBottom: 35 }}>
+<div style={{ textAlign: "center", marginBottom: 45 }}>
   <div
     style={{
       display: "inline-block",
@@ -339,26 +340,28 @@ className="hide-on-mobile"
   </div>
 
   <h1
-    style={{
+   style={{
   background: "linear-gradient(90deg,#F27A35,#A61E22,#1F5AA6)",
   WebkitBackgroundClip: "text",
   WebkitTextFillColor: "transparent",
-  fontSize: "clamp(22px, 5vw, 40px)",
+  fontSize: "clamp(22px, 5vw, 42px)",
   fontWeight: "800",
-  marginBottom: 12,
-  lineHeight: 1.2,
+  marginBottom: 16,
+  lineHeight: 1.25,
+  letterSpacing: "0.3px",
 }}
   >
     Barge Schedule & Trips
   </h1>
 
-  <p
-    style={{
-      color: "#64748B",
-      fontSize: 16,
-      marginBottom: 8,
-    }}
-  >
+ <p
+  style={{
+    color: "#64748B",
+    fontSize: 15,
+    lineHeight: 1.6,
+    marginBottom: 8,
+  }}
+>
     Camiguin Ferry Timetable for RSTW Participants
   </p>
 
