@@ -228,6 +228,13 @@ if (Object.keys(newErrors).length > 0) {
   backgroundColor: "white",
 });
 
+const requiredTextStyle = {
+  fontSize: 11,
+  color: "#ef4444",
+  marginTop: -8,
+  marginBottom: 10,
+};
+
   const formBox = {
     background: "rgba(255,255,255,0.95)",
     padding: 30,
@@ -246,6 +253,7 @@ if (Object.keys(newErrors).length > 0) {
     marginTop: 25,
     marginBottom: 10,
   };
+
 
   return (
   <main style={pageStyle}>
@@ -310,6 +318,8 @@ if (Object.keys(newErrors).length > 0) {
           onChange={handleChange}
           style={inputStyle(submitted && errors.requester_name)}
         />
+        {submitted && errors.requester_name && (
+          <p style={requiredTextStyle}>Required</p>)}
 
         <input
           name="email"
@@ -318,6 +328,9 @@ if (Object.keys(newErrors).length > 0) {
           onChange={handleChange}
           style={inputStyle(submitted && errors.email)}
         />
+        {submitted && errors.requester_name && (
+        <p style={requiredTextStyle}>Required</p>
+      )}
 
         <input
           name="committee_unit"
@@ -326,6 +339,9 @@ if (Object.keys(newErrors).length > 0) {
           onChange={handleChange}
           style={inputStyle(submitted && errors.commmittee_unit)}
         />
+        {submitted && errors.requester_name && (
+         <p style={requiredTextStyle}>Required</p>
+          )}
 
         {/* ================= TRANSPORT DETAILS ================= */}
 
@@ -340,6 +356,9 @@ if (Object.keys(newErrors).length > 0) {
           onChange={handleChange}
           style={inputStyle(submitted && errors.passengers)}
         />
+        {submitted && errors.requester_name && (
+          <p style={requiredTextStyle}>Required</p>
+        )}
 
         <textarea
           name="passenger_names"
@@ -360,7 +379,9 @@ if (Object.keys(newErrors).length > 0) {
           onChange={handleChange}
           style={inputStyle(submitted && errors.pickup_location)}
         />
-
+        {submitted && errors.requester_name && (
+          <p style={requiredTextStyle}>Required</p>
+        )}
         <input
           name="destination"
           placeholder="Destination"
@@ -368,7 +389,9 @@ if (Object.keys(newErrors).length > 0) {
           onChange={handleChange}
           style={inputStyle(submitted && errors.destination)}
         />
-
+        {submitted && errors.requester_name && (
+            <p style={requiredTextStyle}>Required</p>
+          )}
         {/* ================= FLIGHT DETAILS ================= */}
 
         <div style={sectionTitleStyle}>
@@ -460,6 +483,9 @@ if (Object.keys(newErrors).length > 0) {
               onChange={handleChange}
               style={inputStyle(submitted && errors.pick_up_date)}
             />
+            {submitted && errors.requester_name && (
+              <p style={requiredTextStyle}>Required</p>
+            )}
           </div>
 
           <div style={{ flex: 1 }}>
@@ -480,6 +506,9 @@ if (Object.keys(newErrors).length > 0) {
               onChange={handleChange}
               style={inputStyle(submitted && errors.pick_up_time)}
             />
+            {submitted && errors.requester_name && (
+            <p style={requiredTextStyle}>Required</p>
+          )}
           </div>
         </div>
 
@@ -496,7 +525,9 @@ if (Object.keys(newErrors).length > 0) {
           onChange={handleChange}
           style={inputStyle(submitted && errors.conatact_person)}
         />
-
+        {submitted && errors.requester_name && (
+          <p style={requiredTextStyle}>Required</p>
+        )}
         <input
           name="contact_number"
           placeholder="Contact Number"
@@ -504,7 +535,9 @@ if (Object.keys(newErrors).length > 0) {
           onChange={handleChange}
           style={inputStyle(submitted && errors.contact_number)}
         />
-
+          {submitted && errors.requester_name && (
+            <p style={requiredTextStyle}>Required</p>
+          )}
         <input
           name="alternate_contact_person"
           placeholder="Alternate Contact Person"
