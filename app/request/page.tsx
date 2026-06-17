@@ -63,6 +63,16 @@ export default function RequestPage() {
   "pick_up_time",
   "contact_number",
 ];
+
+const isFormValid =
+  formData.requester_name &&
+  formData.email &&
+  formData.pickup_location &&
+  formData.destination &&
+  formData.pick_up_date &&
+  formData.pick_up_time &&
+  formData.contact_number &&
+  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim().toLowerCase());
 // ================= HANDLE SUBMIT =================
 const handleSubmit = async () => {
   const cleanEmail = formData.email
@@ -314,7 +324,7 @@ if (Object.keys(newErrors).length > 0) {
           placeholder="Committee / Unit"
           value={formData.committee_unit}
           onChange={handleChange}
-          style={inputStyle}
+          style={inputStyle(submitted && errors.commmittee_unit)}
         />
 
         {/* ================= TRANSPORT DETAILS ================= */}
@@ -328,7 +338,7 @@ if (Object.keys(newErrors).length > 0) {
           placeholder="Number of Passengers"
           value={formData.passengers}
           onChange={handleChange}
-          style={inputStyle}
+          style={inputStyle(submitted && errors.passengers)}
         />
 
         <textarea
@@ -370,7 +380,7 @@ if (Object.keys(newErrors).length > 0) {
           placeholder="Flight Number"
           value={formData.flight_no}
           onChange={handleChange}
-          style={inputStyle}
+          style={inputStyle(submitted && errors.flight_no)}
         />
 
         <div
@@ -395,7 +405,7 @@ if (Object.keys(newErrors).length > 0) {
               name="flight_arrival_date"
               value={formData.flight_arrival_date}
               onChange={handleChange}
-              style={inputStyle}
+              style={inputStyle(submitted && errors.flight_arrival_date)}
             />
           </div>
 
@@ -415,7 +425,7 @@ if (Object.keys(newErrors).length > 0) {
               name="flight_arrival_time"
               value={formData.flight_arrival_time}
               onChange={handleChange}
-              style={inputStyle}
+              style={inputStyle(submitted && errors.flight_arrival_time)}
             />
           </div>
         </div>
@@ -484,7 +494,7 @@ if (Object.keys(newErrors).length > 0) {
           placeholder="Contact Person"
           value={formData.contact_person}
           onChange={handleChange}
-          style={inputStyle}
+          style={inputStyle(submitted && errors.conatact_person)}
         />
 
         <input
@@ -500,7 +510,7 @@ if (Object.keys(newErrors).length > 0) {
           placeholder="Alternate Contact Person"
           value={formData.alternate_contact_person}
           onChange={handleChange}
-          style={inputStyle}
+          style={inputStyle(submitted && errors.alternate_contact_person)}
         />
 
         <input
@@ -508,7 +518,7 @@ if (Object.keys(newErrors).length > 0) {
           placeholder="Alternate Contact Number"
           value={formData.alternate_contact_number}
           onChange={handleChange}
-          style={inputStyle}
+          style={inputStyle(submitted && errors.alternate_contact_number)}
         />
 
         
@@ -559,23 +569,26 @@ if (Object.keys(newErrors).length > 0) {
           </button>
 
           <button
-            onClick={handleSubmit}
-            style={{
-              flex: 2,
-              background:
-                "linear-gradient(135deg, #0B3D91, #2563EB)",
-              color: "white",
-              padding: "12px",
-              border: "none",
-              borderRadius: 10,
-              cursor: "pointer",
-              fontWeight: "bold",
-              fontSize: 14,
-              whiteSpace: "nowrap",
-            }}
-          >
-            Submit Request
-          </button>
+          onClick={handleSubmit}
+          disabled={!isFormValid}
+          style={{
+            flex: 2,
+            background: !isFormValid
+              ? "#94a3b8"
+              : "linear-gradient(135deg, #0B3D91, #2563EB)",
+            color: "white",
+            padding: "12px",
+            border: "none",
+            borderRadius: 10,
+            cursor: !isFormValid ? "not-allowed" : "pointer",
+            fontWeight: "bold",
+            fontSize: 14,
+            whiteSpace: "nowrap",
+            opacity: !isFormValid ? 0.6 : 1,
+          }}
+        >
+          Submit Request
+        </button>
         </div>
       </div>
     </main>
