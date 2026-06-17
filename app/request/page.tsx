@@ -667,7 +667,7 @@ const requiredTextStyle = {
       <h3 style={{ marginBottom: 10 }}>Confirm Submission</h3>
 
       <p style={{ fontSize: 14, color: "#475569" }}>
-        Submit this transportation request?
+        Are you done reviewing the details of your request?
       </p>
 
       <div style={{ display: "flex", gap: 10, marginTop: 20 }}>

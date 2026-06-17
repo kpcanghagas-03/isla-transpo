@@ -9,30 +9,36 @@ export default function TrackPage() {
   const [loading, setLoading] = useState(false);
 
   const searchRequest = async () => {
-    if (!code) {
-      alert("Please enter request code");
-      return;
-    }
+  if (!code) {
+    alert("Please enter request code");
+    return;
+  }
 
-    setLoading(true);
+  setLoading(true);
 
-    const { data, error } = await supabase
-      .from("transport_requests")
-      .select("*")
-      .eq("request_code", code)
-      .single();
+  const { data, error } = await supabase
+    .from("transport_requests")
+    .select("*")
+    .eq("request_code", code)
+    .maybeSingle(); // ✅ SAFE instead of .single()
 
-    setLoading(false);
+  setLoading(false);
 
-    if (error) {
-      console.log(error);
-      alert("Request not found");
-      setRequest(null);
-      return;
-    }
+  if (error) {
+    console.log(error);
+    alert("Error fetching request");
+    setRequest(null);
+    return;
+  }
 
-    setRequest(data);
-  };
+  if (!data) {
+    alert("Request not found");
+    setRequest(null);
+    return;
+  }
+
+  setRequest(data);
+};
 
   return (
     <div style={{ padding: 20, maxWidth: 500, margin: "0 auto" }}>
@@ -62,6 +68,11 @@ export default function TrackPage() {
           <p><b>Schedule:</b> {request.pick_up_date} {request.pick_up_time}</p>
         </div>
       )}
+      {request === null && !loading && (
+        <p style={{ marginTop: 20, color: "#64748b" }}>
+            No request found
+        </p>
+        )}
     </div>
   );
 }
