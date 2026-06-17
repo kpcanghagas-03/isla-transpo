@@ -168,7 +168,7 @@ className="safe-top"
     zIndex: 20,
     display: "flex",
     alignItems: "center",
-    gap: 4,
+    gap: 12,
     flexWrap: "wrap",
     maxWidth: "90%",
   }}
@@ -349,7 +349,7 @@ className="hide-on-mobile"
         <section
           style={{
             textAlign: "center",
-            padding: "40px 16px 20px",
+            padding: "90px 16px 20px",
             position: "relative",
             zIndex: 2,
           }}
