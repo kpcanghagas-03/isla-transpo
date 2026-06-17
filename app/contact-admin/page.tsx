@@ -42,7 +42,7 @@ export default function ContactAdminPage() {
   setMessage("");
 };
 
-  return (
+ return (
   <main style={pageStyle}>
     {/* Background accents (same as Track page) */}
     <div style={leftAccent} />
