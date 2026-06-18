@@ -43,20 +43,30 @@ export default function AdminMessagesPage() {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const buildThreads = (msgs: Msg[]): Thread[] => {
-    const map = new Map<string, Thread>();
-    for (const m of msgs) {
-      if (!map.has(m.request_code)) {
-        map.set(m.request_code, {
-          request_code: m.request_code,
-          request_id: m.request_id,
-          subject: m.subject,
-          messages: [],
-          lastAt: m.created_at,
-          hasUnread: false,
-        });
+  const map = new Map<string, Thread>();
 
-        useEffect(() => {
-  const fetchThreads = async () => {
+  for (const m of msgs) {
+    if (!map.has(m.request_code)) {
+      map.set(m.request_code, {
+        request_code: m.request_code,
+        request_id: m.request_id,
+        subject: m.subject,
+        messages: [],
+        lastAt: m.created_at,
+        hasUnread: false,
+      });
+    }
+
+    const t = map.get(m.request_code)!;
+    t.messages.push(m);
+
+    if (m.created_at > t.lastAt) t.lastAt = m.created_at;
+    if (m.sender === "requester") t.hasUnread = true;
+    if (m.subject) t.subject = m.subject;
+  }
+
+  useEffect(() => {
+  const load = async () => {
     setFetching(true);
     setFetchError(null);
 
@@ -74,29 +84,19 @@ export default function AdminMessagesPage() {
     }
 
     if (data) {
-      setThreads(data); // ✅ THIS fills your main state
-
-      // OPTIONAL (only if threadList depends on grouping)
-      // setThreadList(buildThreadList(data));
+      // IMPORTANT: build threads properly
+      setThreads(buildThreads(data));
     }
 
     setFetching(false);
   };
 
-  fetchThreads();
+  load();
 }, []);
-      }
-      const t = map.get(m.request_code)!;
-      t.messages.push(m);
-      if (m.created_at > t.lastAt) t.lastAt = m.created_at;
-      // mark unread if ANY requester message exists (not just status=open)
-      if (m.sender === "requester") t.hasUnread = true;
-      if (m.subject) t.subject = m.subject;
-    }
-    return Array.from(map.values()).sort((a, b) =>
-      b.lastAt.localeCompare(a.lastAt)
-    );
-  };
+  return Array.from(map.values()).sort((a, b) =>
+    b.lastAt.localeCompare(a.lastAt)
+  );
+};
 
   useEffect(() => {
   const load = async () => {
