@@ -10,6 +10,7 @@ export default function ContactAdminPage() {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState("");
   const [messages, setMessages] = useState<any[]>([]);
+  const [activeCode, setActiveCode] = useState("");
 
   const loadMessages = async (code: string) => {
   const { data, error } = await supabase
@@ -27,7 +28,7 @@ export default function ContactAdminPage() {
 };
 
 useEffect(() => {
-  if (!requestCode) return;
+  if (!activeCode) return;
 
   const channel = supabase
     .channel("admin_messages_realtime")
@@ -37,7 +38,7 @@ useEffect(() => {
         event: "INSERT",
         schema: "public",
         table: "admin_messages",
-        filter: `request_code=eq.${requestCode}`,
+        filter: `request_code=eq.${activeCode}`,
       },
       (payload) => {
         setMessages((prev) => [...prev, payload.new]);
@@ -48,10 +49,10 @@ useEffect(() => {
   return () => {
     supabase.removeChannel(channel);
   };
-}, [requestCode]);
+}, [activeCode]);
 
  const sendMessage = async () => {
-  if (!requestCode.trim() || !message.trim()) {
+  if (!activeCode.trim() || !message.trim()) {
     setStatus("Please fill all fields");
     return;
   }
@@ -116,12 +117,24 @@ useEffect(() => {
           value={requestCode}
           onChange={(e) => setRequestCode(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              loadMessages(requestCode.trim());
-            }
-          }}
+          if (e.key === "Enter") {
+            const code = requestCode.trim();
+            setActiveCode(code);
+            loadMessages(code);
+          }
+        }}
           style={inputStyle}
         />
+        <button
+          onClick={() => {
+            const code = requestCode.trim();
+            setActiveCode(code);
+            loadMessages(code);
+          }}
+          style={buttonStyle}
+        >
+          Load Conversation
+        </button>
 
         <textarea
           id="message"
