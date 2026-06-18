@@ -59,126 +59,85 @@ export default function AdminMessagesPage() {
   };
 
   useEffect(() => {
-    const load = async () => {
-      setFetching(true);
-      setFetchError(null);
+  const load = async () => {
+    setFetching(true);
 
-      const { data, error } = await supabase
-        .from("admin_messages")
-        .select("*")
-        .order("created_at", { ascending: true });
+    const { data, error } = await supabase
+      .from("admin_messages")
+      .select("*")
+      .order("created_at", { ascending: true });
 
-      if (error) {
-        console.error("Admin fetch error:", error);
-        setFetchError(`Could not load messages: ${error.message}`);
-        setFetching(false);
-        return;
-      }
+    if (!error && data) {
+      setThreads(buildThreads(data as Msg[]));
+    }
 
-      console.log("Fetched rows:", data?.length, data);
-      setThreads(buildThreads((data as Msg[]) || []));
-      setFetching(false);
-    };
+    setFetching(false);
+  };
 
-    load();
+  load();
 
-    const channel = supabase
-  .channel("admin_all_messages")
-  .on(
-    "postgres_changes",
-    {
-      event: "*",
-      schema: "public",
-      table: "admin_messages",
-    },
-    (payload) => {
-      const eventType = payload.eventType;
+  const channel = supabase
+    .channel("admin_all_messages")
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "admin_messages",
+      },
+      (payload) => {
+        const eventType = payload.eventType;
 
-      setThreads((prev) => {
-        // ========================
-        // DELETE
-        // ========================
-        if (eventType === "DELETE") {
-          const oldMsg = payload.old as Msg;
+        setThreads((prev) => {
+          if (eventType === "DELETE") {
+            const oldMsg = payload.old as Msg;
 
-          return prev.map((t) => ({
-            ...t,
-            messages: t.messages.filter((m) => m.id !== oldMsg.id),
-          }));
-        }
+            return prev.map((t) => ({
+              ...t,
+              messages: t.messages.filter((m) => m.id !== oldMsg.id),
+            }));
+          }
 
-        const msg = payload.new as Msg;
-
-        if (!msg?.request_code) return prev;
-
-        const targetCode = msg.request_code;
-
-        const exists = prev.find((t) => t.request_code === targetCode);
-
-        // ========================
-        // INSERT
-        // ========================
-        if (eventType === "INSERT") {
           const msg = payload.new as Msg;
-
           if (!msg?.request_code) return prev;
 
-          return prev.map((t) => {
-            if (t.request_code !== msg.request_code) return t;
+          if (eventType === "INSERT") {
+            return prev.map((t) => {
+              if (t.request_code !== msg.request_code) return t;
 
-            const updatedMessages = [...t.messages, msg];
+              return {
+                ...t,
+                messages: [...t.messages, msg],
+                lastAt: msg.created_at,
+                subject: msg.subject || t.subject,
+                hasUnread: msg.sender === "requester",
+              };
+            });
+          }
 
-            return {
-              ...t,
-              messages: updatedMessages,
-              lastAt: msg.created_at,
-              subject: msg.subject || t.subject,
-              hasUnread: msg.sender === "requester" ? true : t.hasUnread,
-            };
-          });
-        }
+          if (eventType === "UPDATE") {
+            return prev.map((t) => {
+              if (t.request_code !== msg.request_code) return t;
 
-          // NEW THREAD CASE (IMPORTANT FIX)
-          return [
-            {
-              request_code: msg.request_code,
-              request_id: msg.request_id,
-              subject: msg.subject,
-              messages: [msg],
-              lastAt: msg.created_at,
-              hasUnread: msg.sender === "requester",
-            },
-            ...prev,
-          ];
-        }
+              return {
+                ...t,
+                messages: t.messages.map((m) =>
+                  m.id === msg.id ? msg : m
+                ),
+              };
+            });
+          }
 
-        // ========================
-        // UPDATE
-        // ========================
-        if (eventType === "UPDATE") {
-          return prev.map((t) =>
-            t.request_code === targetCode
-              ? {
-                  ...t,
-                  messages: t.messages.map((m) =>
-                    m.id === msg.id ? msg : m
-                  ),
-                  subject: msg.subject || t.subject,
-                }
-              : t
-          );
-        }
+          return prev;
+        });
+      }
+    )
+    .subscribe();
 
-        return prev;
-      });
-    }
-  )
-  .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
+  return () => {
+    supabase.removeChannel(channel);
+  };
+}, []);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
