@@ -102,27 +102,49 @@ export default function ContactPage() {
     setStep("chat");
   };
 
-  const sendMessage = async () => {
-    if (!message.trim()) { setError("Please write a message first."); return; }
-    setLoading(true);
-    setError("");
-    setSuccess("");
+ const sendMessage = async () => {
+  if (!message.trim()) {
+    setError("Please write a message first.");
+    return;
+  }
 
-    const { error: err } = await supabase.from("admin_messages").insert([{
-      request_id: requestId,
-      request_code: activeCode,
-      sender: "requester",
-      subject: messageType === "cancel" ? "Cancel Request" : "Concern",
-      message: message.trim(),
-      status: "open",
-    }]);
+  setLoading(true);
+  setError("");
+  setSuccess("");
 
-    setLoading(false);
-    if (err) { setError("Failed to send. Please try again."); return; }
-    setMessage("");
-    setSuccess("Sent!");
-    setTimeout(() => setSuccess(""), 2000);
+  // 1. INSTANT UI UPDATE (THIS IS WHAT FIXES "NOT SHOWING")
+  const tempMessage: MessageType = {
+    id: crypto.randomUUID(),
+    request_code: activeCode,
+    sender: "requester",
+    message: message.trim(),
+    created_at: new Date().toISOString(),
+    status: "open",
   };
+
+  setMessages((prev) => [...prev, tempMessage]);
+
+  // 2. DATABASE INSERT (YOUR CODE GOES HERE)
+  const { error: err } = await supabase.from("admin_messages").insert([{
+    request_id: requestId,
+    request_code: activeCode,
+    sender: "requester",
+    subject: messageType === "cancel" ? "Cancel Request" : "Concern",
+    message: message.trim(),
+    status: "open",
+  }]);
+
+  setLoading(false);
+
+  if (err) {
+    setError("Failed to send. Please try again.");
+    return;
+  }
+
+  setMessage("");
+  setSuccess("Sent!");
+  setTimeout(() => setSuccess(""), 2000);
+};
 
   return (
     <main style={styles.page}>
