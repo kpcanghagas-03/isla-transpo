@@ -119,19 +119,24 @@ export default function AdminMessagesPage() {
         // INSERT
         // ========================
         if (eventType === "INSERT") {
-          if (exists) {
-            return prev.map((t) =>
-              t.request_code === targetCode
-                ? {
-                    ...t,
-                    messages: [...t.messages, msg],
-                    lastAt: msg.created_at,
-                    subject: msg.subject || t.subject,
-                    hasUnread: msg.sender === "requester" ? true : t.hasUnread,
-                  }
-                : t
-            );
-          }
+          const msg = payload.new as Msg;
+
+          if (!msg?.request_code) return prev;
+
+          return prev.map((t) => {
+            if (t.request_code !== msg.request_code) return t;
+
+            const updatedMessages = [...t.messages, msg];
+
+            return {
+              ...t,
+              messages: updatedMessages,
+              lastAt: msg.created_at,
+              subject: msg.subject || t.subject,
+              hasUnread: msg.sender === "requester" ? true : t.hasUnread,
+            };
+          });
+        }
 
           // NEW THREAD CASE (IMPORTANT FIX)
           return [
