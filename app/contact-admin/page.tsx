@@ -87,23 +87,12 @@ export default function AdminMessagesPage() {
       },
       (payload) => {
         const eventType = payload.eventType;
+        const msg = payload.new as Msg;
 
-        setThreads((prev) =>
-            prev.map((t) =>
-              t.request_code === activeThread.request_code
-                ? {
-                    ...t,
-                    messages: [...t.messages, newMsg],
-                    lastAt: newMsg.created_at,
-                  }
-                : t
-            )
-          );
-          }
+        if (!msg?.request_code) return;
 
-          const msg = payload.new as Msg;
-          if (!msg?.request_code) return prev;
 
+        setThreads((prev) => {
           if (eventType === "INSERT") {
             return prev.map((t) => {
               if (t.request_code !== msg.request_code) return t;
@@ -181,31 +170,22 @@ export default function AdminMessagesPage() {
 
   // 3. SEND TO SUPABASE
   const { error } = await supabase.from("admin_messages").insert([
-    {
-      request_id: activeThread.request_id,
-      request_code: activeThread.request_code,
-      sender: "admin",
-      subject: activeThread.subject,
-      message: optimisticMsg.message,
-      status: "replied",
-    },
-  ]);
+  {
+    request_id: activeThread.request_id,
+    request_code: activeThread.request_code,
+    sender: "admin",
+    subject: activeThread.subject,
+    message: optimisticMsg.message,
+    status: "replied",
+  },
+]);
 
-  if (error) {
+setLoading(false);
+
+if (error) {
   console.error("Reply error:", error);
-  setLoading(false);
   return;
 }
-
-const newMsg: Msg = {
-  id: crypto.randomUUID(),
-  request_id: activeThread.request_id,
-  request_code: activeThread.request_code,
-  sender: "admin",
-  subject: activeThread.subject,
-  message: reply.trim(),
-  created_at: new Date().toISOString(),
-  status: "replied",
 };
 
   const filteredThreads = threads.filter((t) => {
