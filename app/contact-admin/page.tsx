@@ -29,6 +29,7 @@ export default function AdminMessagesPage() {
   const [reply, setReply] = useState("");
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const [filter, setFilter] = useState<"all" | "open" | "cancel">("all");
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -48,7 +49,8 @@ export default function AdminMessagesPage() {
       const t = map.get(m.request_code)!;
       t.messages.push(m);
       if (m.created_at > t.lastAt) t.lastAt = m.created_at;
-      if (m.sender === "requester" && m.status === "open") t.hasUnread = true;
+      // mark unread if ANY requester message exists (not just status=open)
+      if (m.sender === "requester") t.hasUnread = true;
       if (m.subject) t.subject = m.subject;
     }
     return Array.from(map.values()).sort((a, b) =>
@@ -58,51 +60,72 @@ export default function AdminMessagesPage() {
 
   useEffect(() => {
     const load = async () => {
-      const { data } = await supabase
+      setFetching(true);
+      setFetchError(null);
+
+      const { data, error } = await supabase
         .from("admin_messages")
         .select("*")
         .order("created_at", { ascending: true });
+
+      if (error) {
+        console.error("Admin fetch error:", error);
+        setFetchError(`Could not load messages: ${error.message}`);
+        setFetching(false);
+        return;
+      }
+
+      console.log("Fetched rows:", data?.length, data);
       setThreads(buildThreads((data as Msg[]) || []));
       setFetching(false);
     };
+
     load();
 
     const channel = supabase
       .channel("admin_all_messages")
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "admin_messages" }, (payload) => {
-        setThreads((prev) => {
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "admin_messages" },
+        (payload) => {
           const newMsg = payload.new as Msg;
-          const exists = prev.find((t) => t.request_code === newMsg.request_code);
-          if (exists) {
-            return prev.map((t) =>
-              t.request_code === newMsg.request_code
-                ? {
-                    ...t,
-                    messages: [...t.messages, newMsg],
-                    lastAt: newMsg.created_at,
-                    hasUnread: newMsg.sender === "requester" ? true : t.hasUnread,
-                    subject: newMsg.subject || t.subject,
-                  }
-                : t
-            ).sort((a, b) => b.lastAt.localeCompare(a.lastAt));
-          } else {
-            return [
-              {
-                request_code: newMsg.request_code,
-                request_id: newMsg.request_id,
-                subject: newMsg.subject,
-                messages: [newMsg],
-                lastAt: newMsg.created_at,
-                hasUnread: newMsg.sender === "requester",
-              },
-              ...prev,
-            ];
-          }
-        });
-      })
+          setThreads((prev) => {
+            const exists = prev.find((t) => t.request_code === newMsg.request_code);
+            if (exists) {
+              return prev
+                .map((t) =>
+                  t.request_code === newMsg.request_code
+                    ? {
+                        ...t,
+                        messages: [...t.messages, newMsg],
+                        lastAt: newMsg.created_at,
+                        hasUnread: newMsg.sender === "requester" ? true : t.hasUnread,
+                        subject: newMsg.subject || t.subject,
+                      }
+                    : t
+                )
+                .sort((a, b) => b.lastAt.localeCompare(a.lastAt));
+            } else {
+              return [
+                {
+                  request_code: newMsg.request_code,
+                  request_id: newMsg.request_id,
+                  subject: newMsg.subject,
+                  messages: [newMsg],
+                  lastAt: newMsg.created_at,
+                  hasUnread: newMsg.sender === "requester",
+                },
+                ...prev,
+              ];
+            }
+          });
+        }
+      )
       .subscribe();
 
-    return () => { supabase.removeChannel(channel); };
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   useEffect(() => {
@@ -115,16 +138,24 @@ export default function AdminMessagesPage() {
     if (!reply.trim() || !activeThread) return;
     setLoading(true);
 
-    await supabase.from("admin_messages").insert([{
-      request_id: activeThread.request_id,
-      request_code: activeThread.request_code,
-      sender: "admin",
-      subject: activeThread.subject,
-      message: reply.trim(),
-      status: "replied",
-    }]);
+    const { error } = await supabase.from("admin_messages").insert([
+      {
+        request_id: activeThread.request_id,
+        request_code: activeThread.request_code,
+        sender: "admin",
+        subject: activeThread.subject,
+        message: reply.trim(),
+        status: "replied",
+      },
+    ]);
 
-    // Mark all requester messages in this thread as read
+    if (error) {
+      console.error("Reply error:", error);
+      setLoading(false);
+      return;
+    }
+
+    // Mark requester messages as replied
     await supabase
       .from("admin_messages")
       .update({ status: "replied" })
@@ -144,7 +175,8 @@ export default function AdminMessagesPage() {
   };
 
   const filteredThreads = threads.filter((t) => {
-    if (filter === "cancel") return t.subject?.toLowerCase().includes("cancel");
+    if (filter === "cancel")
+      return t.subject?.toLowerCase().includes("cancel");
     if (filter === "open") return t.hasUnread;
     return true;
   });
@@ -188,10 +220,34 @@ export default function AdminMessagesPage() {
         </div>
 
         <div style={s.threadList}>
-          {fetching && <p style={s.dimText}>Loading…</p>}
-          {!fetching && filteredThreads.length === 0 && (
-            <p style={s.dimText}>No conversations yet.</p>
+          {/* ── Debug / status banners ── */}
+          {fetching && (
+            <p style={s.dimText}>Loading conversations…</p>
           )}
+
+          {!fetching && fetchError && (
+            <div style={s.errorBanner}>
+              <p style={{ margin: 0, fontSize: 12, fontWeight: 700 }}>⚠ Fetch failed</p>
+              <p style={{ margin: "4px 0 0", fontSize: 11 }}>{fetchError}</p>
+              <p style={{ margin: "6px 0 0", fontSize: 11, opacity: 0.8 }}>
+                Check Supabase RLS — make sure the admin_messages table has a SELECT policy that allows reads. Open browser console for details.
+              </p>
+            </div>
+          )}
+
+          {!fetching && !fetchError && threads.length === 0 && (
+            <div style={s.emptyBanner}>
+              <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.7)" }}>No messages found</p>
+              <p style={{ margin: "6px 0 0", fontSize: 11, color: "rgba(255,255,255,0.45)", lineHeight: 1.5 }}>
+                The table is empty, or RLS is blocking reads. Check browser console for the raw Supabase response.
+              </p>
+            </div>
+          )}
+
+          {!fetching && !fetchError && threads.length > 0 && filteredThreads.length === 0 && (
+            <p style={s.dimText}>No results for this filter.</p>
+          )}
+
           {filteredThreads.map((t) => (
             <button
               key={t.request_code}
@@ -208,8 +264,8 @@ export default function AdminMessagesPage() {
               <div style={s.threadItemBottom}>
                 <span style={{
                   ...s.subjectBadge,
-                  background: t.subject?.includes("Cancel") ? "#FEF2F2" : "#EFF6FF",
-                  color: t.subject?.includes("Cancel") ? "#DC2626" : "#1D4ED8",
+                  background: t.subject?.toLowerCase().includes("cancel") ? "#FEF2F2" : "#EFF6FF",
+                  color: t.subject?.toLowerCase().includes("cancel") ? "#DC2626" : "#1D4ED8",
                 }}>
                   {t.subject || "Concern"}
                 </span>
@@ -239,7 +295,6 @@ export default function AdminMessagesPage() {
 
         {activeCode && activeThread && (
           <>
-            {/* Chat header */}
             <div style={s.chatHead}>
               <div>
                 <p style={{ margin: 0, fontSize: 15, fontWeight: 700, color: "#0F172A" }}>
@@ -253,14 +308,13 @@ export default function AdminMessagesPage() {
                 ...s.subjectBadge,
                 fontSize: 13,
                 padding: "5px 14px",
-                background: activeThread.subject?.includes("Cancel") ? "#FEF2F2" : "#EFF6FF",
-                color: activeThread.subject?.includes("Cancel") ? "#DC2626" : "#1D4ED8",
+                background: activeThread.subject?.toLowerCase().includes("cancel") ? "#FEF2F2" : "#EFF6FF",
+                color: activeThread.subject?.toLowerCase().includes("cancel") ? "#DC2626" : "#1D4ED8",
               }}>
                 {activeThread.subject || "Concern"}
               </span>
             </div>
 
-            {/* Messages */}
             <div style={s.messages}>
               {activeThread.messages.map((msg) => (
                 <div key={msg.id} style={{
@@ -288,7 +342,6 @@ export default function AdminMessagesPage() {
               <div ref={bottomRef} />
             </div>
 
-            {/* Reply box */}
             <div style={s.replyBox}>
               <textarea
                 style={s.replyInput}
@@ -301,7 +354,7 @@ export default function AdminMessagesPage() {
               <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 8, gap: 10, alignItems: "center" }}>
                 <span style={{ fontSize: 11, color: "#94A3B8" }}>⌘ + Enter to send</span>
                 <button
-                  style={{ ...s.replyBtn, opacity: loading ? 0.6 : 1 }}
+                  style={{ ...s.replyBtn, opacity: loading || !reply.trim() ? 0.5 : 1 }}
                   onClick={sendReply}
                   disabled={loading || !reply.trim()}
                 >
@@ -438,6 +491,20 @@ const s: Record<string, React.CSSProperties> = {
     textAlign: "center",
     marginTop: 24,
   },
+  errorBanner: {
+    margin: "12px 8px",
+    padding: "12px 14px",
+    borderRadius: 10,
+    background: "rgba(220,38,38,0.25)",
+    border: "1px solid rgba(220,38,38,0.4)",
+    color: "#FCA5A5",
+  },
+  emptyBanner: {
+    margin: "12px 8px",
+    padding: "12px 14px",
+    borderRadius: 10,
+    background: "rgba(255,255,255,0.07)",
+  },
   main: {
     flex: 1,
     display: "flex",
@@ -491,7 +558,7 @@ const s: Record<string, React.CSSProperties> = {
     color: "#0F172A",
     outline: "none",
     resize: "none",
-    boxSizing: "border-box",
+    boxSizing: "border-box" as const,
     lineHeight: 1.5,
     fontFamily: "inherit",
   },
