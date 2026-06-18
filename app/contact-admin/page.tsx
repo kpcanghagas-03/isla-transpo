@@ -115,6 +115,11 @@ useEffect(() => {
           placeholder="Enter Request Code (ISLA-XXXXXX)"
           value={requestCode}
           onChange={(e) => setRequestCode(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              loadMessages(requestCode.trim());
+            }
+          }}
           style={inputStyle}
         />
 
