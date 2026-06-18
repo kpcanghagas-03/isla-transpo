@@ -82,45 +82,82 @@ export default function AdminMessagesPage() {
 
     load();
 
-    const channel = supabase
+   const channel = supabase
   .channel("admin_all_messages")
   .on(
     "postgres_changes",
     {
-      event: "*", // 👈 KEY FIX (INSERT + UPDATE + DELETE)
+      event: "*",
       schema: "public",
       table: "admin_messages",
     },
     (payload) => {
-      const msg = payload.new as Msg;
-      const old = payload.old as Msg;
+      const eventType = payload.eventType;
 
       setThreads((prev) => {
-        // DELETE event
-        if (payload.eventType === "DELETE") {
+        // ========================
+        // DELETE
+        // ========================
+        if (eventType === "DELETE") {
+          const oldMsg = payload.old as Msg;
+
           return prev.map((t) => ({
             ...t,
-            messages: t.messages.filter((m) => m.id !== old.id),
+            messages: t.messages.filter((m) => m.id !== oldMsg.id),
           }));
         }
 
-        // INSERT or UPDATE
-        const targetCode = msg.request_code || old?.request_code;
+        const msg = payload.new as Msg;
+
+        if (!msg?.request_code) return prev;
+
+        const targetCode = msg.request_code;
 
         const exists = prev.find((t) => t.request_code === targetCode);
 
-        if (exists) {
+        // ========================
+        // INSERT
+        // ========================
+        if (eventType === "INSERT") {
+          if (exists) {
+            return prev.map((t) =>
+              t.request_code === targetCode
+                ? {
+                    ...t,
+                    messages: [...t.messages, msg],
+                    lastAt: msg.created_at,
+                    subject: msg.subject || t.subject,
+                    hasUnread: msg.sender === "requester" ? true : t.hasUnread,
+                  }
+                : t
+            );
+          }
+
+          // NEW THREAD CASE (IMPORTANT FIX)
+          return [
+            {
+              request_code: msg.request_code,
+              request_id: msg.request_id,
+              subject: msg.subject,
+              messages: [msg],
+              lastAt: msg.created_at,
+              hasUnread: msg.sender === "requester",
+            },
+            ...prev,
+          ];
+        }
+
+        // ========================
+        // UPDATE
+        // ========================
+        if (eventType === "UPDATE") {
           return prev.map((t) =>
             t.request_code === targetCode
               ? {
                   ...t,
-                  messages:
-                    payload.eventType === "INSERT"
-                      ? [...t.messages, msg]
-                      : t.messages.map((m) =>
-                          m.id === msg.id ? msg : m
-                        ),
-                  lastAt: msg.created_at,
+                  messages: t.messages.map((m) =>
+                    m.id === msg.id ? msg : m
+                  ),
                   subject: msg.subject || t.subject,
                 }
               : t
@@ -132,11 +169,6 @@ export default function AdminMessagesPage() {
     }
   )
   .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
