@@ -33,13 +33,15 @@ export default function ContactAdminPage() {
 
   // 🔥 STEP 2: insert message with request_id
   const { error } = await supabase.from("admin_messages").insert([
-  {
-    request_id: requestData.id,
-    sender: "requester",
-    message: message.trim(),
-    status: "open",
-  },
-]);
+    {
+      request_id: requestData.id,
+      request_code: requestCode.trim(),
+      sender: "requester",
+      subject: `Concern for ${requestCode.trim()}`,
+      message: message.trim(),
+      status: "open",
+    },
+  ]);
 
   setLoading(false);
 
