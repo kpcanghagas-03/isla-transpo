@@ -69,6 +69,8 @@ export default function ContactAdminPage() {
         </p>
 
         <input
+          id="requestCode"
+          name="requestCode"
           placeholder="Enter Request Code (ISLA-XXXXXX)"
           value={requestCode}
           onChange={(e) => setRequestCode(e.target.value)}
@@ -76,6 +78,8 @@ export default function ContactAdminPage() {
         />
 
         <textarea
+          id="message"
+          name="message"
           placeholder="Write your concern..."
           value={message}
           onChange={(e) => setMessage(e.target.value)}
