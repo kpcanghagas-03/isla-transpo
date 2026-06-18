@@ -54,6 +54,37 @@ export default function AdminMessagesPage() {
           lastAt: m.created_at,
           hasUnread: false,
         });
+
+        useEffect(() => {
+  const fetchThreads = async () => {
+    setFetching(true);
+    setFetchError(null);
+
+    const { data, error } = await supabase
+      .from("message_threads")
+      .select("*");
+
+    console.log("THREAD RAW DATA:", data);
+    console.log("THREAD ERROR:", error);
+
+    if (error) {
+      setFetchError(error.message);
+      setFetching(false);
+      return;
+    }
+
+    if (data) {
+      setThreads(data); // ✅ THIS fills your main state
+
+      // OPTIONAL (only if threadList depends on grouping)
+      // setThreadList(buildThreadList(data));
+    }
+
+    setFetching(false);
+  };
+
+  fetchThreads();
+}, []);
       }
       const t = map.get(m.request_code)!;
       t.messages.push(m);
