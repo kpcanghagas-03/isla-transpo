@@ -2,12 +2,53 @@
 
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { useEffect } from "react";
 
 export default function ContactAdminPage() {
   const [requestCode, setRequestCode] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState("");
+  const [messages, setMessages] = useState<any[]>([]);
+
+  const loadMessages = async (code: string) => {
+  const { data, error } = await supabase
+    .from("admin_messages")
+    .select("*")
+    .eq("request_code", code)
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    console.log("LOAD ERROR:", error);
+    return;
+  }
+
+  setMessages(data || []);
+};
+
+useEffect(() => {
+  if (!requestCode) return;
+
+  const channel = supabase
+    .channel("admin_messages_realtime")
+    .on(
+      "postgres_changes",
+      {
+        event: "INSERT",
+        schema: "public",
+        table: "admin_messages",
+        filter: `request_code=eq.${requestCode}`,
+      },
+      (payload) => {
+        setMessages((prev) => [...prev, payload.new]);
+      }
+    )
+    .subscribe();
+
+  return () => {
+    supabase.removeChannel(channel);
+  };
+}, [requestCode]);
 
  const sendMessage = async () => {
   if (!requestCode.trim() || !message.trim()) {
@@ -37,7 +78,7 @@ export default function ContactAdminPage() {
       request_id: requestData.id,
       request_code: requestCode.trim(),
       sender: "requester",
-      subject: `Concern for ${requestCode.trim()}`,
+      subject: null,
       message: message.trim(),
       status: "open",
     },
@@ -96,6 +137,43 @@ export default function ContactAdminPage() {
         >
           {loading ? "Sending..." : "Send to Admin"}
         </button>
+
+        {messages.length > 0 && (
+  <div style={{ marginTop: 25 }}>
+    <p style={{ marginBottom: 10, fontSize: 12, color: "#64748b" }}>
+  Conversation Thread
+</p>
+    {messages.map((msg) => (
+      <div
+        key={msg.id}
+        style={{
+          display: "flex",
+          justifyContent:
+            msg.sender === "requester" ? "flex-end" : "flex-start",
+          marginBottom: 10,
+        }}
+      >
+        <div
+          style={{
+            maxWidth: "75%",
+            padding: "10px 14px",
+            borderRadius: 14,
+            fontSize: 14,
+            whiteSpace: "pre-wrap",
+            background:
+              msg.sender === "requester"
+                ? "linear-gradient(135deg, #0B3D91, #2563EB)"
+                : "#E2E8F0",
+            color: msg.sender === "requester" ? "white" : "#0f172a",
+            boxShadow: "0 4px 10px rgba(0,0,0,0.08)",
+          }}
+        >
+          {msg.message}
+        </div>
+      </div>
+    ))}
+  </div>
+)}
 
         {status && (
           <p style={{ marginTop: 15, textAlign: "center", fontSize: 13 }}>
