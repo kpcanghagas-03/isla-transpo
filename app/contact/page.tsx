@@ -25,85 +25,87 @@ export default function ContactPage() {
   const [success, setSuccess] = useState("");
   const [requestId, setRequestId] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const hasRestored = useRef(false);
 
   // ✅ RESTORE ON PAGE LOAD
-useEffect(() => {
-  const savedCode = localStorage.getItem("activeCode");
-  const savedStep = localStorage.getItem("step") as any;
-  const savedRequestId = localStorage.getItem("requestId");
-  const savedType = localStorage.getItem("messageType") as any;
-
-  if (savedCode) setActiveCode(savedCode);
-  if (savedStep) setStep(savedStep);
-  if (savedRequestId) setRequestId(savedRequestId);
-  if (savedType) setMessageType(savedType);
-}, []);
-
   useEffect(() => {
-  if (!activeCode) return;
+    const savedCode   = localStorage.getItem("activeCode");
+    const savedStep   = localStorage.getItem("step") as typeof step | null;
+    const savedId     = localStorage.getItem("requestId");
+    const savedType   = localStorage.getItem("messageType") as typeof messageType | null;
 
-  const channel = supabase
-    .channel("contact_realtime_" + activeCode)
-    .on(
-      "postgres_changes",
-      {
-        event: "*", // 👈 IMPORTANT CHANGE
-        schema: "public",
-        table: "admin_messages",
-        filter: `request_code=eq.${activeCode}`,
-      },
-      (payload) => {
-        const msg = payload.new as MessageType;
-        const old = payload.old as MessageType;
+    if (savedCode) setActiveCode(savedCode);
+    if (savedStep) setStep(savedStep);
+    if (savedId)   setRequestId(savedId);
+    if (savedType) setMessageType(savedType);
 
-        setMessages((prev) => {
-          // DELETE
-          if (payload.eventType === "DELETE") {
-            return prev.filter((m) => m.id !== old.id);
-          }
+    hasRestored.current = true;
+  }, []);
 
-          // UPDATE
-          if (payload.eventType === "UPDATE") {
-            return prev.map((m) => (m.id === msg.id ? msg : m));
-          }
+  // ✅ REALTIME SUBSCRIPTION
+  useEffect(() => {
+    if (!activeCode) return;
 
-          // INSERT
-          return [...prev, msg];
-        });
-      }
-    )
-    .subscribe();
+    const channel = supabase
+      .channel("contact_realtime_" + activeCode)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "admin_messages",
+          filter: `request_code=eq.${activeCode}`,
+        },
+        (payload) => {
+          const msg = payload.new as MessageType;
+          const old = payload.old as MessageType;
 
-  return () => {
-    supabase.removeChannel(channel);
-  };
-}, [activeCode]);
+          setMessages((prev) => {
+            if (payload.eventType === "DELETE") {
+              return prev.filter((m) => m.id !== old.id);
+            }
+            if (payload.eventType === "UPDATE") {
+              return prev.map((m) => (m.id === msg.id ? msg : m));
+            }
+            return [...prev, msg];
+          });
+        }
+      )
+      .subscribe();
 
-// ✅ SAVE ACTIVE CODE
-useEffect(() => {
-  if (activeCode) {
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [activeCode]);
+
+  // ✅ SAVE STEP
+  useEffect(() => {
+    if (!hasRestored.current) return;
+    localStorage.setItem("step", step);
+  }, [step]);
+
+  // ✅ SAVE ACTIVE CODE
+  useEffect(() => {
+    if (!hasRestored.current || !activeCode) return;
     localStorage.setItem("activeCode", activeCode);
-  }
-}, [activeCode]);
+  }, [activeCode]);
 
-// ✅ SAVE STEP
-useEffect(() => {
-  localStorage.setItem("step", step);
-}, [step]);
-
-// ✅ SAVE REQUEST ID
-useEffect(() => {
-  if (requestId) {
+  // ✅ SAVE REQUEST ID
+  useEffect(() => {
+    if (!hasRestored.current || !requestId) return;
     localStorage.setItem("requestId", requestId);
-  }
-}, [requestId]);
+  }, [requestId]);
 
-// ✅ SAVE MESSAGE TYPE
-useEffect(() => {
-  if (messageType) {
+  // ✅ SAVE MESSAGE TYPE
+  useEffect(() => {
+    if (!hasRestored.current || !messageType) return;
     localStorage.setItem("messageType", messageType);
-  }
-}, [messageType]);
+  }, [messageType]);
+
+  // ✅ SCROLL TO BOTTOM ON NEW MESSAGES
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   const verifyCode = async () => {
     const code = inputCode.trim().toUpperCase();
@@ -141,49 +143,47 @@ useEffect(() => {
     setStep("chat");
   };
 
- const sendMessage = async () => {
-  if (!message.trim()) {
-    setError("Please write a message first.");
-    return;
-  }
+  const sendMessage = async () => {
+    if (!message.trim()) {
+      setError("Please write a message first.");
+      return;
+    }
 
-  setLoading(true);
-  setError("");
-  setSuccess("");
+    setLoading(true);
+    setError("");
+    setSuccess("");
 
-  // 1. INSTANT UI UPDATE (THIS IS WHAT FIXES "NOT SHOWING")
-  const tempMessage: MessageType = {
-    id: crypto.randomUUID(),
-    request_code: activeCode,
-    sender: "requester",
-    message: message.trim(),
-    created_at: new Date().toISOString(),
-    status: "open",
+    const tempMessage: MessageType = {
+      id: crypto.randomUUID(),
+      request_code: activeCode,
+      sender: "requester",
+      message: message.trim(),
+      created_at: new Date().toISOString(),
+      status: "open",
+    };
+
+    setMessages((prev) => [...prev, tempMessage]);
+
+    const { error: err } = await supabase.from("admin_messages").insert([{
+      request_id: requestId,
+      request_code: activeCode,
+      sender: "requester",
+      subject: messageType === "cancel" ? "Cancel Request" : "Concern",
+      message: message.trim(),
+      status: "open",
+    }]);
+
+    setLoading(false);
+
+    if (err) {
+      setError("Failed to send. Please try again.");
+      return;
+    }
+
+    setMessage("");
+    setSuccess("Sent!");
+    setTimeout(() => setSuccess(""), 2000);
   };
-
-  setMessages((prev) => [...prev, tempMessage]);
-
-  // 2. DATABASE INSERT (YOUR CODE GOES HERE)
-  const { error: err } = await supabase.from("admin_messages").insert([{
-    request_id: requestId,
-    request_code: activeCode,
-    sender: "requester",
-    subject: messageType === "cancel" ? "Cancel Request" : "Concern",
-    message: message.trim(),
-    status: "open",
-  }]);
-
-  setLoading(false);
-
-  if (err) {
-    setError("Failed to send. Please try again.");
-    return;
-  }
-
-  setMessage("");
-  setSuccess("Sent!");
-  setTimeout(() => setSuccess(""), 2000);
-};
 
   return (
     <main style={styles.page}>
@@ -229,7 +229,19 @@ useEffect(() => {
           <div style={styles.section}>
             <div style={styles.codeTag}>
               <span style={styles.codeTagText}>{activeCode}</span>
-              <button style={styles.changeLinkBtn} onClick={() => { setStep("enter-code"); setInputCode(""); setActiveCode(""); setMessages([]); }}>
+              <button
+                style={styles.changeLinkBtn}
+                onClick={() => {
+                  setStep("enter-code");
+                  setInputCode("");
+                  setActiveCode("");
+                  setMessages([]);
+                  localStorage.removeItem("activeCode");
+                  localStorage.removeItem("step");
+                  localStorage.removeItem("requestId");
+                  localStorage.removeItem("messageType");
+                }}
+              >
                 Change
               </button>
             </div>
