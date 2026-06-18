@@ -32,13 +32,18 @@ export default function ContactAdminPage() {
   }
 
   // 🔥 STEP 2: insert message with request_id
+  const cleanRequestCode = requestCode?.trim();
+  const cleanMessage = message?.trim();
+
+  console.log("DEBUG:", { cleanRequestCode, cleanMessage });
+
   const { error } = await supabase.from("admin_messages").insert([
     {
       request_id: requestData.id,
-      request_code: requestCode.trim(),
+      request_code: cleanRequestCode,
       sender: "requester",
-      subject: `Concern for ${requestCode.trim()}`,
-      message: message.trim(),
+      subject: cleanRequestCode ? `Concern - ${cleanRequestCode}` : "Transport Concern",
+      message: cleanMessage,
       status: "open",
     },
   ]);
