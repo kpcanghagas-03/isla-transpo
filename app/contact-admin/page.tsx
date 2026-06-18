@@ -138,41 +138,53 @@ useEffect(() => {
           {loading ? "Sending..." : "Send to Admin"}
         </button>
 
-        {messages.length > 0 && (
-  <div style={{ marginTop: 25 }}>
+        <div
+  style={{
+    marginTop: 25,
+    border: "1px solid #e2e8f0",
+    borderRadius: 12,
+    padding: 12,
+    height: 300,
+    overflowY: "auto",
+    background: "#fff",
+  }}
+>
     <p style={{ marginBottom: 10, fontSize: 12, color: "#64748b" }}>
   Conversation Thread
 </p>
-    {messages.map((msg) => (
+
+{messages.length === 0 ? (
+  <p style={{ fontSize: 12, color: "#94a3b8" }}>
+    No messages yet. Enter your request code and start chatting.
+  </p>
+) : (
+  messages.map((msg) => (
+    <div
+      key={msg.id}
+      style={{
+        display: "flex",
+        justifyContent:
+          msg.sender === "requester" ? "flex-end" : "flex-start",
+        marginBottom: 10,
+      }}
+    >
       <div
-        key={msg.id}
         style={{
-          display: "flex",
-          justifyContent:
-            msg.sender === "requester" ? "flex-end" : "flex-start",
-          marginBottom: 10,
+          maxWidth: "75%",
+          padding: "10px 14px",
+          borderRadius: 14,
+          fontSize: 14,
+          background:
+            msg.sender === "requester"
+              ? "linear-gradient(135deg, #0B3D91, #2563EB)"
+              : "#E2E8F0",
+          color: msg.sender === "requester" ? "white" : "#0f172a",
         }}
       >
-        <div
-          style={{
-            maxWidth: "75%",
-            padding: "10px 14px",
-            borderRadius: 14,
-            fontSize: 14,
-            whiteSpace: "pre-wrap",
-            background:
-              msg.sender === "requester"
-                ? "linear-gradient(135deg, #0B3D91, #2563EB)"
-                : "#E2E8F0",
-            color: msg.sender === "requester" ? "white" : "#0f172a",
-            boxShadow: "0 4px 10px rgba(0,0,0,0.08)",
-          }}
-        >
-          {msg.message}
-        </div>
+        {msg.message}
       </div>
-    ))}
-  </div>
+    </div>
+  ))
 )}
 
         {status && (
@@ -180,6 +192,7 @@ useEffect(() => {
             {status}
           </p>
         )}
+      </div>
       </div>
     </main>
   );
