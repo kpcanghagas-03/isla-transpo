@@ -19,11 +19,13 @@ export default function ContactAdminPage() {
   setStatus("Sending...");
 
   // 🔥 STEP 1: get real request ID
+  const normalizedCode = requestCode.trim().toUpperCase();
+
   const { data: requestData, error: requestError } = await supabase
-  .from("transport_requests")
-  .select("id, subject, request_code")
-  .eq("request_code", requestCode.trim())
-  .maybeSingle();
+    .from("transport_requests")
+    .select("id, subject, request_code")
+    .ilike("request_code", normalizedCode)
+    .maybeSingle();
 
   if (requestError || !requestData) {
     setLoading(false);
