@@ -26,6 +26,19 @@ export default function ContactPage() {
   const [requestId, setRequestId] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
+  // ✅ RESTORE ON PAGE LOAD
+useEffect(() => {
+  const savedCode = localStorage.getItem("activeCode");
+  const savedStep = localStorage.getItem("step") as any;
+  const savedRequestId = localStorage.getItem("requestId");
+  const savedType = localStorage.getItem("messageType") as any;
+
+  if (savedCode) setActiveCode(savedCode);
+  if (savedStep) setStep(savedStep);
+  if (savedRequestId) setRequestId(savedRequestId);
+  if (savedType) setMessageType(savedType);
+}, []);
+
   useEffect(() => {
   if (!activeCode) return;
 
@@ -65,6 +78,32 @@ export default function ContactPage() {
     supabase.removeChannel(channel);
   };
 }, [activeCode]);
+
+// ✅ SAVE ACTIVE CODE
+useEffect(() => {
+  if (activeCode) {
+    localStorage.setItem("activeCode", activeCode);
+  }
+}, [activeCode]);
+
+// ✅ SAVE STEP
+useEffect(() => {
+  localStorage.setItem("step", step);
+}, [step]);
+
+// ✅ SAVE REQUEST ID
+useEffect(() => {
+  if (requestId) {
+    localStorage.setItem("requestId", requestId);
+  }
+}, [requestId]);
+
+// ✅ SAVE MESSAGE TYPE
+useEffect(() => {
+  if (messageType) {
+    localStorage.setItem("messageType", messageType);
+  }
+}, [messageType]);
 
   const verifyCode = async () => {
     const code = inputCode.trim().toUpperCase();
