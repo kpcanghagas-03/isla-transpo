@@ -22,9 +22,18 @@ type Thread = {
   lastAt: string;
   hasUnread: boolean;
 };
-
+type ThreadSummary = {
+  id: string;
+  request_code: string;
+  subject: string | null;
+  status: string;
+  last_message: string | null;
+  last_message_at: string | null;
+  message_count: number;
+};
 export default function AdminMessagesPage() {
   const [threads, setThreads] = useState<Thread[]>([]);
+  const [threadList, setThreadList] = useState<ThreadSummary[]>([]);
   const [activeCode, setActiveCode] = useState<string | null>(null);
   const [reply, setReply] = useState("");
   const [loading, setLoading] = useState(false);
@@ -63,13 +72,14 @@ export default function AdminMessagesPage() {
     setFetching(true);
 
     const { data, error } = await supabase
-      .from("admin_messages")
-      .select("*")
-      .order("created_at", { ascending: true });
+  .from("support_thread_view")
+  .select("*")
+  .order("last_message_at", { ascending: false });
 
     if (!error && data) {
-      setThreads(buildThreads(data as Msg[]));
-    }
+  console.log("THREAD VIEW", data);
+  setThreadList(data as ThreadSummary[]);
+}
 
     setFetching(false);
   };
