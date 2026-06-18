@@ -64,14 +64,13 @@ export default function AdminMessagesPage() {
     if (m.sender === "requester") t.hasUnread = true;
     if (m.subject) t.subject = m.subject;
   }
-
-  useEffect(() => {
+useEffect(() => {
   const load = async () => {
     setFetching(true);
     setFetchError(null);
 
     const { data, error } = await supabase
-      .from("message_threads")
+      .from("admin_messages")
       .select("*");
 
     console.log("THREAD RAW DATA:", data);
@@ -84,8 +83,7 @@ export default function AdminMessagesPage() {
     }
 
     if (data) {
-      // IMPORTANT: build threads properly
-      setThreads(buildThreads(data));
+      setThreads(buildThreads(data)); // 🔥 THIS is correct now
     }
 
     setFetching(false);
