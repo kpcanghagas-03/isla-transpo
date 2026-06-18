@@ -1,31 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-
-// ------------------------------------------------------------------
-// 🛑 TO USE IN YOUR REAL APP:
-// Uncomment the line below and remove the mock `supabase` object.
-// import { supabase } from "@/lib/supabase";
-// ------------------------------------------------------------------
-
-// MOCK SUPABASE CLIENT (For Live Preview Purposes Only)
-const supabase = {
-  from: (table: string) => ({
-    select: (query: string) => {
-      const builder = Promise.resolve({ data: [], error: null });
-      (builder as any).order = () => builder;
-      return builder;
-    },
-    insert: (data: any) => Promise.resolve({ error: null }),
-  }),
-  channel: (name: string) => ({
-    on: (event: string, opts: any, callback: any) => ({
-      subscribe: () => ({}),
-    }),
-  }),
-  removeChannel: (channel: any) => {},
-} as any;
-// ------------------------------------------------------------------
+import { supabase } from "@/lib/supabase";
 
 type Msg = {
   id: string;
