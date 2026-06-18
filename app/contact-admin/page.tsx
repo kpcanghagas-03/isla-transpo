@@ -146,44 +146,54 @@ export default function AdminMessagesPage() {
   const activeThread = threads.find((t) => t.request_code === activeCode);
 
   const sendReply = async () => {
-    if (!reply.trim() || !activeThread) return;
-    setLoading(true);
+  if (!reply.trim() || !activeThread) return;
+  setLoading(true);
 
-    const { error } = await supabase.from("admin_messages").insert([
-      {
-        request_id: activeThread.request_id,
-        request_code: activeThread.request_code,
-        sender: "admin",
-        subject: activeThread.subject,
-        message: reply.trim(),
-        status: "replied",
-      },
-    ]);
-
-    if (error) {
-      console.error("Reply error:", error);
-      setLoading(false);
-      return;
-    }
-
-    // Mark requester messages as replied
-    await supabase
-      .from("admin_messages")
-      .update({ status: "replied" })
-      .eq("request_code", activeThread.request_code)
-      .eq("sender", "requester");
-
-    setThreads((prev) =>
-      prev.map((t) =>
-        t.request_code === activeThread.request_code
-          ? { ...t, hasUnread: false }
-          : t
-      )
-    );
-
-    setReply("");
-    setLoading(false);
+  // 1. CREATE OPTIMISTIC MESSAGE (instant UI)
+  const optimisticMsg: Msg = {
+    id: crypto.randomUUID(),
+    request_code: activeThread.request_code,
+    request_id: activeThread.request_id,
+    sender: "admin",
+    subject: activeThread.subject,
+    message: reply.trim(),
+    created_at: new Date().toISOString(),
+    status: "replied",
   };
+
+  // 2. INSTANTLY UPDATE UI (NO WAIT)
+  setThreads((prev) =>
+    prev.map((t) =>
+      t.request_code === activeThread.request_code
+        ? {
+            ...t,
+            messages: [...t.messages, optimisticMsg],
+            lastAt: optimisticMsg.created_at,
+          }
+        : t
+    )
+  );
+
+  setReply("");
+
+  // 3. SEND TO SUPABASE
+  const { error } = await supabase.from("admin_messages").insert([
+    {
+      request_id: activeThread.request_id,
+      request_code: activeThread.request_code,
+      sender: "admin",
+      subject: activeThread.subject,
+      message: optimisticMsg.message,
+      status: "replied",
+    },
+  ]);
+
+  setLoading(false);
+
+  if (error) {
+    console.error("Reply error:", error);
+  }
+};
 
   const filteredThreads = threads.filter((t) => {
     if (filter === "cancel")
