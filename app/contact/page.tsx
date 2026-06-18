@@ -27,28 +27,44 @@ export default function ContactPage() {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  if (!activeCode) return;
 
-  useEffect(() => {
-    if (!activeCode) return;
-    const channel = supabase
-      .channel("contact_realtime_" + activeCode)
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "admin_messages",
-          filter: `request_code=eq.${activeCode}`,
-        },
-        (payload) => {
-          setMessages((prev) => [...prev, payload.new as MessageType]);
-        }
-      )
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
-  }, [activeCode]);
+  const channel = supabase
+    .channel("contact_realtime_" + activeCode)
+    .on(
+      "postgres_changes",
+      {
+        event: "*", // 👈 IMPORTANT CHANGE
+        schema: "public",
+        table: "admin_messages",
+        filter: `request_code=eq.${activeCode}`,
+      },
+      (payload) => {
+        const msg = payload.new as MessageType;
+        const old = payload.old as MessageType;
+
+        setMessages((prev) => {
+          // DELETE
+          if (payload.eventType === "DELETE") {
+            return prev.filter((m) => m.id !== old.id);
+          }
+
+          // UPDATE
+          if (payload.eventType === "UPDATE") {
+            return prev.map((m) => (m.id === msg.id ? msg : m));
+          }
+
+          // INSERT
+          return [...prev, msg];
+        });
+      }
+    )
+    .subscribe();
+
+  return () => {
+    supabase.removeChannel(channel);
+  };
+}, [activeCode]);
 
   const verifyCode = async () => {
     const code = inputCode.trim().toUpperCase();

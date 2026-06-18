@@ -83,45 +83,55 @@ export default function AdminMessagesPage() {
     load();
 
     const channel = supabase
-      .channel("admin_all_messages")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "admin_messages" },
-        (payload) => {
-          const newMsg = payload.new as Msg;
-          setThreads((prev) => {
-            const exists = prev.find((t) => t.request_code === newMsg.request_code);
-            if (exists) {
-              return prev
-                .map((t) =>
-                  t.request_code === newMsg.request_code
-                    ? {
-                        ...t,
-                        messages: [...t.messages, newMsg],
-                        lastAt: newMsg.created_at,
-                        hasUnread: newMsg.sender === "requester" ? true : t.hasUnread,
-                        subject: newMsg.subject || t.subject,
-                      }
-                    : t
-                )
-                .sort((a, b) => b.lastAt.localeCompare(a.lastAt));
-            } else {
-              return [
-                {
-                  request_code: newMsg.request_code,
-                  request_id: newMsg.request_id,
-                  subject: newMsg.subject,
-                  messages: [newMsg],
-                  lastAt: newMsg.created_at,
-                  hasUnread: newMsg.sender === "requester",
-                },
-                ...prev,
-              ];
-            }
-          });
+  .channel("admin_all_messages")
+  .on(
+    "postgres_changes",
+    {
+      event: "*", // 👈 KEY FIX (INSERT + UPDATE + DELETE)
+      schema: "public",
+      table: "admin_messages",
+    },
+    (payload) => {
+      const msg = payload.new as Msg;
+      const old = payload.old as Msg;
+
+      setThreads((prev) => {
+        // DELETE event
+        if (payload.eventType === "DELETE") {
+          return prev.map((t) => ({
+            ...t,
+            messages: t.messages.filter((m) => m.id !== old.id),
+          }));
         }
-      )
-      .subscribe();
+
+        // INSERT or UPDATE
+        const targetCode = msg.request_code || old?.request_code;
+
+        const exists = prev.find((t) => t.request_code === targetCode);
+
+        if (exists) {
+          return prev.map((t) =>
+            t.request_code === targetCode
+              ? {
+                  ...t,
+                  messages:
+                    payload.eventType === "INSERT"
+                      ? [...t.messages, msg]
+                      : t.messages.map((m) =>
+                          m.id === msg.id ? msg : m
+                        ),
+                  lastAt: msg.created_at,
+                  subject: msg.subject || t.subject,
+                }
+              : t
+          );
+        }
+
+        return prev;
+      });
+    }
+  )
+  .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
