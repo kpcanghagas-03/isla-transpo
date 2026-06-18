@@ -3,6 +3,82 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 
+const pageStyle: React.CSSProperties = {
+  minHeight: "100vh",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  padding: "20px",
+  background: "#f8fafc",
+  position: "relative",
+};
+
+const leftAccent: React.CSSProperties = {
+  position: "absolute",
+  top: 0,
+  left: 0,
+  width: "40%",
+  height: "100%",
+  background: "rgba(59, 130, 246, 0.1)",
+  zIndex: 0,
+};
+
+const rightAccent: React.CSSProperties = {
+  position: "absolute",
+  bottom: 0,
+  right: 0,
+  width: "40%",
+  height: "100%",
+  background: "rgba(242, 122, 53, 0.1)",
+  zIndex: 0,
+};
+
+const card: React.CSSProperties = {
+  position: "relative",
+  zIndex: 1,
+  width: "100%",
+  maxWidth: 560,
+  padding: "32px",
+  borderRadius: 24,
+  boxShadow: "0 20px 60px rgba(15, 23, 42, 0.08)",
+  background: "#ffffff",
+};
+
+const title: React.CSSProperties = {
+  margin: 0,
+  fontSize: "28px",
+  fontWeight: 700,
+  color: "#0f172a",
+};
+
+const subtitle: React.CSSProperties = {
+  margin: "8px 0 24px",
+  color: "#475569",
+  fontSize: "14px",
+};
+
+const inputStyle: React.CSSProperties = {
+  width: "100%",
+  padding: "12px 14px",
+  borderRadius: 12,
+  border: "1px solid #cbd5e1",
+  fontSize: "14px",
+  outline: "none",
+  background: "#f8fafc",
+};
+
+const buttonStyle: React.CSSProperties = {
+  width: "100%",
+  padding: "12px 16px",
+  marginTop: 12,
+  border: "none",
+  borderRadius: 12,
+  fontSize: "14px",
+  color: "#fff",
+  background: "#0b3d91",
+  cursor: "pointer",
+};
+
 export default function ContactAdminPage() {
   const [requestCode, setRequestCode] = useState("");
   const [message, setMessage] = useState("");
