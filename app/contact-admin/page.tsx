@@ -19,12 +19,10 @@ export default function ContactAdminPage() {
   setStatus("Sending...");
 
   // 🔥 STEP 1: get real request ID
-  const normalizedCode = requestCode.trim().toUpperCase();
-
   const { data: requestData, error: requestError } = await supabase
     .from("transport_requests")
-    .select("id, subject, request_code")
-    .ilike("request_code", normalizedCode)
+    .select("id")
+    .eq("request_code", requestCode.trim())
     .maybeSingle();
 
   if (requestError || !requestData) {
@@ -34,21 +32,16 @@ export default function ContactAdminPage() {
   }
 
   // 🔥 STEP 2: insert message with request_id
-  const cleanRequestCode = requestCode?.trim();
-  const cleanMessage = message?.trim();
-
-  console.log("DEBUG:", { cleanRequestCode, cleanMessage });
-
   const { error } = await supabase.from("admin_messages").insert([
-  {
-    request_id: requestData.id,
-    request_code: requestData.request_code,
-    sender: "requester",
-    subject: requestData.subject || "Transport Concern",
-    message: cleanMessage,
-    status: "open",
-  },
-]);
+    {
+      request_id: requestData.id,
+      request_code: requestCode.trim(),
+      sender: "requester",
+      subject: `Concern for ${requestCode.trim()}`,
+      message: message.trim(),
+      status: "open",
+    },
+  ]);
 
   setLoading(false);
 
