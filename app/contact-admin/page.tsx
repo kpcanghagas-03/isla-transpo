@@ -88,14 +88,17 @@ export default function AdminMessagesPage() {
       (payload) => {
         const eventType = payload.eventType;
 
-        setThreads((prev) => {
-          if (eventType === "DELETE") {
-            const oldMsg = payload.old as Msg;
-
-            return prev.map((t) => ({
-              ...t,
-              messages: t.messages.filter((m) => m.id !== oldMsg.id),
-            }));
+        setThreads((prev) =>
+            prev.map((t) =>
+              t.request_code === activeThread.request_code
+                ? {
+                    ...t,
+                    messages: [...t.messages, newMsg],
+                    lastAt: newMsg.created_at,
+                  }
+                : t
+            )
+          );
           }
 
           const msg = payload.new as Msg;
@@ -188,11 +191,21 @@ export default function AdminMessagesPage() {
     },
   ]);
 
-  setLoading(false);
-
   if (error) {
-    console.error("Reply error:", error);
-  }
+  console.error("Reply error:", error);
+  setLoading(false);
+  return;
+}
+
+const newMsg: Msg = {
+  id: crypto.randomUUID(),
+  request_id: activeThread.request_id,
+  request_code: activeThread.request_code,
+  sender: "admin",
+  subject: activeThread.subject,
+  message: reply.trim(),
+  created_at: new Date().toISOString(),
+  status: "replied",
 };
 
   const filteredThreads = threads.filter((t) => {
