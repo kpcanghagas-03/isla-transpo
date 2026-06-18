@@ -82,7 +82,7 @@ export default function AdminMessagesPage() {
 
     load();
 
-   const channel = supabase
+    const channel = supabase
   .channel("admin_all_messages")
   .on(
     "postgres_changes",
@@ -169,6 +169,11 @@ export default function AdminMessagesPage() {
     }
   )
   .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
