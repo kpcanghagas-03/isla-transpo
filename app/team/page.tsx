@@ -73,7 +73,7 @@ export default function TeamPage() {
           <div className="tp-nav-links">
             <span className="tp-nav-item active">Team</span>
             <button className="tp-terminal-btn" onClick={() => router.push("/")}>
-              ⚙️ Terminal Control
+              ⚙️ Home
             </button>
           </div>
         </header>
