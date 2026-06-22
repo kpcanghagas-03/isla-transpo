@@ -172,7 +172,7 @@ export default function HomePage() {
           }}>Navigation</p>
 
           {navItems.map(({ label, icon, action }) => {
-            const isExternal = label === "Track My Request" || label === "Contact / Concerns";
+            const isExternal = label === "Track My Request" || label === "Contact Support";
             const accent =
               label === "Contact / Concerns" ? "#A61E22" :
               label === "Track My Request"   ? "#F27A35" :
