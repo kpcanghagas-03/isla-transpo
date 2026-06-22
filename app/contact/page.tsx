@@ -39,33 +39,61 @@ export default function ContactPage() {
   const [messages, setMessages] = useState<MessageType[]>([]);
   const [loading, setLoading] = useState(false);
   const [verifying, setVerifying] = useState(false);
+  const [restoring, setRestoring] = useState(true);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [requestId, setRequestId] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const hasRestored = useRef(false);
 
-  // RESTORE ON PAGE LOAD
+  // RESTORE ON PAGE LOAD — now also re-fetches the actual conversation,
+  // not just the localStorage breadcrumbs. This is what fixes the
+  // "conversation disappears on refresh" bug.
   useEffect(() => {
-    const savedCode = localStorage.getItem("activeCode");
-    const savedStep = localStorage.getItem("step") as typeof step | null;
-    const savedId = localStorage.getItem("requestId");
-    const savedType = localStorage.getItem("messageType") as typeof messageType | null;
-    const savedName = localStorage.getItem("contactName");
+    const restore = async () => {
+      const savedCode = localStorage.getItem("activeCode");
+      const savedStep = localStorage.getItem("step") as typeof step | null;
+      const savedId = localStorage.getItem("requestId");
+      const savedType = localStorage.getItem("messageType") as typeof messageType | null;
+      const savedName = localStorage.getItem("contactName");
 
-    if (savedCode) setActiveCode(savedCode);
-    if (savedStep) setStep(savedStep);
-    if (savedId) setRequestId(savedId);
-    if (savedType) setMessageType(savedType);
-    if (savedName) {
-      setSenderName(savedName);
-      setInputName(savedName);
-    }
+      if (savedName) {
+        setSenderName(savedName);
+        setInputName(savedName);
+      }
 
-    hasRestored.current = true;
+      if (savedCode) {
+        setActiveCode(savedCode);
+        if (savedId) setRequestId(savedId);
+        if (savedType) setMessageType(savedType);
+
+        const { data: msgs, error: fetchErr } = await supabase
+          .from("admin_messages")
+          .select("*")
+          .eq("request_code", savedCode)
+          .order("created_at", { ascending: true });
+
+        if (!fetchErr) {
+          setMessages(msgs || []);
+          if (savedStep) setStep(savedStep);
+        } else {
+          // Couldn't restore the thread — fall back to asking for the code again.
+          localStorage.removeItem("activeCode");
+          localStorage.removeItem("step");
+          localStorage.removeItem("requestId");
+          localStorage.removeItem("messageType");
+        }
+      }
+
+      hasRestored.current = true;
+      setRestoring(false);
+    };
+
+    restore();
   }, []);
 
-  // REALTIME SUBSCRIPTION
+  // REALTIME SUBSCRIPTION — fires once activeCode is set, whether that's
+  // from a fresh code entry or from the restore above.
   useEffect(() => {
     if (!activeCode) return;
 
@@ -250,6 +278,19 @@ export default function ContactPage() {
     localStorage.removeItem("requestId");
     localStorage.removeItem("messageType");
   };
+
+  if (restoring) {
+    return (
+      <main className="ct-page">
+        <style>{CSS}</style>
+        <div className="ct-card">
+          <div className="ct-section" style={{ textAlign: "center", color: "#94A3B8", fontSize: 13 }}>
+            Loading your conversation…
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="ct-page">
