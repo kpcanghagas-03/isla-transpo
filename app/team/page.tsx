@@ -105,7 +105,7 @@ export default function TeamPage() {
             </div>
             <div className="tp-meta-item">
               <span className="tp-meta-label">ABOARD</span>
-              <span className="tp-meta-val highlights">{String(totalCrew).padStart(2, "0")} TEAM 👥</span>
+              <span className="tp-meta-val highlights">{String(totalCrew).padStart(2, "0")} Members 👥</span>
             </div>
           </div>
         </div>
