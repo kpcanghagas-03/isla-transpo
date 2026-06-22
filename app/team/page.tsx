@@ -1,6 +1,6 @@
-"use client";
+"useclient";
 
-import { useRouter } from "next/navigation";
+import { useRouter } from"next/navigation";
 
 type Department = {
   id: string;
@@ -13,19 +13,19 @@ const DEPARTMENTS: Department[] = [
   {
     id: "Members",
     label: "Leadership & Coordination",
-    accent: "#3b82f6", // Vibrant neon blue
+    accent: "#0ea5e9", // Bright Ocean Blue
     members: ["John Paul T. Balistoy", "Junvee O. Barbadillo", "Marc Mana"],
   },
   {
     id: "development",
     label: "System Development",
-    accent: "#f97316", // Intense glowing orange
+    accent: "#f97316", // Hibiscus/Sunset Orange
     members: ["Karen P. Canghagas", "Arjay A. Charcos"],
   },
   {
     id: "operations",
     label: "Transportation Operations",
-    accent: "#ef4444", // Piercing warning red
+    accent: "#ef4444", // Camiguin Volcano Red
     members: [
       "Lino A. Gorres Jr.",
       "Ramil M. Cañeda",
@@ -59,443 +59,396 @@ export default function TeamPage() {
     <main className="tp-page">
       <style jsx>{CSS}</style>
 
-      {/* Dynamic Deep Ocean Glowing Elements */}
-      <div className="tp-ocean-glow" />
-      <div className="tp-radar-sweep" />
+      {/* Island Horizon Gradient Elements */}
+      <div className="tp-island-sky" />
+      <div className="tp-island-sea" />
 
       <div className="tp-wrap">
-        <button className="tp-back" onClick={() => router.push("/")}>
-          ← Terminal Control
-        </button>
+        {/* ================= NAVIGATION HEADER ================= */}
+        <header className="tp-navbar">
+          <div className="tp-logo-zone">
+            <span className="tp-logo-icon">🌋</span>
+            <span className="tp-logo-text">ISLA-TRANSPO</span>
+          </div>
+          <div className="tp-nav-links">
+            <span className="tp-nav-item active">Team</span>
+            <button className="tp-terminal-btn" onClick={() => router.push("/")}>
+              ⚙️ Terminal Control
+            </button>
+          </div>
+        </header>
 
-        {/* ================= CYBER MANIFEST HEADER ================= */}
+        <span className="tp-section-tagline">TRANSIT OPERATIONS MANIFEST</span>
+
+        {/* ================= HERO MANIFEST TICKET ================= */}
         <div className="tp-manifest-card">
           <div className="tp-manifest-main">
-            <span className="tp-live-tag">
-              <span className="tp-pulse-dot" /> LIVE DISPATCH SYSTEM
+            <span className="tp-live-tracker">
+              <span className="tp-pulse-dot" /> LIVE NETWORK TRACKER
             </span>
             <h1 className="tp-title">Transportation Team</h1>
             <p className="tp-subcopy">
-              Fleet operatives and system architects managing island transit pipelines 
-              for RSTW 2026 across Camiguin coordinates.
+              RSTW 2026 team on our premium transit network itinerary on Camiguin. 
+              Our modernized respective teams support code architecture and public transit pipelines.
             </p>
           </div>
 
-          <div className="tp-manifest-sidebar">
+          <div className="tp-manifest-ticket-stub">
             <div className="tp-meta-item">
-              <span className="tp-meta-label">SECTOR</span>
-              <span className="tp-meta-val">CMG // RSTW26</span>
+              <span className="tp-meta-label">ROUTE</span>
+              <span className="tp-meta-val">CMG // RSTW26 📍</span>
             </div>
             <div className="tp-meta-item">
-              <span className="tp-meta-label">TIMELINE</span>
-              <span className="tp-meta-val">JUL 22-24, 2026</span>
+              <span className="tp-meta-label">DATES</span>
+              <span className="tp-meta-val">JUL 22–24, 2026 📅</span>
             </div>
             <div className="tp-meta-item">
-              <span className="tp-meta-label">MANIFEST</span>
-              <span className="tp-meta-val text-neon">{String(totalCrew).padStart(2, "0")} ACTIVE</span>
+              <span className="tp-meta-label">ABOARD</span>
+              <span className="tp-meta-val highlights">{String(totalCrew).padStart(2, "0")} OPERATIVES 👥</span>
             </div>
           </div>
         </div>
 
-        {/* ================= SYSTEMS METRICS GATES ================= */}
-        <div className="tp-grid-stats">
-          <div className="tp-stat-gate border-blue">
-            <span className="tp-stat-num text-blue">{totalCrew}</span>
-            <span className="tp-stat-label">On-Duty Personnel</span>
+        {/* ================= SYSTEM METRICS ================= */}
+        <h3 className="tp-block-heading">SYSTEM METRICS</h3>
+        <div className="tp-metrics-grid">
+          <div className="tp-metric-box">
+            <div className="tp-metric-header">
+              <span className="tp-metric-num">0{totalCrew}</span>
+              <span className="tp-metric-icon">👥</span>
+            </div>
+            <span className="tp-metric-label">On-Duty Personnel</span>
           </div>
-          <div className="tp-stat-gate border-orange">
-            <span className="tp-stat-num text-orange">{stops.length}</span>
-            <span className="tp-stat-label">Active Node Sectors</span>
+          <div className="tp-metric-box">
+            <div className="tp-metric-header">
+              <span className="tp-metric-num">0{stops.length}</span>
+              <span className="tp-metric-icon">🛠️</span>
+            </div>
+            <span className="tp-metric-label">Active Node Sectors</span>
           </div>
-          <div className="tp-stat-gate border-red">
-            <span className="tp-stat-num text-red">1.0</span>
-            <span className="tp-stat-label">Centralized Network</span>
+          <div className="tp-metric-box">
+            <div className="tp-metric-header">
+              <span className="tp-metric-num">1</span>
+              <span className="tp-metric-icon">🕸️</span>
+            </div>
+            <span className="tp-metric-label">Central Network</span>
           </div>
-          <div className="tp-stat-gate border-blue">
-            <span className="tp-stat-num text-blue">99.9%</span>
-            <span className="tp-stat-label">Uptime Allocation</span>
+          <div className="tp-metric-box">
+            <div className="tp-metric-header">
+              <span className="tp-metric-num">∞</span>
+              <span className="tp-metric-icon">🔗</span>
+            </div>
+            <span className="tp-metric-label">Shared Commitment</span>
           </div>
         </div>
 
         {/* ================= TRANSIT PIPELINE TRACKER ================= */}
-        <div className="tp-pipeline-container">
-          <div className="tp-track-lane">
-            {/* The active tracing transport pulse */}
-            <div className="tp-ferry-pulse" />
+        <h3 className="tp-block-heading">TRANSIT PIPELINE TRACKER</h3>
+        <div className="tp-pipeline-panel">
+          
+          {/* Island Pipeline Visual Map Line */}
+          <div className="tp-map-track">
+            <div className="tp-track-station active"><span>CMG Terminal</span></div>
+            <div className="tp-track-line-segment"><div className="tp-boat-emoji">🚢</div></div>
+            <div className="tp-track-station"><span>Midway</span></div>
+            <div className="tp-track-line-segment" />
+            <div className="tp-track-station active-end"><span>RSTW26 Hub</span></div>
+          </div>
 
+          <div className="tp-departments-stack">
             {stops.map((stop, i) => (
-              <section className="tp-node-station" key={stop.id}>
-                <span className="tp-node-indicator" style={{ '--node-color': stop.accent } as React.CSSProperties} />
-                
-                <span className="tp-station-eyebrow" style={{ color: stop.accent }}>
-                  WAYPOINT KEY // 0{i + 1}
-                </span>
-                <h2 className="tp-station-title">{stop.label}</h2>
+              <section className="tp-dept-section" key={stop.id}>
+                <div className="tp-dept-banner" style={{ background: stop.accent }}>
+                  <span className="tp-dept-badge-title">
+                    {stop.id === "Members" ? "TEAM-LDR" : stop.id === "development" ? "TEKM-LDR" : "TEAM-COOR"}
+                  </span>
+                  <h4 className="tp-dept-name">{stop.label}</h4>
+                </div>
 
-                <div className="tp-crew-deck">
+                <div className="tp-crew-rows">
                   {stop.crew.map((person) => (
-                    <article className="tp-operative-card" key={person.name} style={{ '--hover-glow': stop.accent } as React.CSSProperties}>
-                      <div className="tp-card-header">
-                        <div className="tp-avatar-seal" style={{ background: `${stop.accent}15`, color: stop.accent, border: `1px solid ${stop.accent}40` }}>
-                          {initials(person.name)}
-                        </div>
-                        <span className="tp-badge-id">
-                          ID-{String(person.no).padStart(2, "0")} / 0{totalCrew}
-                        </span>
+                    <div className="tp-crew-row" key={person.name}>
+                      <div className="tp-crew-avatar" style={{ background: `${stop.accent}18`, color: stop.accent }}>
+                        {initials(person.name)}
                       </div>
-                      
-                      <h3 className="tp-operative-name">{person.name}</h3>
-                      
-                      <div className="tp-card-footer" style={{ borderTop: `1px dashed ${stop.accent}20` }}>
-                        <span className="tp-sector-tag" style={{ color: stop.accent, background: `${stop.accent}0a` }}>
-                          {stop.id.toUpperCase()}
-                        </span>
+                      <div className="tp-crew-info">
+                        <span className="tp-crew-name">{person.name}</span>
+                        <span className="tp-crew-role">RSTW Fleet Operative</span>
                       </div>
-                    </article>
+                      <span className="tp-crew-number">#{String(person.no).padStart(2, "0")}</span>
+                    </div>
                   ))}
                 </div>
               </section>
             ))}
-
-            <div className="tp-terminal-node">
-              <span className="tp-terminal-dot" />
-              <span>PIPELINE TERMINAL SECURE</span>
-            </div>
           </div>
         </div>
 
-        {/* ================= FOOTER PROTOCOL ================= */}
-        <div className="tp-auth-footer">
-          <div className="tp-watermark">SECURE ENDPOINT</div>
-          <h2 className="tp-auth-title">Operation Clearance</h2>
-          <p className="tp-auth-desc">
-            Every route synchronized, passenger logged, and dispatch movement executed 
-            concludes a verified transport framework.
+        {/* ================= FOOTER CLEARANCE ================= */}
+        <div className="tp-footer-protocol">
+          <div className="tp-stamp-row">
+            <div className="tp-digital-stamp">
+              <span className="tp-stamp-icon">🛡️</span>
+              <div>
+                <strong>VALIDATED DIGITAL STAMP</strong>
+                <p>Verified digital stamp</p>
+              </div>
+            </div>
+            <div className="tp-island-icon">🌋</div>
+          </div>
+          <p className="tp-protocol-text">
+            Every route synchronized, passenger logged, and dispatch movement executed concludes a verified transport framework. Transit assets remain managed under the regional archipelago framework protocols.
           </p>
         </div>
+
       </div>
     </main>
   );
 }
 
 const CSS = `
-  @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap');
 
   .tp-page {
     position: relative;
     min-height: 100vh;
-    overflow: hidden;
-    background: #020617; /* Deep midnight void */
-    color: #f8fafc;
-    font-family: system-ui, -apple-system, sans-serif;
+    background: #eef2f5; 
+    color: #1e293b;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    overflow-x: hidden;
   }
 
-  /* Deep Neon Ocean & Volcanic Ambience */
-  .tp-ocean-glow {
+  /* Camiguin Sunset Sky and Sea Background Aesthetics */
+  .tp-island-sky {
     position: absolute;
-    inset: 0;
-    background: 
-      radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.08) 0%, transparent 40%),
-      radial-gradient(circle at 90% 80%, rgba(249, 115, 22, 0.06) 0%, transparent 50%),
-      radial-gradient(circle at 50% 50%, rgba(239, 68, 68, 0.04) 0%, transparent 60%);
-    pointer-events: none;
+    top: 0; left: 0; right: 0; height: 420px;
+    background: linear-gradient(180deg, #bae6fd 0%, #ffedd5 70%, #ffddd2 100%);
+    z-index: 1;
   }
-
-  .tp-radar-sweep {
+  .tp-island-sea {
     position: absolute;
-    width: 200%;
-    height: 200%;
-    top: -50%;
-    left: -50%;
-    background: conic-gradient(from 0deg at 50% 50%, transparent 0%, rgba(59, 130, 246, 0.03) 30%, transparent 40%);
-    animation: radarRotation 12s linear infinite;
-    pointer-events: none;
+    top: 420px; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(180deg, #e0f2fe 0%, #f1f5f9 100%);
+    z-index: 1;
   }
 
-  @keyframes radarRotation {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-  }
-
-  .tp-wrap { 
-    max-width: 960px; 
-    margin: 0 auto; 
-    padding: 60px 24px 100px; 
-    position: relative; 
-    z-index: 2; 
-  }
-
-  .tp-back {
-    border: 1px solid rgba(255, 255, 255, 0.1); 
-    cursor: pointer; 
-    background: rgba(15, 23, 42, 0.6);
-    backdrop-filter: blur(8px);
-    padding: 10px 20px; 
-    border-radius: 8px;
-    color: #94a3b8; 
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 12px;
-    letter-spacing: 0.05em;
-    transition: all 0.2s ease;
-    margin-bottom: 32px;
-  }
-  .tp-back:hover {
-    color: #3b82f6;
-    border-color: rgba(59, 130, 246, 0.4);
-    background: rgba(59, 130, 246, 0.05);
-  }
-
-  /* ── Cyber Manifest Header ── */
-  .tp-manifest-card {
+  .tp-wrap {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 24px 20px 80px;
     position: relative;
-    background: linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(30, 41, 59, 0.5) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 20px;
-    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+    z-index: 2;
+  }
+
+  /* ── Navigation Bar ── */
+  .tp-navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    padding: 14px 24px;
+    border-radius: 16px;
     margin-bottom: 32px;
+    box-shadow: 0 4px 20px rgba(14, 165, 233, 0.05);
+  }
+  .tp-logo-zone { display: flex; align-items: center; gap: 8px; }
+  .tp-logo-icon { font-size: 20px; }
+  .tp-logo-text { font-weight: 800; tracking: 0.02em; color: #0f172a; font-size: 16px; }
+  .tp-nav-links { display: flex; align-items: center; gap: 24px; }
+  .tp-nav-item { font-size: 14px; font-weight: 600; color: #64748b; cursor: pointer; }
+  .tp-nav-item.active { color: #0ea5e9; }
+  
+  .tp-terminal-btn {
+    background: #0ea5e9; color: #fff; border: none;
+    padding: 8px 16px; font-weight: 600; font-size: 13px;
+    border-radius: 10px; cursor: pointer; box-shadow: 0 4px 12px rgba(14, 165, 233, 0.25);
+    transition: transform 0.2s;
+  }
+  .tp-terminal-btn:hover { transform: translateY(-1px); background: #0284c7; }
+
+  .tp-section-tagline {
+    display: block; font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; font-weight: 600; color: #0369a1;
+    margin-bottom: 12px; letter-spacing: 0.05em; padding-left: 4px;
+  }
+
+  /* ── Manifest Ticket Card ── */
+  .tp-manifest-card {
+    background: #ffffff;
+    border-radius: 20px;
+    border: 1px solid rgba(14, 165, 233, 0.15);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
     display: flex;
     flex-wrap: wrap;
     overflow: hidden;
+    margin-bottom: 32px;
   }
-  .tp-manifest-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.4), rgba(249, 115, 22, 0.4), transparent);
-  }
-
-  .tp-manifest-main { flex: 1; min-width: 280px; padding: 40px; }
+  .tp-manifest-main { flex: 1; min-width: 300px; padding: 36px; }
   
-  .tp-live-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    color: #3b82f6;
-    background: rgba(59, 130, 246, 0.1);
-    padding: 4px 12px;
-    border-radius: 4px;
-    margin-bottom: 20px;
-    border: 1px solid rgba(59, 130, 246, 0.2);
+  .tp-live-tracker {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #e0f2fe; color: #0369a1; font-weight: 700;
+    font-size: 11px; padding: 4px 10px; border-radius: 6px;
+    margin-bottom: 16px; letter-spacing: 0.02em;
   }
-  
   .tp-pulse-dot {
-    width: 6px; height: 6px; border-radius: 50%; background: #3b82f6;
-    animation: beaconPulse 1.5s infinite;
+    width: 6px; height: 6px; background: #0ea5e9; border-radius: 50%;
+    animation: flash 2s infinite;
   }
-  @keyframes beaconPulse {
-    0% { transform: scale(0.8); opacity: 0.5; box-shadow: 0 0 0 0 rgba(59,130,246,0.7); }
-    70% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 6px transparent; }
-    100% { transform: scale(0.8); opacity: 0.5; box-shadow: 0 0 0 0 transparent; }
-  }
+  @keyframes flash { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
 
-  .tp-title {
-    font-family: 'Oswald', sans-serif;
-    text-transform: uppercase;
-    font-weight: 700;
-    font-size: clamp(32px, 5vw, 48px);
-    line-height: 1.1;
-    margin: 0 0 16px;
-    color: #ffffff;
-    letter-spacing: -0.01em;
-  }
-  .tp-subcopy { color: #94a3b8; line-height: 1.6; font-size: 15px; max-width: 580px; margin: 0; }
+  .tp-title { font-size: clamp(28px, 4vw, 38px); font-weight: 800; color: #0f172a; margin: 0 0 12px; letter-spacing: -0.02em; }
+  .tp-subcopy { color: #64748b; font-size: 14.5px; line-height: 1.6; margin: 0; max-width: 620px; }
 
-  .tp-manifest-sidebar {
-    background: rgba(2, 6, 17, 0.4);
-    border-left: 1px solid rgba(255, 255, 255, 0.05);
-    padding: 40px;
+  .tp-manifest-ticket-stub {
+    background: #f8fafc;
+    border-left: 2px dashed #e2e8f0;
+    padding: 36px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 24px;
+    gap: 20px;
     min-width: 240px;
+    position: relative;
   }
-  .tp-meta-item { display: flex; flex-direction: column; gap: 4px; }
-  .tp-meta-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #64748b; letter-spacing: 0.1em; }
-  .tp-meta-val { font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: #cbd5e1; font-weight: 500; }
-  .text-neon { color: #f97316; text-shadow: 0 0 10px rgba(249,115,22,0.3); }
+  /* Decorative Ticket Cutouts */
+  .tp-manifest-ticket-stub::before, .tp-manifest-ticket-stub::after {
+    content: ''; position: absolute; left: -10px; width: 20px; height: 20px; background: #ffedd5; border-radius: 50%;
+  }
+  .tp-manifest-ticket-stub::before { top: -10px; }
+  .tp-manifest-ticket-stub::after { bottom: -10px; }
 
-  /* ── System Metrics Gates ── */
-  .tp-grid-stats {
+  .tp-meta-item { display: flex; flex-direction: column; gap: 2px; }
+  .tp-meta-label { font-size: 10px; font-weight: 700; color: #94a3b8; letter-spacing: 0.05em; }
+  .tp-meta-val { font-size: 13px; font-weight: 700; color: #334155; }
+  .tp-meta-val.highlights { color: #f97316; }
+
+  /* ── Block Headings ── */
+  .tp-block-heading {
+    font-size: 12px; font-weight: 800; color: #475569;
+    letter-spacing: 0.06em; margin: 0 0 16px 4px;
+  }
+
+  /* ── Metrics Row ── */
+  .tp-metrics-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 16px;
-    margin-bottom: 48px;
+    margin-bottom: 36px;
   }
-  .tp-stat-gate {
-    background: rgba(15, 23, 42, 0.4);
-    border-radius: 12px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    transition: background 0.3s ease;
-  }
-  .tp-stat-gate:hover { background: rgba(15, 23, 42, 0.7); }
-  
-  .border-blue { border-left: 3px solid #3b82f6; border-top: 1px solid rgba(255,255,255,0.03); }
-  .border-orange { border-left: 3px solid #f97316; border-top: 1px solid rgba(255,255,255,0.03); }
-  .border-red { border-left: 3px solid #ef4444; border-top: 1px solid rgba(255,255,255,0.03); }
-  
-  .tp-stat-num { font-family: 'IBM Plex Mono', monospace; font-weight: 600; font-size: 26px; }
-  .text-blue { color: #3b82f6; }
-  .text-orange { color: #f97316; }
-  .text-red { color: #ef4444; }
-  .tp-stat-label { font-size: 12px; color: #64748b; font-weight: 500; }
-
-  /* ── Transit Pipeline Tracker ── */
-  .tp-pipeline-container {
-    background: rgba(15, 23, 42, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 24px;
-    padding: 44px 36px;
-    margin-bottom: 40px;
-  }
-  .tp-track-lane {
-    position: relative;
-    margin-left: 8px;
-    padding-left: 36px;
-    border-left: 2px dashed rgba(255, 255, 255, 0.1);
-  }
-
-  /* Active Tracking Ferry Dot Animation */
-  .tp-ferry-pulse {
-    position: absolute;
-    left: -6px;
-    top: 0;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: #f97316;
-    box-shadow: 0 0 15px 4px #f97316, 0 0 4px #ffffff;
-    animation: trackingVoyage 8s ease-in-out infinite;
-  }
-  @keyframes trackingVoyage {
-    0% { transform: translateY(0); opacity: 0.2; }
-    5% { opacity: 1; }
-    95% { opacity: 1; }
-    100% { transform: translateY(calc(100% - 10px)); opacity: 0.2; }
-  }
-
-  .tp-node-station { position: relative; margin-bottom: 56px; }
-  .tp-node-station:last-of-type { margin-bottom: 32px; }
-
-  .tp-node-indicator {
-    position: absolute;
-    left: -44px;
-    top: 4px;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: #020617;
-    border: 3px solid var(--node-color);
-    box-shadow: 0 0 12px var(--node-color);
-  }
-  
-  .tp-station-eyebrow {
-    display: block;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    margin-bottom: 6px;
-  }
-  .tp-station-title {
-    font-family: 'Oswald', sans-serif;
-    text-transform: uppercase;
-    font-size: 22px;
-    color: #f1f5f9;
-    margin: 0 0 20px;
-    letter-spacing: 0.02em;
-  }
-
-  .tp-crew-deck { 
-    display: grid; 
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); 
-    gap: 16px; 
-  }
-
-  /* Operative Profile Glassmorphism Cards */
-  .tp-operative-card {
-    position: relative;
-    background: rgba(30, 41, 59, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+  .tp-metric-box {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid #e2e8f0;
     border-radius: 14px;
     padding: 20px;
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.01);
   }
-  .tp-operative-card:hover {
-    transform: translateY(-4px);
-    background: rgba(30, 41, 59, 0.5);
-    border-color: var(--hover-glow);
-    box-shadow: 0 10px 30px -10px rgba(0,0,0,0.7), 0 0 15px -3px var(--hover-glow);
-  }
-  
-  .tp-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-  
-  .tp-avatar-seal {
-    width: 38px; height: 38px; border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 14px;
-  }
-  .tp-badge-id { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #475569; }
-  .tp-operative-name { font-size: 15px; font-weight: 600; color: #f8fafc; margin: 0 0 12px; }
-  
-  .tp-card-footer {
-    padding-top: 12px;
-    margin-top: 4px;
-  }
-  .tp-sector-tag {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 9px; font-weight: 600; letter-spacing: 0.04em;
-    padding: 2px 6px; border-radius: 4px;
-  }
+  .tp-metric-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .tp-metric-num { font-size: 26px; font-weight: 800; color: #0f172a; }
+  .tp-metric-icon { font-size: 18px; }
+  .tp-metric-label { font-size: 12.5px; font-weight: 600; color: #64748b; }
 
-  .tp-terminal-node {
-    display: flex; align-items: center; gap: 12px;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px; letter-spacing: 0.1em; color: #475569;
-  }
-  .tp-terminal-dot {
-    width: 10px; height: 10px; border-radius: 50%;
-    background: #020617; border: 2px solid rgba(255,255,255,0.2); margin-left: -42px;
-  }
-
-  /* ── Footer Protocol / Stamp ── */
-  .tp-auth-footer {
-    position: relative;
-    background: linear-gradient(180deg, rgba(15, 23, 42, 0.5) 0%, rgba(2, 6, 17, 0.8) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+  /* ── Transit Pipeline Tracker Panel ── */
+  .tp-pipeline-panel {
+    background: #ffffff;
     border-radius: 20px;
-    padding: 40px;
-    text-align: center;
+    border: 1px solid #e2e8f0;
+    padding: 32px;
+    margin-bottom: 40px;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.02);
+  }
+
+  /* Map Progress Track CSS */
+  .tp-map-track {
+    background: #f0fdf4;
+    border: 1px dashed #bbf7d0;
+    border-radius: 14px;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 36px;
+  }
+  .tp-track-station { background: #fff; border: 1px solid #cbd5e1; padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; color: #475569; }
+  .tp-track-station.active { border-color: #0ea5e9; color: #0ea5e9; background: #f0f9ff; }
+  .tp-track-station.active-end { border-color: #ef4444; color: #ef4444; background: #fef2f2; }
+  
+  .tp-track-line-segment {
+    flex: 1; height: 4px; background: linear-gradient(90deg, #0ea5e9, #f97316, #ef4444);
+    margin: 0 12px; position: relative; border-radius: 2px;
+  }
+  .tp-boat-emoji { position: absolute; top: -14px; left: 40%; font-size: 14px; animation: waveFloat 3s ease-in-out infinite; }
+  @keyframes waveFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+
+  /* Departments Stack Elements */
+  .tp-departments-stack {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+  }
+  .tp-dept-section {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
     overflow: hidden;
   }
-  .tp-watermark {
-    position: absolute; top: 16px; right: 20px;
-    font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.05em;
-    color: rgba(59, 130, 246, 0.7); border: 1px solid rgba(59, 130, 246, 0.3); 
-    background: rgba(59, 130, 246, 0.05);
-    padding: 4px 12px; border-radius: 4px;
+  .tp-dept-banner {
+    padding: 12px 18px;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
   }
-  .tp-auth-title { font-family: 'Oswald', sans-serif; text-transform: uppercase; font-size: 22px; margin: 0 0 12px; color: #f1f5f9; }
-  .tp-auth-desc { color: #64748b; line-height: 1.6; max-width: 580px; margin: 0 auto; font-size: 14px; }
+  .tp-dept-badge-title { font-family: 'IBM Plex Mono', monospace; font-size: 9px; font-weight: 600; opacity: 0.85; letter-spacing: 0.05em; }
+  .tp-dept-name { margin: 0; font-size: 14px; font-weight: 700; }
 
-  /* ── Responsive Viewports ── */
+  .tp-crew-rows { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+  
+  .tp-crew-row {
+    display: flex; align-items: center; background: #ffffff;
+    border: 1px solid #e2e8f0; padding: 10px 14px; border-radius: 10px;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .tp-crew-row:hover { transform: translateX(2px); border-color: #cbd5e1; }
+  
+  .tp-crew-avatar {
+    width: 34px; height: 34px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; margin-right: 12px;
+  }
+  .tp-crew-info { flex: 1; display: flex; flex-direction: column; }
+  .tp-crew-name { font-size: 13px; font-weight: 700; color: #1e293b; }
+  .tp-crew-role { font-size: 11px; color: #94a3b8; font-weight: 500; }
+  .tp-crew-number { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #94a3b8; font-weight: 600; }
+
+  /* ── Footer Clearance Protocol ── */
+  .tp-footer-protocol {
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    backdrop-filter: blur(8px);
+    border-radius: 16px;
+    padding: 24px;
+  }
+  .tp-stamp-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .tp-digital-stamp { display: flex; align-items: center; gap: 12px; }
+  .tp-stamp-icon { font-size: 24px; }
+  .tp-digital-stamp strong { display: block; font-size: 12px; color: #334155; font-weight: 800; }
+  .tp-digital-stamp p { margin: 0; font-size: 11px; color: #94a3b8; font-weight: 500; }
+  .tp-island-icon { font-size: 22px; filter: grayscale(0.2); }
+  
+  .tp-protocol-text { margin: 0; font-size: 12px; color: #64748b; line-height: 1.6; }
+
+  /* ── Responsive Optimization ── */
   @media (max-width: 640px) {
-    .tp-wrap { padding: 40px 16px 60px; }
-    .tp-manifest-main, .tp-manifest-sidebar { padding: 28px; }
-    .tp-manifest-sidebar { border-left: none; border-top: 1px solid rgba(255, 255, 255, 0.05); }
-    .tp-pipeline-container { padding: 32px 16px; }
-    .tp-track-lane { margin-left: 0px; padding-left: 24px; }
-    .tp-node-indicator { left: -31px; }
-    .tp-terminal-dot { margin-left: -29px; }
-    .tp-crew-deck { grid-template-columns: 1fr; }
-    .tp-grid-stats { grid-template-columns: repeat(2, 1fr); }
+    .tp-manifest-main, .tp-manifest-ticket-stub { padding: 24px; }
+    .tp-manifest-ticket-stub { border-left: none; border-top: 2px dashed #e2e8f0; }
+    .tp-manifest-ticket-stub::before, .tp-manifest-ticket-stub::after { left: auto; top: -10px; }
+    .tp-manifest-ticket-stub::before { left: -10px; }
+    .tp-manifest-ticket-stub::after { right: -10px; }
+    .tp-pipeline-panel { padding: 16px; }
+    .tp-map-track { display: none; } /* Hide map visualization on mobile grids */
+    .tp-metrics-grid { grid-template-columns: repeat(2, 1fr); }
   }
 `;
