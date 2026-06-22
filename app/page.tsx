@@ -14,6 +14,14 @@ const IconContact = () => <svg width="17" height="17" viewBox="0 0 24 24" fill="
 const IconAdmin   = () => <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l4 4h4v6c0 6-4 10-8 10s-8-4-8-10V6h4l4-4z"/><path d="M8 14h8"/><path d="M12 10v4"/></svg>;
 const IconChevron = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>;
 const IconBus     = () => <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="5" width="20" height="14" rx="3"/><line x1="2" y1="10" x2="22" y2="10"/><circle cx="7" cy="19" r="1"/><circle cx="17" cy="19" r="1"/><line x1="12" y1="5" x2="12" y2="10"/></svg>;
+const IconTeam = () => (<svg width="17"   height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+  >
+    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+    <circle cx="9" cy="7" r="4" />
+    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+  </svg>
+);
 
 export default function HomePage() {
   const router = useRouter();
@@ -28,6 +36,7 @@ export default function HomePage() {
 
   const navItems = [
     { label: "Home",                    icon: <IconHome />,    action: () => router.push("/") },
+    { label: "Meet the Team",           icon: <IconTeam />,    action: () => router.push("/team")},
     { label: "Request Transportation",  icon: <IconRequest />, action: () => router.push("/request") },
     { label: "Barge Schedule & Trips",  icon: <IconBarge />,   action: () => router.push("/attendee") },
     { label: "Track My Request",        icon: <IconTrack />,   action: () => window.open("https://isla-transpo.vercel.app/track", "_blank") },
