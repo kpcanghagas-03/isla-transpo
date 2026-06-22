@@ -20,7 +20,7 @@ const DEPARTMENTS: Department[] = [
     id: "development",
     label: "System Development",
     accent: "#F27A35",
-    members: ["Karen P. Canghagas", "Arjay A. Charcos"],
+    members: ["Karen P.Canghagas", "Arjay A. Charcos"],
   },
   {
     id: "operations",
@@ -59,102 +59,91 @@ export default function TeamPage() {
     <main className="tp-page">
       <style jsx>{CSS}</style>
 
-      {/* Camiguin ambient layers */}
-      <div className="tp-sea" />
-      <div className="tp-volcanoGlow" />
+      {/* faint corner color, borrowed straight from the homepage's decorations */}
+      <div className="tp-blob tp-blob-tr" />
+      <div className="tp-blob tp-blob-bl" />
 
       <div className="tp-wrap">
         <button className="tp-back" onClick={() => router.push("/")}>
-          ← Return to Home
+          ← Back to Home
         </button>
 
-        {/* HERO PASS */}
+        {/* ================= HERO TICKET ================= */}
         <div className="tp-ticket">
           <span className="tp-notchL" />
           <span className="tp-notchR" />
 
           <div className="tp-ticketMain">
-            <span className="tp-eyebrow">TRANSPO SA ISLA • CAMIGUIN ROUTE PASS</span>
+            <span className="tp-eyebrow"> TRANSPO SA ISLA</span>
             <h1 className="tp-title">Transportation Team</h1>
             <p className="tp-subcopy">
-              A coordinated island expedition network built for RSTW 2026.
-              Every member here is part of the movement behind Camiguin’s transport flow.
+              Behind every request, route, and pickup is a person working the
+              line. Meet the Team keeping ISLA-TRANSPO moving for RSTW 2026
+              on Camiguin Island.
             </p>
           </div>
 
           <div className="tp-stub">
             <div>
               <span className="tp-stubLabel">Route</span>
-              <span className="tp-stubValue">Camiguin → RSTW 2026</span>
+              <span className="tp-stubValue">CMG → RSTW26</span>
             </div>
             <div>
-              <span className="tp-stubLabel">Window</span>
-              <span className="tp-stubValue">JUL 22–24</span>
+              <span className="tp-stubLabel">Dates</span>
+              <span className="tp-stubValue">JUL 22–24, 2026</span>
             </div>
             <div>
-              <span className="tp-stubLabel">Crew</span>
-              <span className="tp-stubValue">{String(totalCrew).padStart(2, "0")} OPERATIVES</span>
+              <span className="tp-stubLabel">Members</span>
+              <span className="tp-stubValue">{String(totalCrew).padStart(2, "0")} ABOARD</span>
             </div>
           </div>
         </div>
 
-        {/* STATS */}
+        {/* ================= GATE STATS ================= */}
         <div className="tp-gates">
           <div className="tp-gate">
-            <span className="tp-gateVal c-blue">{totalCrew}</span>
+            <span className="tp-gateVal" style={{ color: "#1F5AA6" }}>{totalCrew}</span>
             <span className="tp-gateLabel">Team members</span>
           </div>
           <div className="tp-gate">
-            <span className="tp-gateVal c-orange">{stops.length}</span>
+            <span className="tp-gateVal" style={{ color: "#F27A35" }}>{stops.length}</span>
             <span className="tp-gateLabel">Departments</span>
           </div>
           <div className="tp-gate">
-            <span className="tp-gateVal c-red">1</span>
-            <span className="tp-gateLabel">Unified system</span>
+            <span className="tp-gateVal" style={{ color: "#A61E22" }}>1</span>
+            <span className="tp-gateLabel">Shared mission</span>
           </div>
           <div className="tp-gate">
-            <span className="tp-gateVal c-blue">∞</span>
+            <span className="tp-gateVal" style={{ color: "#1F5AA6" }}>∞</span>
             <span className="tp-gateLabel">Commitment</span>
           </div>
         </div>
 
-        {/* ROUTE */}
+        {/* ================= ROUTE / ROSTER ================= */}
         <div className="tp-routePanel">
           <div className="tp-route">
             {stops.map((stop, i) => (
               <section className="tp-stop" key={stop.id}>
                 <span className="tp-stopDot" style={{ background: stop.accent }} />
-
                 <span className="tp-stopEyebrow" style={{ color: stop.accent }}>
-                  STATION {String(i + 1).padStart(2, "0")}
+                  STOP {String(i + 1).padStart(2, "0")}
                 </span>
-
                 <h2 className="tp-stopTitle">{stop.label}</h2>
 
                 <div className="tp-crewGrid">
                   {stop.crew.map((person) => (
                     <article className="tp-badge" key={person.name}>
                       <div className="tp-badgeTop">
-                        <span
-                          className="tp-badgeSeal"
-                          style={{
-                            background: `${stop.accent}22`,
-                            color: stop.accent,
-                            boxShadow: `0 0 0 6px ${stop.accent}10`,
-                          }}
-                        >
+                        <span className="tp-badgeSeal" style={{ background: `${stop.accent}1c`, color: stop.accent }}>
                           {initials(person.name)}
                         </span>
-
                         <span className="tp-badgeNo">
-                          {String(person.no).padStart(2, "0")} / {String(totalCrew).padStart(2, "0")}
+                          {String(person.no).padStart(2, "0")}/{String(totalCrew).padStart(2, "0")}
                         </span>
                       </div>
-
                       <h3 className="tp-badgeName">{person.name}</h3>
-
-                      <div className="tp-badgeFoot" style={{ color: stop.accent }}>
-                        {stop.label}
+                      <div className="tp-badgeFoot">
+                        <span style={{ color: stop.accent }}>{stop.label}</span>
                       </div>
                     </article>
                   ))}
@@ -162,17 +151,21 @@ export default function TeamPage() {
               </section>
             ))}
 
-            <div className="tp-endOfLine">END OF LINE</div>
+            <div className="tp-endOfLine">
+              <span className="tp-endDot" />
+              <span>END OF LINE</span>
+            </div>
           </div>
         </div>
 
-        {/* THANK YOU */}
+        {/* ================= THANK YOU ================= */}
         <div className="tp-thanks">
-          <span className="tp-stamp">CAMIGUIN VERIFIED</span>
-          <h2 className="tp-thanksTitle">Thank You Crew</h2>
+          <span className="tp-stamp">VALIDATED</span>
+          <h2 className="tp-thanksTitle">Thank You</h2>
           <p className="tp-thanksCopy">
-            Every route coordinated, every passenger assisted, and every operation executed
-            is part of a unified island transport effort.
+            Every request fulfilled, every attendee assisted, and every trip
+            coordinated reflects the work of the people on this.
+
           </p>
         </div>
       </div>
@@ -181,236 +174,219 @@ export default function TeamPage() {
 }
 
 const CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
 
-.tp-page {
-  position: relative;
-  min-height: 100vh;
-  overflow: hidden;
-  background: radial-gradient(circle at top, #ffffff 0%, #f6fbff 40%, #ffffff 100%);
-  font-family: system-ui, sans-serif;
-}
+  .tp-page {
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+    background: linear-gradient(180deg,#ffffff 0%,#f8fafc 50%,#ffffff 100%);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+  }
 
-/* Camiguin atmosphere */
-.tp-sea {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 20% 10%, rgba(31,90,166,0.12), transparent 40%),
-              radial-gradient(circle at 80% 90%, rgba(242,122,53,0.10), transparent 45%);
-  pointer-events: none;
-}
+  .tp-blob {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.07;
+    pointer-events: none;
+  }
+  .tp-blob-tr { top: -90px; right: -90px; width: 320px; height: 320px; background: conic-gradient(#F27A35,#A61E22,#1F5AA6,#F27A35); }
+  .tp-blob-bl { bottom: -120px; left: -120px; width: 350px; height: 350px; background: conic-gradient(#1F5AA6,#F27A35,#A61E22,#1F5AA6); }
 
-.tp-volcanoGlow {
-  position: absolute;
-  width: 500px;
-  height: 500px;
-  top: -200px;
-  right: -200px;
-  background: conic-gradient(#F27A35,#A61E22,#1F5AA6,#F27A35);
-  opacity: 0.05;
-  filter: blur(40px);
-}
+  .tp-wrap { max-width: 880px; margin: 0 auto; padding: 56px 20px 80px; position: relative; z-index: 2; }
 
-/* layout */
-.tp-wrap {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 56px 20px;
-  position: relative;
-  z-index: 2;
-}
+  .tp-back {
+    border: none; cursor: pointer; background: #fff;
+    padding: 9px 18px; border-radius: 999px;
+    color: #1F5AA6; font-weight: 700; font-size: 13px;
+    box-shadow: 0 4px 14px rgba(0,0,0,.08);
+    margin-bottom: 28px;
+  }
+  .tp-back:focus-visible { outline: 2px solid #F27A35; outline-offset: 3px; }
 
-.tp-back {
-  background: white;
-  border: 1px solid #e5e7eb;
-  padding: 10px 16px;
-  border-radius: 999px;
-  font-weight: 600;
-  cursor: pointer;
-  margin-bottom: 24px;
-}
+  /* ── Hero ticket ── */
+  .tp-ticket {
+    position: relative;
+    background: #fff;
+    border: 1.5px dashed #FDBA74;
+    border-radius: 26px;
+    box-shadow: 0 18px 44px rgba(0,0,0,.07);
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+  .tp-ticketMain { padding: 40px 36px 28px; }
+  .tp-eyebrow {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    color: #EA580C;
+    background: #FFF7ED;
+    border: 1px solid #FDBA74;
+    border-radius: 999px;
+    padding: 4px 12px;
+    margin-bottom: 18px;
+  }
+  .tp-title {
+    font-family: 'Oswald', sans-serif;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    font-size: clamp(32px, 6vw, 52px);
+    line-height: 1.05;
+    margin: 0 0 14px;
+    background: linear-gradient(90deg,#F27A35,#A61E22,#1F5AA6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .tp-subcopy { color: #64748B; line-height: 1.75; font-size: 15px; max-width: 560px; margin: 0; }
 
-/* HERO */
-.tp-ticket {
-  background: rgba(255,255,255,0.9);
-  backdrop-filter: blur(10px);
-  border: 1px solid #f0d7c3;
-  border-radius: 26px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.08);
-  overflow: hidden;
-}
+  .tp-stub {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: space-between;
+    background: #FFF7ED;
+    border-top: 1.5px dashed #FDBA74;
+    padding: 18px 36px;
+  }
+  .tp-stub > div { display: flex; flex-direction: column; gap: 3px; }
+  .tp-stubLabel { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: #C2783D; font-weight: 700; }
+  .tp-stubValue { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #EA580C; font-weight: 600; }
 
-.tp-ticketMain {
-  padding: 42px 36px 24px;
-}
+  .tp-notchL, .tp-notchR {
+    position: absolute;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: #f8fafc;
+    z-index: 3;
+  }
+  .tp-notchL { left: -11px; }
+  .tp-notchR { right: -11px; }
 
-.tp-eyebrow {
-  font-family: IBM Plex Mono;
-  font-size: 11px;
-  letter-spacing: .14em;
-  color: #EA580C;
-}
+  /* ── Gate stats ── */
+  .tp-gates {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin-bottom: 36px;
+  }
+  .tp-gate {
+    background: #FFF7ED;
+    border: 1px dashed #FDBA74;
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .tp-gateVal { font-family: 'IBM Plex Mono', monospace; font-weight: 600; font-size: 24px; }
+  .tp-gateLabel { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #94806B; }
 
-.tp-title {
-  font-family: Oswald;
-  font-size: 46px;
-  margin: 12px 0;
-  background: linear-gradient(90deg,#1F5AA6,#F27A35,#A61E22);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
+  /* ── Route panel ── */
+  .tp-routePanel {
+    background: #FFF7ED;
+    border: 1px solid #FDBA74;
+    border-radius: 28px;
+    padding: 36px 32px;
+    margin-bottom: 28px;
+  }
+  .tp-route {
+    position: relative;
+    margin-left: 6px;
+    padding-left: 30px;
+    border-left: 3px dashed #F2A35F;
+  }
+  .tp-stop { position: relative; margin-bottom: 48px; }
+  .tp-stop:last-of-type { margin-bottom: 24px; }
 
-.tp-subcopy {
-  color: #64748B;
-  max-width: 600px;
-  line-height: 1.7;
-}
+  .tp-stopDot {
+    position: absolute;
+    left: -39px;
+    top: 3px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    box-shadow: 0 0 0 5px #FFF7ED;
+  }
+  .tp-stopEyebrow {
+    display: block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+  .tp-stopTitle {
+    font-family: 'Oswald', sans-serif;
+    text-transform: uppercase;
+    font-size: clamp(18px, 3vw, 22px);
+    color: #1F2937;
+    margin: 0 0 16px;
+  }
 
-/* stub */
-.tp-stub {
-  display: flex;
-  justify-content: space-between;
-  padding: 18px 36px;
-  background: #fff4e8;
-  border-top: 1px dashed #f2b38a;
-}
+  .tp-crewGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
 
-.tp-stubLabel {
-  font-size: 10px;
-  color: #b45309;
-}
+  .tp-badge {
+    position: relative;
+    background: #fff;
+    border-radius: 14px;
+    padding: 16px 16px 12px;
+    box-shadow: 0 6px 16px rgba(0,0,0,.05);
+  }
+  .tp-badgeTop { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .tp-badgeSeal {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 13px;
+  }
+  .tp-badgeNo { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #94A3B8; }
+  .tp-badgeName { font-size: 14px; font-weight: 600; color: #0F172A; margin: 0 0 8px; line-height: 1.4; }
+  .tp-badgeFoot {
+    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+    border-top: 1px dashed #E5DACB; padding-top: 8px;
+  }
 
-.tp-stubValue {
-  font-family: IBM Plex Mono;
-  color: #ea580c;
-}
+  .tp-endOfLine {
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; letter-spacing: 0.1em; color: #C2783D;
+  }
+  .tp-endDot {
+    width: 11px; height: 11px; border-radius: 50%;
+    border: 2px solid #F2A35F; margin-left: -34px;
+  }
 
-/* stats */
-.tp-gates {
-  display: grid;
-  grid-template-columns: repeat(4,1fr);
-  gap: 12px;
-  margin: 28px 0;
-}
+  /* ── Thank you ── */
+  .tp-thanks {
+    position: relative;
+    background: #fff;
+    border-radius: 24px;
+    padding: 36px 32px;
+    text-align: center;
+    box-shadow: 0 10px 28px rgba(0,0,0,.07);
+  }
+  .tp-stamp {
+    position: absolute; top: 20px; right: 22px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.1em;
+    color: #1F5AA6; border: 1.5px solid #1F5AA6; border-radius: 999px;
+    padding: 4px 10px; transform: rotate(8deg);
+  }
+  .tp-thanksTitle { font-family: 'Oswald', sans-serif; text-transform: uppercase; font-size: 24px; margin: 0 0 12px; color: #0F172A; }
+  .tp-thanksCopy { color: #64748B; line-height: 1.75; max-width: 560px; margin: 0 auto; font-size: 14px; }
 
-.tp-gate {
-  background: white;
-  border: 1px dashed #e5e7eb;
-  padding: 14px;
-  border-radius: 14px;
-}
-
-.tp-gateVal {
-  font-family: IBM Plex Mono;
-  font-size: 22px;
-}
-
-.c-blue { color:#1F5AA6 }
-.c-orange { color:#F27A35 }
-.c-red { color:#A61E22 }
-
-.tp-gateLabel {
-  font-size: 11px;
-  color: #6b7280;
-}
-
-/* route */
-.tp-routePanel {
-  background: #fffaf5;
-  border-radius: 26px;
-  padding: 34px;
-  border: 1px solid #f2c9a8;
-}
-
-.tp-route {
-  border-left: 3px dashed #f2a35f;
-  padding-left: 26px;
-}
-
-.tp-stop {
-  margin-bottom: 42px;
-  position: relative;
-}
-
-.tp-stopDot {
-  position: absolute;
-  left: -34px;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-}
-
-.tp-stopTitle {
-  font-family: Oswald;
-  text-transform: uppercase;
-}
-
-.tp-crewGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill,minmax(220px,1fr));
-  gap: 12px;
-  margin-top: 14px;
-}
-
-.tp-badge {
-  background: white;
-  border-radius: 14px;
-  padding: 14px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-  transition: 0.25s ease;
-}
-
-.tp-badge:hover {
-  transform: translateY(-3px);
-}
-
-.tp-badgeSeal {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:700;
-}
-
-.tp-badgeName {
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.tp-endOfLine {
-  text-align:center;
-  margin-top: 20px;
-  font-family: IBM Plex Mono;
-  color: #c2410c;
-}
-
-/* thanks */
-.tp-thanks {
-  margin-top: 26px;
-  text-align: center;
-  padding: 30px;
-  background: white;
-  border-radius: 22px;
-}
-
-.tp-stamp {
-  font-family: IBM Plex Mono;
-  border: 1px solid #1F5AA6;
-  padding: 4px 10px;
-  font-size: 11px;
-  position: absolute;
-  right: 30px;
-  top: 20px;
-}
-
-.tp-thanksTitle {
-  font-family: Oswald;
-}
-
-/* mobile */
-@media (max-width:640px){
-  .tp-gates{grid-template-columns:1fr 1fr}
-}
+  /* ── Mobile ── */
+  @media (max-width: 640px) {
+    .tp-wrap { padding: 40px 14px 56px; }
+    .tp-ticketMain { padding: 30px 22px 22px; }
+    .tp-stub { padding: 16px 22px; }
+    .tp-routePanel { padding: 26px 18px; }
+    .tp-route { margin-left: 2px; padding-left: 22px; }
+    .tp-stopDot { left: -31px; }
+    .tp-endDot { margin-left: -26px; }
+    .tp-crewGrid { grid-template-columns: 1fr; }
+    .tp-gates { grid-template-columns: repeat(2, 1fr); }
+  }
 `;
