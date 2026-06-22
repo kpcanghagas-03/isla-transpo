@@ -90,6 +90,8 @@ export default function App() {
   const [fetching, setFetching] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [filter, setFilter] = useState<"all" | "open" | "cancel">("all");
+  const [confirmDeleteCode, setConfirmDeleteCode] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   // INITIAL LOAD
@@ -296,6 +298,28 @@ export default function App() {
     }
   };
 
+  // Deletes every message in a thread (the whole conversation for that request_code).
+  const deleteThread = async (code: string) => {
+    setDeleting(true);
+
+    // Optimistic removal from the UI first.
+    const snapshot = threads;
+    setThreads((prev) => prev.filter((t) => t.request_code !== code));
+    if (activeCode === code) setActiveCode(null);
+
+    const { error } = await supabase.from("admin_messages").delete().eq("request_code", code);
+
+    setDeleting(false);
+    setConfirmDeleteCode(null);
+
+    if (error) {
+      console.error("Failed to delete thread:", error);
+      // Roll back if it failed on the server.
+      setThreads(snapshot);
+      alert("Couldn't delete this conversation: " + error.message);
+    }
+  };
+
   const filteredThreads = threads.filter((t) => {
     if (filter === "cancel") return t.subject?.toLowerCase().includes("cancel");
     if (filter === "open") return t.hasUnread;
@@ -364,35 +388,79 @@ export default function App() {
           {filteredThreads.map((t) => {
             const isCancel = t.subject?.toLowerCase().includes("cancel");
             const last = t.messages[t.messages.length - 1];
+            const isConfirming = confirmDeleteCode === t.request_code;
+
             return (
-              <button
-                key={t.request_code}
-                className={`adm-thread-item ${activeCode === t.request_code ? "adm-thread-active" : ""}`}
-                onClick={() => openThread(t.request_code)}
-              >
-                <div className="adm-thread-top">
-                  <span className="adm-thread-identity">
-                    {t.senderName ? `${t.senderName} · ${t.request_code}` : t.request_code}
-                  </span>
-                  <span className="adm-thread-time">{timeLabel(t.lastAt)}</span>
-                </div>
-                <div className="adm-thread-bottom">
-                  <span
-                    className="adm-subject-badge"
-                    style={{
-                      background: isCancel ? "#FEF2F2" : "#EFF6FF",
-                      color: isCancel ? "#DC2626" : "#1D4ED8",
-                    }}
-                  >
-                    {t.subject || "Concern"}
-                  </span>
-                  {t.hasUnread && <span className="adm-unread-dot" />}
-                </div>
-                <p className="adm-thread-preview">
-                  {last?.message.slice(0, 60)}
-                  {(last?.message.length || 0) > 60 ? "…" : ""}
-                </p>
-              </button>
+              <div key={t.request_code} className="adm-thread-wrap">
+                <button
+                  className={`adm-thread-item ${activeCode === t.request_code ? "adm-thread-active" : ""}`}
+                  onClick={() => openThread(t.request_code)}
+                >
+                  <div className="adm-thread-top">
+                    <span className="adm-thread-identity">
+                      {t.senderName ? `${t.senderName} · ${t.request_code}` : t.request_code}
+                    </span>
+                    <span className="adm-thread-time">{timeLabel(t.lastAt)}</span>
+                  </div>
+                  <div className="adm-thread-bottom">
+                    <span
+                      className="adm-subject-badge"
+                      style={{
+                        background: isCancel ? "#FEF2F2" : "#EFF6FF",
+                        color: isCancel ? "#DC2626" : "#1D4ED8",
+                      }}
+                    >
+                      {t.subject || "Concern"}
+                    </span>
+                    {t.hasUnread && <span className="adm-unread-dot" />}
+                  </div>
+                  <p className="adm-thread-preview">
+                    {last?.message.slice(0, 60)}
+                    {(last?.message.length || 0) > 60 ? "…" : ""}
+                  </p>
+                </button>
+
+                <button
+                  className="adm-thread-delete-btn"
+                  aria-label="Delete conversation"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setConfirmDeleteCode(t.request_code);
+                  }}
+                >
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="3 6 5 6 21 6" />
+                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                    <path d="M10 11v6" />
+                    <path d="M14 11v6" />
+                    <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+                  </svg>
+                </button>
+
+                {isConfirming && (
+                  <div className="adm-confirm-popover">
+                    <p className="adm-confirm-text">
+                      Delete this entire conversation? This can't be undone.
+                    </p>
+                    <div className="adm-confirm-row">
+                      <button
+                        className="adm-confirm-cancel"
+                        onClick={() => setConfirmDeleteCode(null)}
+                        disabled={deleting}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        className="adm-confirm-delete"
+                        onClick={() => deleteThread(t.request_code)}
+                        disabled={deleting}
+                      >
+                        {deleting ? "Deleting…" : "Delete"}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             );
           })}
         </div>
@@ -435,7 +503,42 @@ export default function App() {
               >
                 {activeThread.subject || "Concern"}
               </span>
+              <button
+                className="adm-chat-delete-btn"
+                onClick={() => setConfirmDeleteCode(activeThread.request_code)}
+                aria-label="Delete conversation"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                  <path d="M10 11v6" />
+                  <path d="M14 11v6" />
+                  <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+                </svg>
+              </button>
             </div>
+
+            {confirmDeleteCode === activeThread.request_code && (
+              <div className="adm-chat-confirm-bar">
+                <span>Delete this entire conversation? This can't be undone.</span>
+                <div className="adm-confirm-row">
+                  <button
+                    className="adm-confirm-cancel"
+                    onClick={() => setConfirmDeleteCode(null)}
+                    disabled={deleting}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="adm-confirm-delete"
+                    onClick={() => deleteThread(activeThread.request_code)}
+                    disabled={deleting}
+                  >
+                    {deleting ? "Deleting…" : "Delete"}
+                  </button>
+                </div>
+              </div>
+            )}
 
             <div className="adm-messages">
               {activeThread.messages.map((msg) => (
@@ -533,12 +636,44 @@ const CSS = `
   }
   .adm-filter-active { background: rgba(255,255,255,0.22); color: white; }
   .adm-thread-list { flex: 1; overflow-y: auto; padding: 8px; }
+  .adm-thread-wrap { position: relative; margin-bottom: 4px; }
   .adm-thread-item {
-    display: block; width: 100%; padding: 12px; border-radius: 10px; border: none;
-    background: transparent; text-align: left; cursor: pointer; margin-bottom: 4px;
+    display: block; width: 100%; padding: 12px 38px 12px 12px; border-radius: 10px; border: none;
+    background: transparent; text-align: left; cursor: pointer;
   }
   .adm-thread-item:hover { background: rgba(255,255,255,0.08); }
   .adm-thread-active { background: rgba(255,255,255,0.15) !important; }
+  .adm-thread-delete-btn {
+    position: absolute;
+    top: 10px;
+    right: 8px;
+    width: 26px; height: 26px;
+    border-radius: 7px;
+    border: none;
+    background: transparent;
+    color: rgba(255,255,255,0.4);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .adm-thread-delete-btn:hover { background: rgba(220,38,38,0.25); color: #FCA5A5; }
+  .adm-confirm-popover {
+    margin: 4px 4px 8px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: #1E3A8A;
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+  .adm-confirm-text { margin: 0 0 8px; font-size: 12px; color: rgba(255,255,255,0.85); line-height: 1.4; }
+  .adm-confirm-row { display: flex; gap: 8px; justify-content: flex-end; }
+  .adm-confirm-cancel {
+    padding: 6px 12px; border-radius: 7px; border: 1px solid rgba(255,255,255,0.3);
+    background: transparent; color: white; font-size: 12px; font-weight: 600; cursor: pointer;
+  }
+  .adm-confirm-delete {
+    padding: 6px 12px; border-radius: 7px; border: none;
+    background: #DC2626; color: white; font-size: 12px; font-weight: 700; cursor: pointer;
+  }
+  .adm-confirm-cancel:disabled, .adm-confirm-delete:disabled { opacity: 0.6; cursor: not-allowed; }
   .adm-thread-top {
     display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 5px;
   }
@@ -591,6 +726,17 @@ const CSS = `
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .adm-chat-head-meta { margin: 0; font-size: 12px; color: #64748B; }
+  .adm-chat-delete-btn {
+    width: 34px; height: 34px; border-radius: 9px; border: 1px solid #FCA5A5;
+    background: #FEF2F2; color: #DC2626; cursor: pointer; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .adm-chat-delete-btn:hover { background: #FEE2E2; }
+  .adm-chat-confirm-bar {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    padding: 10px 24px; background: #FEF2F2; border-bottom: 1px solid #FCA5A5;
+    font-size: 13px; color: #991B1B; flex-shrink: 0;
+  }
   .adm-messages { flex: 1; overflow-y: auto; padding: 20px 24px; background: #F8FAFC; }
   .adm-msg-row { display: flex; flex-direction: column; margin-bottom: 14px; }
   .adm-msg-meta { font-size: 11px; color: #94A3B8; margin-bottom: 3px; }
