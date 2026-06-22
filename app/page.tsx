@@ -415,7 +415,7 @@ export default function HomePage() {
               onMouseEnter={(e) => { e.currentTarget.style.transform="translateY(-2px)"; e.currentTarget.style.background="#FEF2F2"; }}
               onMouseLeave={(e) => { e.currentTarget.style.transform="translateY(0)"; e.currentTarget.style.background="white"; }}
             >
-              <IconContact /> Contact / Concerns
+              <IconContact /> Contact Support
             </a>
           </div>
         </section>
