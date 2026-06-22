@@ -203,9 +203,15 @@ const CSS = `
   .tp-wrap {
     max-width: 1040px;
     margin: 0 auto;
-    padding: 24px 20px 80px;
+    padding: 16px 12px 60px;
     position: relative;
     z-index: 2;
+  }
+
+  @media (min-width: 640px) {
+    .tp-wrap {
+      padding: 24px 20px 80px;
+    }
   }
 
   /* ── Navigation Bar ── */
@@ -216,23 +222,40 @@ const CSS = `
     background: rgba(255, 255, 255, 0.75);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.5);
-    padding: 14px 24px;
+    padding: 12px 16px;
     border-radius: 16px;
-    margin-bottom: 32px;
+    margin-bottom: 24px;
     box-shadow: 0 4px 20px rgba(14, 165, 233, 0.05);
   }
+  
+  @media (min-width: 640px) {
+    .tp-navbar {
+      padding: 14px 24px;
+      margin-bottom: 32px;
+    }
+  }
+
   .tp-logo-zone { display: flex; align-items: center; gap: 8px; }
   .tp-logo-icon { font-size: 20px; }
-  .tp-logo-text { font-weight: 800; tracking: 0.02em; color: #0f172a; font-size: 16px; }
-  .tp-nav-links { display: flex; align-items: center; gap: 24px; }
-  .tp-nav-item { font-size: 14px; font-weight: 600; color: #64748b; cursor: pointer; }
+  .tp-logo-text { font-weight: 800; tracking: 0.02em; color: #0f172a; font-size: 14px; }
+  @media (min-width: 640px) { .tp-logo-text { font-size: 16px; } }
+  
+  .tp-nav-links { display: flex; align-items: center; gap: 16px; }
+  @media (min-width: 640px) { .tp-nav-links { gap: 24px; } }
+  
+  .tp-nav-item { font-size: 13px; font-weight: 600; color: #64748b; cursor: pointer; }
   .tp-nav-item.active { color: #0ea5e9; }
   
   .tp-terminal-btn {
     background: #0ea5e9; color: #fff; border: none;
-    padding: 8px 16px; font-weight: 600; font-size: 13px;
+    padding: 6px 12px; font-weight: 600; font-size: 12px;
     border-radius: 10px; cursor: pointer; box-shadow: 0 4px 12px rgba(14, 165, 233, 0.25);
     transition: transform 0.2s;
+  }
+  @media (min-width: 640px) {
+    .tp-terminal-btn {
+      padding: 8px 16px; font-size: 13px;
+    }
   }
   .tp-terminal-btn:hover { transform: translateY(-1px); background: #0284c7; }
 
@@ -249,11 +272,20 @@ const CSS = `
     border: 1px solid rgba(14, 165, 233, 0.15);
     box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     overflow: hidden;
-    margin-bottom: 32px;
+    margin-bottom: 24px;
   }
-  .tp-manifest-main { flex: 1; min-width: 300px; padding: 36px; }
+  
+  @media (min-width: 768px) {
+    .tp-manifest-card {
+      flex-direction: row;
+      margin-bottom: 32px;
+    }
+  }
+
+  .tp-manifest-main { flex: 1; padding: 24px; }
+  @media (min-width: 640px) { .tp-manifest-main { padding: 36px; } }
   
   .tp-live-tracker {
     display: inline-flex; align-items: center; gap: 6px;
@@ -267,28 +299,50 @@ const CSS = `
   }
   @keyframes flash { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
 
-  .tp-title { font-size: clamp(28px, 4vw, 38px); font-weight: 800; color: #0f172a; margin: 0 0 12px; letter-spacing: -0.02em; }
-  .tp-subcopy { color: #64748b; font-size: 14.5px; line-height: 1.6; margin: 0; max-width: 620px; }
+  .tp-title { font-size: clamp(24px, 4vw, 36px); font-weight: 800; color: #0f172a; margin: 0 0 12px; letter-spacing: -0.02em; }
+  .tp-subcopy { color: #64748b; font-size: 14px; line-height: 1.6; margin: 0; max-width: 620px; }
+  @media (min-width: 640px) { .tp-subcopy { font-size: 14.5px; } }
 
   .tp-manifest-ticket-stub {
     background: #f8fafc;
-    border-left: 2px dashed #e2e8f0;
-    padding: 36px;
+    border-top: 2px dashed #e2e8f0;
+    padding: 24px;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 20px;
-    min-width: 240px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 16px;
     position: relative;
   }
+  
+  @media (min-width: 768px) {
+    .tp-manifest-ticket-stub {
+      flex-direction: column;
+      justify-content: center;
+      border-top: none;
+      border-left: 2px dashed #e2e8f0;
+      min-width: 240px;
+      padding: 36px;
+      gap: 20px;
+    }
+  }
+
   /* Decorative Ticket Cutouts */
   .tp-manifest-ticket-stub::before, .tp-manifest-ticket-stub::after {
-    content: ''; position: absolute; left: -10px; width: 20px; height: 20px; background: #ffedd5; border-radius: 50%;
+    content: ''; position: absolute; background: #ffedd5; border-radius: 50%;
   }
-  .tp-manifest-ticket-stub::before { top: -10px; }
-  .tp-manifest-ticket-stub::after { bottom: -10px; }
+  
+  @media (max-width: 767px) {
+    .tp-manifest-ticket-stub::before { top: -10px; left: -10px; width: 20px; height: 20px; }
+    .tp-manifest-ticket-stub::after { top: -10px; right: -10px; width: 20px; height: 20px; }
+  }
 
-  .tp-meta-item { display: flex; flex-direction: column; gap: 2px; }
+  @media (min-width: 768px) {
+    .tp-manifest-ticket-stub::before { top: -10px; left: -10px; width: 20px; height: 20px; }
+    .tp-manifest-ticket-stub::after { bottom: -10px; left: -10px; width: 20px; height: 20px; }
+  }
+
+  .tp-meta-item { display: flex; flex-direction: column; gap: 2px; min-width: 100px; }
   .tp-meta-label { font-size: 10px; font-weight: 700; color: #94a3b8; letter-spacing: 0.05em; }
   .tp-meta-val { font-size: 13px; font-weight: 700; color: #334155; }
   .tp-meta-val.highlights { color: #f97316; }
@@ -299,33 +353,20 @@ const CSS = `
     letter-spacing: 0.06em; margin: 0 0 16px 4px;
   }
 
-  /* ── Metrics Row ── */
-  .tp-metrics-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px;
-    margin-bottom: 36px;
-  }
-  .tp-metric-box {
-    background: rgba(255, 255, 255, 0.8);
-    border: 1px solid #e2e8f0;
-    border-radius: 14px;
-    padding: 20px;
-    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.01);
-  }
-  .tp-metric-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-  .tp-metric-num { font-size: 26px; font-weight: 800; color: #0f172a; }
-  .tp-metric-icon { font-size: 18px; }
-  .tp-metric-label { font-size: 12.5px; font-weight: 600; color: #64748b; }
-
   /* ── Transit Pipeline Tracker Panel ── */
   .tp-pipeline-panel {
     background: #ffffff;
     border-radius: 20px;
     border: 1px solid #e2e8f0;
-    padding: 32px;
-    margin-bottom: 40px;
+    padding: 16px;
+    margin-bottom: 24px;
     box-shadow: 0 10px 30px rgba(15, 23, 42, 0.02);
+  }
+  @media (min-width: 640px) {
+    .tp-pipeline-panel {
+      padding: 32px;
+      margin-bottom: 40px;
+    }
   }
 
   /* Map Progress Track CSS */
@@ -333,29 +374,56 @@ const CSS = `
     background: #f0fdf4;
     border: 1px dashed #bbf7d0;
     border-radius: 14px;
-    padding: 16px 24px;
+    padding: 12px;
     display: flex;
+    flex-direction: column;
+    gap: 12px;
     align-items: center;
-    justify-content: space-between;
-    margin-bottom: 36px;
+    margin-bottom: 24px;
   }
-  .tp-track-station { background: #fff; border: 1px solid #cbd5e1; padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; color: #475569; }
+  
+  @media (min-width: 640px) {
+    .tp-map-track {
+      flex-direction: row;
+      justify-content: space-between;
+      padding: 16px 24px;
+      margin-bottom: 36px;
+      gap: 0;
+    }
+  }
+  
+  .tp-track-station { background: #fff; border: 1px solid #cbd5e1; padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; color: #475569; width: 100%; text-align: center; }
+  @media (min-width: 640px) { .tp-track-station { width: auto; } }
+  
   .tp-track-station.active { border-color: #0ea5e9; color: #0ea5e9; background: #f0f9ff; }
   .tp-track-station.active-end { border-color: #ef4444; color: #ef4444; background: #fef2f2; }
   
   .tp-track-line-segment {
     flex: 1; height: 4px; background: linear-gradient(90deg, #0ea5e9, #f97316, #ef4444);
-    margin: 0 12px; position: relative; border-radius: 2px;
+    margin: 4px 12px; position: relative; border-radius: 2px; width: 4px; min-height: 20px;
   }
+  @media (min-width: 640px) {
+    .tp-track-line-segment {
+      width: auto; min-height: 0; margin: 0 12px;
+    }
+  }
+  
   .tp-boat-emoji { position: absolute; top: -14px; left: 40%; font-size: 14px; animation: waveFloat 3s ease-in-out infinite; }
+  @media (max-width: 639px) { .tp-boat-emoji { left: -6px; top: calc(50% - 10px); } }
   @keyframes waveFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
 
   /* Departments Stack Elements */
   .tp-departments-stack {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 24px;
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    gap: 20px;
   }
+  @media (min-width: 640px) {
+    .tp-departments-stack {
+      gap: 24px;
+    }
+  }
+  
   .tp-dept-section {
     background: #f8fafc;
     border: 1px solid #e2e8f0;
@@ -385,11 +453,12 @@ const CSS = `
     width: 34px; height: 34px; border-radius: 8px;
     display: flex; align-items: center; justify-content: center;
     font-size: 12px; font-weight: 700; margin-right: 12px;
+    flex-shrink: 0;
   }
-  .tp-crew-info { flex: 1; display: flex; flex-direction: column; }
-  .tp-crew-name { font-size: 13px; font-weight: 700; color: #1e293b; }
+  .tp-crew-info { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  .tp-crew-name { font-size: 13px; font-weight: 700; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .tp-crew-role { font-size: 11px; color: #94a3b8; font-weight: 500; }
-  .tp-crew-number { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #94a3b8; font-weight: 600; }
+  .tp-crew-number { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #94a3b8; font-weight: 600; flex-shrink: 0; }
 
   /* ── Footer Clearance Protocol ── */
   .tp-footer-protocol {
@@ -397,8 +466,10 @@ const CSS = `
     border: 1px solid rgba(226, 232, 240, 0.8);
     backdrop-filter: blur(8px);
     border-radius: 16px;
-    padding: 24px;
+    padding: 20px;
   }
+  @media (min-width: 640px) { .tp-footer-protocol { padding: 24px; } }
+  
   .tp-stamp-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
   .tp-digital-stamp { display: flex; align-items: center; gap: 12px; }
   .tp-stamp-icon { font-size: 24px; }
@@ -407,16 +478,4 @@ const CSS = `
   .tp-island-icon { font-size: 22px; filter: grayscale(0.2); }
   
   .tp-protocol-text { margin: 0; font-size: 12px; color: #64748b; line-height: 1.6; }
-
-  /* ── Responsive Optimization ── */
-  @media (max-width: 640px) {
-    .tp-manifest-main, .tp-manifest-ticket-stub { padding: 24px; }
-    .tp-manifest-ticket-stub { border-left: none; border-top: 2px dashed #e2e8f0; }
-    .tp-manifest-ticket-stub::before, .tp-manifest-ticket-stub::after { left: auto; top: -10px; }
-    .tp-manifest-ticket-stub::before { left: -10px; }
-    .tp-manifest-ticket-stub::after { right: -10px; }
-    .tp-pipeline-panel { padding: 16px; }
-    .tp-map-track { display: none; }
-    .tp-metrics-grid { grid-template-columns: repeat(2, 1fr); }
-  }
 `;
