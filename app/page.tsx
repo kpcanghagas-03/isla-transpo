@@ -379,7 +379,7 @@ export default function HomePage() {
             ISLA-TRANSPO
           </h1>
 
-          <p style={{ maxWidth:680, margin:"0 auto 22px", color:"#64748B", fontSize:"clamp(14px,2.5vw,17px)", lineHeight:1.65 }}>
+          <p style={{ maxWidth:680, margin:"0 auto 22px", color:"#64748B", fontSize:"clamp(11px,2.5vw,17px)", lineHeight:1.65 }}>
             Transportation Management System for the Regional Science, Technology and Innovation Week 2026
           </p>
 
@@ -519,6 +519,60 @@ export default function HomePage() {
                 boxShadow:"0 6px 18px rgba(0,0,0,0.12)",
               }}
             />
+          </div>
+        </section>
+            
+            <section
+          style={{
+            maxWidth: 1100,
+            margin: "30px auto",
+            padding: "0 16px",
+          }}
+        >
+          <div
+            style={{
+              background: "#fff",
+              borderRadius: 24,
+              padding: "28px",
+              boxShadow: "0 8px 24px rgba(0,0,0,.07)",
+              textAlign: "center",
+            }}
+          >
+            <h2
+              style={{
+                color: "#1F5AA6",
+                marginBottom: 12,
+                fontSize: 22,
+                fontWeight: 800,
+              }}
+            >
+              Powered By
+            </h2>
+
+            <p
+              style={{
+                color: "#64748B",
+                lineHeight: 1.8,
+                maxWidth: 850,
+                margin: "0 auto 20px",
+              }}
+            >
+              ISLA-TRANSPO is proudly developed, maintained, and operated through the
+              collective efforts of the RSTW 2026 Transportation Team.
+            </p>
+
+            <div
+              style={{
+                color: "#0F172A",
+                fontWeight: 600,
+                lineHeight: 2,
+              }}
+            >
+              John Paul T. Balistoy • Karen P. Canghagas • Arjay A. Charcos •
+              Junvee O. Barbadillo • Marc Mana • Lino A. Gorres Jr. •
+              Ramil M. Cañeda • Ernesto A. Soliva • Pablito D. Murillo •
+              Francisco F. Talle Jr. • Leonel V. Quidet
+            </div>
           </div>
         </section>
 
