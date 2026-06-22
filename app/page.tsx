@@ -31,7 +31,7 @@ export default function HomePage() {
     { label: "Request Transportation",  icon: <IconRequest />, action: () => router.push("/request") },
     { label: "Barge Schedule & Trips",  icon: <IconBarge />,   action: () => router.push("/attendee") },
     { label: "Track My Request",        icon: <IconTrack />,   action: () => window.open("https://isla-transpo.vercel.app/track", "_blank") },
-    { label: "Contact / Concerns",      icon: <IconContact />, action: () => window.open("https://isla-transpo.vercel.app/contact", "_blank") },
+    { label: "Contact Support",         icon: <IconContact />, action: () => window.open("https://isla-transpo.vercel.app/contact", "_blank") },
     { label: "Admin",                   icon: <IconAdmin/>,    action: () => window.open("https://isla-transpo.vercel.app/admin", "_blank")},
   ];
 
@@ -216,7 +216,7 @@ export default function HomePage() {
           }}>Quick Links</p>
 
           {[
-            { label:"Contact / Submit Concern", href:"https://isla-transpo.vercel.app/contact", color:"#A61E22" },
+            { label:"Contact Support", href:"https://isla-transpo.vercel.app/contact", color:"#A61E22" },
             { label:"Track My Request",         href:"https://isla-transpo.vercel.app/track",   color:"#F27A35" },
           ].map(({ label, href, color }) => (
             <a
@@ -483,7 +483,7 @@ export default function HomePage() {
           <QuickLink
             href="https://isla-transpo.vercel.app/contact"
             icon={<IconContact />}
-            title="Contact / Submit Concern"
+            title="Contact Support"
             desc="Have a concern or need to cancel your request? Reach our admin team directly."
             color="#A61E22"
           />
