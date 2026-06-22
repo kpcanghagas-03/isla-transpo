@@ -1,6 +1,6 @@
-"useclient";
+"use client";
 
-import { useRouter } from"next/navigation";
+import { useRouter } from "next/navigation";
 
 type Department = {
   id: string;
@@ -448,7 +448,7 @@ const CSS = `
     .tp-manifest-ticket-stub::before { left: -10px; }
     .tp-manifest-ticket-stub::after { right: -10px; }
     .tp-pipeline-panel { padding: 16px; }
-    .tp-map-track { display: none; } /* Hide map visualization on mobile grids */
+    .tp-map-track { display: none; }
     .tp-metrics-grid { grid-template-columns: repeat(2, 1fr); }
   }
 `;
