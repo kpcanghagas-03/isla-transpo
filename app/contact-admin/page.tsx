@@ -3,39 +3,87 @@
 import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 
+// Keep this type identical in shape to the one used in the requester-facing
+// contact page — both pages read/write the same admin_messages table.
 type Msg = {
   id: string;
   request_code: string;
+  request_id: string;
   sender: "requester" | "admin";
+  sender_name: string | null;
   subject: string | null;
   message: string;
   created_at: string;
   status: string;
-  request_id: string;
+  read_by_admin: boolean;
 };
 
 type Thread = {
   request_code: string;
   request_id: string;
   subject: string | null;
+  senderName: string | null;
   messages: Msg[];
   lastAt: string;
   hasUnread: boolean;
 };
 
-type ThreadSummary = {
-  id: string;
-  request_code: string;
-  subject: string | null;
-  status: string;
-  last_message: string | null;
-  last_message_at: string | null;
-  message_count: number;
-};
+const PH_TIME_ZONE = "Asia/Manila";
+
+function buildThreads(msgs: Msg[]): Thread[] {
+  const map = new Map<string, Thread>();
+
+  for (const m of msgs) {
+    if (!map.has(m.request_code)) {
+      map.set(m.request_code, {
+        request_code: m.request_code,
+        request_id: m.request_id,
+        subject: m.subject,
+        senderName: null,
+        messages: [],
+        lastAt: m.created_at,
+        hasUnread: false,
+      });
+    }
+
+    const t = map.get(m.request_code)!;
+    t.messages.push(m);
+
+    if (m.created_at > t.lastAt) t.lastAt = m.created_at;
+    if (m.subject) t.subject = m.subject;
+    // Always prefer the most recent name the requester gave us.
+    if (m.sender === "requester" && m.sender_name) t.senderName = m.sender_name;
+  }
+
+  for (const t of map.values()) {
+    t.messages.sort((a, b) => a.created_at.localeCompare(b.created_at));
+    // The dot is on only if there's a requester message the admin hasn't read yet.
+    t.hasUnread = t.messages.some((m) => m.sender === "requester" && !m.read_by_admin);
+  }
+
+  return Array.from(map.values()).sort((a, b) => b.lastAt.localeCompare(a.lastAt));
+}
+
+function timeLabel(iso: string) {
+  const d = new Date(iso);
+  const now = new Date();
+  const diff = now.getTime() - d.getTime();
+  if (diff < 60_000) return "just now";
+  if (diff < 3_600_000) return `${Math.floor(diff / 60_000)}m ago`;
+  if (diff < 86_400_000) return `${Math.floor(diff / 3_600_000)}h ago`;
+  return d.toLocaleDateString("en-PH", { timeZone: PH_TIME_ZONE, month: "short", day: "numeric" });
+}
+
+function timeOfDay(iso: string) {
+  return new Date(iso).toLocaleTimeString("en-PH", {
+    timeZone: PH_TIME_ZONE,
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
 
 export default function App() {
   const [threads, setThreads] = useState<Thread[]>([]);
-  const [threadList, setThreadList] = useState<ThreadSummary[]>([]);
   const [activeCode, setActiveCode] = useState<string | null>(null);
   const [reply, setReply] = useState("");
   const [loading, setLoading] = useState(false);
@@ -44,36 +92,7 @@ export default function App() {
   const [filter, setFilter] = useState<"all" | "open" | "cancel">("all");
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  // FIXED: Properly encapsulated the buildThreads logic
-  const buildThreads = (msgs: Msg[]): Thread[] => {
-    const map = new Map<string, Thread>();
-
-    for (const m of msgs) {
-      if (!map.has(m.request_code)) {
-        map.set(m.request_code, {
-          request_code: m.request_code,
-          request_id: m.request_id,
-          subject: m.subject,
-          messages: [],
-          lastAt: m.created_at,
-          hasUnread: false,
-        });
-      }
-
-      const t = map.get(m.request_code)!;
-      t.messages.push(m);
-
-      if (m.created_at > t.lastAt) t.lastAt = m.created_at;
-      if (m.sender === "requester") t.hasUnread = true;
-      if (m.subject) t.subject = m.subject;
-    }
-
-    return Array.from(map.values()).sort((a, b) =>
-      b.lastAt.localeCompare(a.lastAt)
-    );
-  };
-
-  // FIXED: Separated the useEffect properly
+  // INITIAL LOAD
   useEffect(() => {
     const load = async () => {
       setFetching(true);
@@ -81,91 +100,70 @@ export default function App() {
 
       const { data, error } = await supabase.from("admin_messages").select("*");
 
-      console.log("THREAD RAW DATA:", data);
-      console.log("THREAD ERROR:", error);
-
       if (error) {
         setFetchError(error.message);
         setFetching(false);
         return;
       }
 
-      if (data) {
-        setThreads(buildThreads(data)); // 🔥 THIS is correct now
-      }
-
+      setThreads(buildThreads((data as Msg[]) || []));
       setFetching(false);
     };
 
     load();
   }, []);
 
-  // FIXED: Separated secondary data loading and realtime subscription
+  // REALTIME SUBSCRIPTION
   useEffect(() => {
-    const loadViews = async () => {
-      setFetching(true);
-
-      const { data, error } = await supabase
-        .from("support_thread_view")
-        .select("*")
-        .order("last_message_at", { ascending: false });
-
-      if (!error && data) {
-        console.log("THREAD VIEW", data);
-        setThreadList(data as ThreadSummary[]);
-      }
-
-      setFetching(false);
-    };
-
-    loadViews();
-
     const channel = supabase
       .channel("admin_all_messages")
       .on(
         "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "admin_messages",
-        },
+        { event: "*", schema: "public", table: "admin_messages" },
         (payload: any) => {
           const eventType = payload.eventType;
           const msg = payload.new as Msg;
-
-          if (!msg?.request_code) return;
+          const old = payload.old as Msg;
 
           setThreads((prev) => {
-            if (eventType === "INSERT") {
-              const threadExists = prev.some(
-                (t) => t.request_code === msg.request_code
-              );
+            if (eventType === "DELETE") {
+              return prev
+                .map((t) =>
+                  t.request_code === old.request_code
+                    ? { ...t, messages: t.messages.filter((m) => m.id !== old.id) }
+                    : t
+                )
+                .filter((t) => t.messages.length > 0);
+            }
 
-              // FIXED: Handle incoming messages for brand-new threads
-              if (!threadExists) {
+            if (eventType === "INSERT") {
+              const exists = prev.some((t) => t.request_code === msg.request_code);
+
+              if (!exists) {
                 const newThread: Thread = {
                   request_code: msg.request_code,
                   request_id: msg.request_id,
                   subject: msg.subject,
+                  senderName: msg.sender === "requester" ? msg.sender_name : null,
                   messages: [msg],
                   lastAt: msg.created_at,
-                  hasUnread: msg.sender === "requester",
+                  hasUnread: msg.sender === "requester" && !msg.read_by_admin,
                 };
-                return [newThread, ...prev].sort((a, b) =>
-                  b.lastAt.localeCompare(a.lastAt)
-                );
+                return [newThread, ...prev].sort((a, b) => b.lastAt.localeCompare(a.lastAt));
               }
 
               return prev
                 .map((t) => {
                   if (t.request_code !== msg.request_code) return t;
-
+                  if (t.messages.some((m) => m.id === msg.id)) return t; // avoid dupes
+                  const messages = [...t.messages, msg];
                   return {
                     ...t,
-                    messages: [...t.messages, msg],
+                    messages,
                     lastAt: msg.created_at,
                     subject: msg.subject || t.subject,
-                    hasUnread: msg.sender === "requester",
+                    senderName: msg.sender === "requester" && msg.sender_name ? msg.sender_name : t.senderName,
+                    hasUnread: messages.some((m) => m.sender === "requester" && !m.read_by_admin),
                   };
                 })
                 .sort((a, b) => b.lastAt.localeCompare(a.lastAt));
@@ -174,10 +172,11 @@ export default function App() {
             if (eventType === "UPDATE") {
               return prev.map((t) => {
                 if (t.request_code !== msg.request_code) return t;
-
+                const messages = t.messages.map((m) => (m.id === msg.id ? msg : m));
                 return {
                   ...t,
-                  messages: t.messages.map((m) => (m.id === msg.id ? msg : m)),
+                  messages,
+                  hasUnread: messages.some((m) => m.sender === "requester" && !m.read_by_admin),
                 };
               });
             }
@@ -199,46 +198,86 @@ export default function App() {
 
   const activeThread = threads.find((t) => t.request_code === activeCode);
 
-  const sendReply = async () => {
-    if (!reply.trim() || !activeThread) return;
-    setLoading(true);
+  // Mark a thread's requester messages as read the moment the admin opens it.
+  const openThread = async (code: string) => {
+    setActiveCode(code);
 
-    // 1. CREATE OPTIMISTIC MESSAGE (instant UI)
-    const optimisticMsg: Msg = {
-      id: crypto.randomUUID(),
-      request_code: activeThread.request_code,
-      request_id: activeThread.request_id,
-      sender: "admin",
-      subject: activeThread.subject,
-      message: reply.trim(),
-      created_at: new Date().toISOString(),
-      status: "replied",
-    };
+    const thread = threads.find((t) => t.request_code === code);
+    if (!thread) return;
 
-    // 2. INSTANTLY UPDATE UI (NO WAIT)
+    const unreadIds = thread.messages
+      .filter((m) => m.sender === "requester" && !m.read_by_admin)
+      .map((m) => m.id);
+
+    if (unreadIds.length === 0) return;
+
+    // Optimistic local update so the dot disappears immediately.
     setThreads((prev) =>
       prev.map((t) =>
-        t.request_code === activeThread.request_code
+        t.request_code === code
           ? {
               ...t,
-              messages: [...t.messages, optimisticMsg],
-              lastAt: optimisticMsg.created_at,
+              hasUnread: false,
+              messages: t.messages.map((m) =>
+                unreadIds.includes(m.id) ? { ...m, read_by_admin: true } : m
+              ),
             }
           : t
       )
     );
 
+    const { error } = await supabase
+      .from("admin_messages")
+      .update({ read_by_admin: true })
+      .in("id", unreadIds);
+
+    if (error) {
+      console.error("Failed to mark messages read:", error);
+    }
+  };
+
+  const goBackToList = () => setActiveCode(null);
+
+  const sendReply = async () => {
+    if (!reply.trim() || !activeThread) return;
+    setLoading(true);
+
+    const tempId = crypto.randomUUID();
+    const optimisticMsg: Msg = {
+      id: tempId,
+      request_code: activeThread.request_code,
+      request_id: activeThread.request_id,
+      sender: "admin",
+      sender_name: "Admin",
+      subject: activeThread.subject,
+      message: reply.trim(),
+      created_at: new Date().toISOString(),
+      status: "replied",
+      read_by_admin: true,
+    };
+
+    setThreads((prev) =>
+      prev.map((t) =>
+        t.request_code === activeThread.request_code
+          ? { ...t, messages: [...t.messages, optimisticMsg], lastAt: optimisticMsg.created_at }
+          : t
+      )
+    );
+
+    const draft = reply.trim();
     setReply("");
 
-    // 3. SEND TO SUPABASE
     const { error } = await supabase.from("admin_messages").insert([
       {
+        id: tempId,
         request_id: activeThread.request_id,
         request_code: activeThread.request_code,
         sender: "admin",
+        sender_name: "Admin",
         subject: activeThread.subject,
-        message: optimisticMsg.message,
+        message: draft,
         status: "replied",
+        read_by_admin: true,
       },
     ]);
 
@@ -246,7 +285,14 @@ export default function App() {
 
     if (error) {
       console.error("Reply error:", error);
-      return;
+      setReply(draft);
+      setThreads((prev) =>
+        prev.map((t) =>
+          t.request_code === activeThread.request_code
+            ? { ...t, messages: t.messages.filter((m) => m.id !== tempId) }
+            : t
+        )
+      );
     }
   };
 
@@ -256,67 +302,30 @@ export default function App() {
     return true;
   });
 
-  const timeLabel = (iso: string) => {
-    const d = new Date(iso);
-    const now = new Date();
-    const diff = now.getTime() - d.getTime();
-    if (diff < 60_000) return "just now";
-    if (diff < 3_600_000) return `${Math.floor(diff / 60_000)}m ago`;
-    if (diff < 86_400_000) return `${Math.floor(diff / 3_600_000)}h ago`;
-    return d.toLocaleDateString();
-  };
-
   return (
-    <div style={s.shell}>
-      {/* Sidebar */}
-      <aside style={s.sidebar}>
-        <div style={s.sideHead}>
-          <div style={s.sideLogo}>
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="white"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
+    <div className={`adm-shell ${activeCode ? "adm-has-active" : ""}`}>
+      <style>{CSS}</style>
+
+      {/* Sidebar / thread list */}
+      <aside className="adm-sidebar">
+        <div className="adm-side-head">
+          <div className="adm-side-logo">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10" />
               <path d="M12 6v6l4 2" />
             </svg>
           </div>
           <div>
-            <p
-              style={{
-                margin: 0,
-                fontSize: 15,
-                fontWeight: 800,
-                color: "white",
-              }}
-            >
-              ISLA-TRANSPO
-            </p>
-            <p
-              style={{
-                margin: 0,
-                fontSize: 11,
-                color: "rgba(255,255,255,0.55)",
-              }}
-            >
-              Admin — Messages
-            </p>
+            <p className="adm-side-title">ISLA-TRANSPO</p>
+            <p className="adm-side-subtitle">Admin — Messages</p>
           </div>
         </div>
 
-        <div style={s.filterRow}>
+        <div className="adm-filter-row">
           {(["all", "open", "cancel"] as const).map((f) => (
             <button
               key={f}
-              style={{
-                ...s.filterBtn,
-                ...(filter === f ? s.filterActive : {}),
-              }}
+              className={`adm-filter-btn ${filter === f ? "adm-filter-active" : ""}`}
               onClick={() => setFilter(f)}
             >
               {f === "all" ? "All" : f === "open" ? "Unread" : "Cancels"}
@@ -324,189 +333,126 @@ export default function App() {
           ))}
         </div>
 
-        <div style={s.threadList}>
-          {/* ── Debug / status banners ── */}
-          {fetching && <p style={s.dimText}>Loading conversations…</p>}
+        <div className="adm-thread-list">
+          {fetching && <p className="adm-dim-text">Loading conversations…</p>}
 
           {!fetching && fetchError && (
-            <div style={s.errorBanner}>
-              <p style={{ margin: 0, fontSize: 12, fontWeight: 700 }}>
-                ⚠ Fetch failed
-              </p>
-              <p style={{ margin: "4px 0 0", fontSize: 11 }}>{fetchError}</p>
-              <p style={{ margin: "6px 0 0", fontSize: 11, opacity: 0.8 }}>
-                Check Supabase RLS — make sure the admin_messages table has a
-                SELECT policy that allows reads. Open browser console for
-                details.
+            <div className="adm-error-banner">
+              <p className="adm-error-title">⚠ Fetch failed</p>
+              <p className="adm-error-detail">{fetchError}</p>
+              <p className="adm-error-hint">
+                Check Supabase RLS — make sure admin_messages has a SELECT policy
+                that allows reads. Open the browser console for details.
               </p>
             </div>
           )}
 
           {!fetching && !fetchError && threads.length === 0 && (
-            <div style={s.emptyBanner}>
-              <p
-                style={{
-                  margin: 0,
-                  fontSize: 13,
-                  fontWeight: 600,
-                  color: "rgba(255,255,255,0.7)",
-                }}
-              >
-                No messages found
-              </p>
-              <p
-                style={{
-                  margin: "6px 0 0",
-                  fontSize: 11,
-                  color: "rgba(255,255,255,0.45)",
-                  lineHeight: 1.5,
-                }}
-              >
-                The table is empty, or RLS is blocking reads. Check browser
+            <div className="adm-empty-banner">
+              <p className="adm-empty-title">No messages found</p>
+              <p className="adm-empty-detail">
+                The table is empty, or RLS is blocking reads. Check the browser
                 console for the raw Supabase response.
               </p>
             </div>
           )}
 
-          {!fetching &&
-            !fetchError &&
-            threads.length > 0 &&
-            filteredThreads.length === 0 && (
-              <p style={s.dimText}>No results for this filter.</p>
-            )}
+          {!fetching && !fetchError && threads.length > 0 && filteredThreads.length === 0 && (
+            <p className="adm-dim-text">No results for this filter.</p>
+          )}
 
-          {filteredThreads.map((t) => (
-            <button
-              key={t.request_code}
-              style={{
-                ...s.threadItem,
-                ...(activeCode === t.request_code ? s.threadActive : {}),
-              }}
-              onClick={() => setActiveCode(t.request_code)}
-            >
-              <div style={s.threadItemTop}>
-                <span style={s.threadCode}>{t.request_code}</span>
-                <span style={s.threadTime}>{timeLabel(t.lastAt)}</span>
-              </div>
-              <div style={s.threadItemBottom}>
-                <span
-                  style={{
-                    ...s.subjectBadge,
-                    background: t.subject?.toLowerCase().includes("cancel")
-                      ? "#FEF2F2"
-                      : "#EFF6FF",
-                    color: t.subject?.toLowerCase().includes("cancel")
-                      ? "#DC2626"
-                      : "#1D4ED8",
-                  }}
-                >
-                  {t.subject || "Concern"}
-                </span>
-                {t.hasUnread && <span style={s.unreadDot} />}
-              </div>
-              <p style={s.threadPreview}>
-                {t.messages[t.messages.length - 1]?.message.slice(0, 60)}
-                {(t.messages[t.messages.length - 1]?.message.length || 0) > 60
-                  ? "…"
-                  : ""}
-              </p>
-            </button>
-          ))}
+          {filteredThreads.map((t) => {
+            const isCancel = t.subject?.toLowerCase().includes("cancel");
+            const last = t.messages[t.messages.length - 1];
+            return (
+              <button
+                key={t.request_code}
+                className={`adm-thread-item ${activeCode === t.request_code ? "adm-thread-active" : ""}`}
+                onClick={() => openThread(t.request_code)}
+              >
+                <div className="adm-thread-top">
+                  <span className="adm-thread-identity">
+                    {t.senderName ? `${t.senderName} · ${t.request_code}` : t.request_code}
+                  </span>
+                  <span className="adm-thread-time">{timeLabel(t.lastAt)}</span>
+                </div>
+                <div className="adm-thread-bottom">
+                  <span
+                    className="adm-subject-badge"
+                    style={{
+                      background: isCancel ? "#FEF2F2" : "#EFF6FF",
+                      color: isCancel ? "#DC2626" : "#1D4ED8",
+                    }}
+                  >
+                    {t.subject || "Concern"}
+                  </span>
+                  {t.hasUnread && <span className="adm-unread-dot" />}
+                </div>
+                <p className="adm-thread-preview">
+                  {last?.message.slice(0, 60)}
+                  {(last?.message.length || 0) > 60 ? "…" : ""}
+                </p>
+              </button>
+            );
+          })}
         </div>
       </aside>
 
-      {/* Main */}
-      <main style={s.main}>
+      {/* Main / chat */}
+      <main className="adm-main">
         {!activeCode && (
-          <div style={s.emptyState}>
-            <div style={s.emptyIcon}>
-              <svg
-                width="32"
-                height="32"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#94A3B8"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
+          <div className="adm-empty-state">
+            <div className="adm-empty-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
               </svg>
             </div>
-            <p style={{ color: "#94A3B8", fontSize: 14 }}>
-              Select a conversation to reply
-            </p>
+            <p className="adm-empty-state-text">Select a conversation to reply</p>
           </div>
         )}
 
         {activeCode && activeThread && (
           <>
-            <div style={s.chatHead}>
-              <div>
-                <p
-                  style={{
-                    margin: 0,
-                    fontSize: 15,
-                    fontWeight: 700,
-                    color: "#0F172A",
-                  }}
-                >
-                  {activeThread.request_code}
+            <div className="adm-chat-head">
+              <button className="adm-back-btn" onClick={goBackToList} aria-label="Back to list">
+                ←
+              </button>
+              <div className="adm-chat-head-text">
+                <p className="adm-chat-head-name">
+                  {activeThread.senderName || "Unknown passenger"}
                 </p>
-                <p style={{ margin: 0, fontSize: 12, color: "#64748B" }}>
-                  {activeThread.messages.length} message
+                <p className="adm-chat-head-meta">
+                  {activeThread.request_code} · {activeThread.messages.length} message
                   {activeThread.messages.length !== 1 ? "s" : ""}
                 </p>
               </div>
               <span
+                className="adm-subject-badge adm-subject-badge-lg"
                 style={{
-                  ...s.subjectBadge,
-                  fontSize: 13,
-                  padding: "5px 14px",
-                  background: activeThread.subject
-                    ?.toLowerCase()
-                    .includes("cancel")
-                    ? "#FEF2F2"
-                    : "#EFF6FF",
-                  color: activeThread.subject?.toLowerCase().includes("cancel")
-                    ? "#DC2626"
-                    : "#1D4ED8",
+                  background: activeThread.subject?.toLowerCase().includes("cancel") ? "#FEF2F2" : "#EFF6FF",
+                  color: activeThread.subject?.toLowerCase().includes("cancel") ? "#DC2626" : "#1D4ED8",
                 }}
               >
                 {activeThread.subject || "Concern"}
               </span>
             </div>
 
-            <div style={s.messages}>
+            <div className="adm-messages">
               {activeThread.messages.map((msg) => (
                 <div
                   key={msg.id}
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems:
-                      msg.sender === "admin" ? "flex-end" : "flex-start",
-                    marginBottom: 14,
-                  }}
+                  className="adm-msg-row"
+                  style={{ alignItems: msg.sender === "admin" ? "flex-end" : "flex-start" }}
                 >
-                  <span
-                    style={{ fontSize: 11, color: "#94A3B8", marginBottom: 3 }}
-                  >
-                    {msg.sender === "admin" ? "You (Admin)" : "Passenger"} ·{" "}
-                    {timeLabel(msg.created_at)}
+                  <span className="adm-msg-meta">
+                    {msg.sender === "admin" ? "You (Admin)" : activeThread.senderName || "Passenger"} ·{" "}
+                    {timeOfDay(msg.created_at)}
                   </span>
                   <div
+                    className="adm-msg-bubble"
                     style={{
-                      maxWidth: "70%",
-                      padding: "11px 15px",
-                      borderRadius:
-                        msg.sender === "admin"
-                          ? "16px 16px 4px 16px"
-                          : "16px 16px 16px 4px",
-                      fontSize: 14,
-                      lineHeight: 1.55,
-                      background:
-                        msg.sender === "admin" ? "#0B3D91" : "#F1F5F9",
+                      borderRadius: msg.sender === "admin" ? "16px 16px 4px 16px" : "16px 16px 16px 4px",
+                      background: msg.sender === "admin" ? "#0B3D91" : "#F1F5F9",
                       color: msg.sender === "admin" ? "white" : "#0F172A",
                     }}
                   >
@@ -517,9 +463,9 @@ export default function App() {
               <div ref={bottomRef} />
             </div>
 
-            <div style={s.replyBox}>
+            <div className="adm-reply-box">
               <textarea
-                style={s.replyInput}
+                className="adm-reply-input"
                 placeholder="Type your reply…"
                 value={reply}
                 onChange={(e) => setReply(e.target.value)}
@@ -528,23 +474,11 @@ export default function App() {
                 }}
                 rows={3}
               />
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  marginTop: 8,
-                  gap: 10,
-                  alignItems: "center",
-                }}
-              >
-                <span style={{ fontSize: 11, color: "#94A3B8" }}>
-                  ⌘ + Enter to send
-                </span>
+              <div className="adm-reply-row">
+                <span className="adm-reply-hint">⌘ + Enter to send</span>
                 <button
-                  style={{
-                    ...s.replyBtn,
-                    opacity: loading || !reply.trim() ? 0.5 : 1,
-                  }}
+                  className="adm-reply-btn"
+                  style={{ opacity: loading || !reply.trim() ? 0.5 : 1 }}
                   onClick={sendReply}
                   disabled={loading || !reply.trim()}
                 >
@@ -559,207 +493,138 @@ export default function App() {
   );
 }
 
-const s: Record<string, React.CSSProperties> = {
-  shell: {
-    display: "flex",
-    height: "100vh",
-    fontFamily: "'Segoe UI', system-ui, sans-serif",
-    background: "#F8FAFC",
-    overflow: "hidden",
-  },
-  sidebar: {
-    width: 300,
-    minWidth: 260,
-    background: "#0B3D91",
-    display: "flex",
-    flexDirection: "column",
-    overflow: "hidden",
-  },
-  sideHead: {
-    display: "flex",
-    alignItems: "center",
-    gap: 10,
-    padding: "20px 16px 16px",
-    borderBottom: "1px solid rgba(255,255,255,0.1)",
-  },
-  sideLogo: {
-    width: 34,
-    height: 34,
-    borderRadius: 9,
-    background: "rgba(255,255,255,0.15)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    flexShrink: 0,
-  },
-  filterRow: {
-    display: "flex",
-    gap: 6,
-    padding: "12px 14px",
-    borderBottom: "1px solid rgba(255,255,255,0.1)",
-  },
-  filterBtn: {
-    flex: 1,
-    padding: "6px 4px",
-    borderRadius: 8,
-    border: "none",
-    background: "rgba(255,255,255,0.1)",
-    color: "rgba(255,255,255,0.65)",
-    fontSize: 12,
-    fontWeight: 600,
-    cursor: "pointer",
-  },
-  filterActive: {
-    background: "rgba(255,255,255,0.22)",
-    color: "white",
-  },
-  threadList: {
-    flex: 1,
-    overflowY: "auto",
-    padding: "8px 8px",
-  },
-  threadItem: {
-    display: "block",
-    width: "100%",
-    padding: "12px 12px",
-    borderRadius: 10,
-    border: "none",
-    background: "transparent",
-    textAlign: "left",
-    cursor: "pointer",
-    marginBottom: 4,
-  },
-  threadActive: {
-    background: "rgba(255,255,255,0.15)",
-  },
-  threadItemTop: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 5,
-  },
-  threadCode: {
-    fontSize: 13,
-    fontWeight: 700,
-    color: "white",
-    letterSpacing: 0.3,
-  },
-  threadTime: {
-    fontSize: 11,
-    color: "rgba(255,255,255,0.45)",
-  },
-  threadItemBottom: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 5,
-  },
-  subjectBadge: {
-    fontSize: 11,
-    fontWeight: 600,
-    padding: "3px 9px",
-    borderRadius: 20,
-  },
-  unreadDot: {
-    width: 8,
-    height: 8,
-    borderRadius: "50%",
-    background: "#F97316",
-    flexShrink: 0,
-  },
-  threadPreview: {
-    margin: 0,
-    fontSize: 12,
-    color: "rgba(255,255,255,0.45)",
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-  },
-  dimText: {
-    color: "rgba(255,255,255,0.35)",
-    fontSize: 13,
-    textAlign: "center",
-    marginTop: 24,
-  },
-  errorBanner: {
-    margin: "12px 8px",
-    padding: "12px 14px",
-    borderRadius: 10,
-    background: "rgba(220,38,38,0.25)",
-    border: "1px solid rgba(220,38,38,0.4)",
-    color: "#FCA5A5",
-  },
-  emptyBanner: {
-    margin: "12px 8px",
-    padding: "12px 14px",
-    borderRadius: 10,
-    background: "rgba(255,255,255,0.07)",
-  },
-  main: {
-    flex: 1,
-    display: "flex",
-    flexDirection: "column",
-    overflow: "hidden",
-  },
-  emptyState: {
-    flex: 1,
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 12,
-  },
-  emptyIcon: {
-    width: 64,
-    height: 64,
-    borderRadius: 16,
-    background: "#F1F5F9",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  chatHead: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "16px 24px",
-    borderBottom: "1px solid #E2E8F0",
-    background: "white",
-    flexShrink: 0,
-  },
-  messages: {
-    flex: 1,
-    overflowY: "auto",
-    padding: "20px 24px",
-    background: "#F8FAFC",
-  },
-  replyBox: {
-    padding: "16px 24px",
-    borderTop: "1px solid #E2E8F0",
-    background: "white",
-    flexShrink: 0,
-  },
-  replyInput: {
-    width: "100%",
-    padding: "12px 14px",
-    borderRadius: 12,
-    border: "1.5px solid #CBD5E1",
-    fontSize: 14,
-    color: "#0F172A",
-    outline: "none",
-    resize: "none",
-    boxSizing: "border-box" as const,
-    lineHeight: 1.5,
-    fontFamily: "inherit",
-  },
-  replyBtn: {
-    padding: "10px 22px",
-    borderRadius: 10,
-    border: "none",
-    background: "#0B3D91",
-    color: "white",
-    fontSize: 14,
-    fontWeight: 700,
-    cursor: "pointer",
-  },
-};
+const CSS = `
+  .adm-shell {
+    display: flex;
+    height: 100vh;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: #F8FAFC;
+    overflow: hidden;
+  }
+  .adm-sidebar {
+    width: 300px;
+    min-width: 260px;
+    background: #0B3D91;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .adm-side-head {
+    display: flex; align-items: center; gap: 10px;
+    padding: 20px 16px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .adm-side-logo {
+    width: 34px; height: 34px; border-radius: 9px;
+    background: rgba(255,255,255,0.15);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .adm-side-title { margin: 0; font-size: 15px; font-weight: 800; color: white; }
+  .adm-side-subtitle { margin: 0; font-size: 11px; color: rgba(255,255,255,0.55); }
+  .adm-filter-row {
+    display: flex; gap: 6px; padding: 12px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .adm-filter-btn {
+    flex: 1; padding: 6px 4px; border-radius: 8px; border: none;
+    background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.65);
+    font-size: 12px; font-weight: 600; cursor: pointer;
+  }
+  .adm-filter-active { background: rgba(255,255,255,0.22); color: white; }
+  .adm-thread-list { flex: 1; overflow-y: auto; padding: 8px; }
+  .adm-thread-item {
+    display: block; width: 100%; padding: 12px; border-radius: 10px; border: none;
+    background: transparent; text-align: left; cursor: pointer; margin-bottom: 4px;
+  }
+  .adm-thread-item:hover { background: rgba(255,255,255,0.08); }
+  .adm-thread-active { background: rgba(255,255,255,0.15) !important; }
+  .adm-thread-top {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 5px;
+  }
+  .adm-thread-identity {
+    font-size: 13px; font-weight: 700; color: white; letter-spacing: 0.2px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .adm-thread-time { font-size: 11px; color: rgba(255,255,255,0.45); flex-shrink: 0; }
+  .adm-thread-bottom { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+  .adm-subject-badge { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; white-space: nowrap; }
+  .adm-subject-badge-lg { font-size: 13px; padding: 5px 14px; }
+  .adm-unread-dot { width: 8px; height: 8px; border-radius: 50%; background: #F97316; flex-shrink: 0; }
+  .adm-thread-preview {
+    margin: 0; font-size: 12px; color: rgba(255,255,255,0.45);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .adm-dim-text { color: rgba(255,255,255,0.35); font-size: 13px; text-align: center; margin-top: 24px; }
+  .adm-error-banner {
+    margin: 12px 8px; padding: 12px 14px; border-radius: 10px;
+    background: rgba(220,38,38,0.25); border: 1px solid rgba(220,38,38,0.4); color: #FCA5A5;
+  }
+  .adm-error-title { margin: 0; font-size: 12px; font-weight: 700; }
+  .adm-error-detail { margin: 4px 0 0; font-size: 11px; }
+  .adm-error-hint { margin: 6px 0 0; font-size: 11px; opacity: 0.8; }
+  .adm-empty-banner { margin: 12px 8px; padding: 12px 14px; border-radius: 10px; background: rgba(255,255,255,0.07); }
+  .adm-empty-title { margin: 0; font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.7); }
+  .adm-empty-detail { margin: 6px 0 0; font-size: 11px; color: rgba(255,255,255,0.45); line-height: 1.5; }
+  .adm-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .adm-empty-state {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+  }
+  .adm-empty-icon {
+    width: 64px; height: 64px; border-radius: 16px; background: #F1F5F9;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .adm-empty-state-text { color: #94A3B8; font-size: 14px; }
+  .adm-chat-head {
+    display: flex; align-items: center; gap: 12px;
+    padding: 16px 24px; border-bottom: 1px solid #E2E8F0; background: white; flex-shrink: 0;
+  }
+  .adm-back-btn {
+    display: none;
+    width: 32px; height: 32px; border-radius: 8px; border: none; background: #F1F5F9;
+    color: #0F172A; font-size: 16px; cursor: pointer; flex-shrink: 0;
+    align-items: center; justify-content: center;
+  }
+  .adm-chat-head-text { flex: 1; min-width: 0; }
+  .adm-chat-head-name {
+    margin: 0; font-size: 15px; font-weight: 700; color: #0F172A;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .adm-chat-head-meta { margin: 0; font-size: 12px; color: #64748B; }
+  .adm-messages { flex: 1; overflow-y: auto; padding: 20px 24px; background: #F8FAFC; }
+  .adm-msg-row { display: flex; flex-direction: column; margin-bottom: 14px; }
+  .adm-msg-meta { font-size: 11px; color: #94A3B8; margin-bottom: 3px; }
+  .adm-msg-bubble { max-width: 70%; padding: 11px 15px; font-size: 14px; line-height: 1.55; word-break: break-word; }
+  .adm-reply-box { padding: 16px 24px; border-top: 1px solid #E2E8F0; background: white; flex-shrink: 0; }
+  .adm-reply-input {
+    width: 100%; padding: 12px 14px; border-radius: 12px; border: 1.5px solid #CBD5E1;
+    font-size: 16px; color: #0F172A; outline: none; resize: none;
+    box-sizing: border-box; line-height: 1.5; font-family: inherit;
+  }
+  .adm-reply-input:focus { border-color: #0B3D91; }
+  .adm-reply-row { display: flex; justify-content: flex-end; margin-top: 8px; gap: 10px; align-items: center; }
+  .adm-reply-hint { font-size: 11px; color: #94A3B8; }
+  .adm-reply-btn {
+    padding: 10px 22px; border-radius: 10px; border: none; background: #0B3D91;
+    color: white; font-size: 14px; font-weight: 700; cursor: pointer;
+  }
+  .adm-reply-btn:disabled { cursor: not-allowed; }
+
+  /* ── Tablet: narrower sidebar ── */
+  @media (max-width: 1024px) {
+    .adm-sidebar { width: 260px; min-width: 220px; }
+  }
+
+  /* ── Phone / small tablet: list and chat become full-screen views ── */
+  @media (max-width: 880px) {
+    .adm-sidebar { width: 100%; min-width: 0; }
+    .adm-main { display: none; }
+    .adm-has-active .adm-sidebar { display: none; }
+    .adm-has-active .adm-main { display: flex; }
+    .adm-back-btn { display: flex; }
+    .adm-msg-bubble { max-width: 85%; }
+    .adm-chat-head { padding: 14px 16px; }
+    .adm-messages { padding: 16px; }
+    .adm-reply-box { padding: 12px 16px; }
+  }
+`;
