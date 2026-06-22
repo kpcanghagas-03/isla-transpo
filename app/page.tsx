@@ -11,6 +11,7 @@ const IconRequest = () => <svg width="17" height="17" viewBox="0 0 24 24" fill="
 const IconBarge   = () => <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 17l2-7h14l2 7"/><path d="M5 10V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/><line x1="12" y1="3" x2="12" y2="6"/><path d="M2 20h20"/></svg>;
 const IconTrack   = () => <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>;
 const IconContact = () => <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>;
+const IconAdmin   = () => <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l4 4h4v6c0 6-4 10-8 10s-8-4-8-10V6h4l4-4z"/><path d="M8 14h8"/><path d="M12 10v4"/></svg>;
 const IconChevron = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>;
 const IconBus     = () => <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="5" width="20" height="14" rx="3"/><line x1="2" y1="10" x2="22" y2="10"/><circle cx="7" cy="19" r="1"/><circle cx="17" cy="19" r="1"/><line x1="12" y1="5" x2="12" y2="10"/></svg>;
 
@@ -31,6 +32,7 @@ export default function HomePage() {
     { label: "Barge Schedule & Trips",  icon: <IconBarge />,   action: () => router.push("/attendee") },
     { label: "Track My Request",        icon: <IconTrack />,   action: () => window.open("https://isla-transpo.vercel.app/track", "_blank") },
     { label: "Contact / Concerns",      icon: <IconContact />, action: () => window.open("https://isla-transpo.vercel.app/contact", "_blank") },
+    { label: "Admin",                   icon: <IconAdmin/>,    action: () => window.open("https://isla-transpo.vercel.app/admin", "_blank")},
   ];
 
   return (
