@@ -117,7 +117,7 @@ export default function TeamPage() {
               <span className="tp-metric-num">0{totalCrew}</span>
               <span className="tp-metric-icon">👥</span>
             </div>
-            <span className="tp-metric-label">On-Duty Personnel</span>
+            <span className="tp-metric-label">TRANSPO MEMBERS</span>
           </div>
           <div className="tp-metric-box">
             <div className="tp-metric-header">
@@ -160,7 +160,7 @@ export default function TeamPage() {
               <section className="tp-dept-section" key={stop.id}>
                 <div className="tp-dept-banner" style={{ background: stop.accent }}>
                   <span className="tp-dept-badge-title">
-                    {stop.id === "Members" ? "TEAM-LDR" : stop.id === "development" ? "TEKM-LDR" : "TEAM-COOR"}
+                    {stop.id === "Members" ? "ADMIN" : stop.id === "development" ? "DEVELOPER" : "TEAM-COOR"}
                   </span>
                   <h4 className="tp-dept-name">{stop.label}</h4>
                 </div>
@@ -173,7 +173,7 @@ export default function TeamPage() {
                       </div>
                       <div className="tp-crew-info">
                         <span className="tp-crew-name">{person.name}</span>
-                        <span className="tp-crew-role">RSTW Fleet Operative</span>
+                        <span className="tp-crew-role">Transpo Member</span>
                       </div>
                       <span className="tp-crew-number">#{String(person.no).padStart(2, "0")}</span>
                     </div>
@@ -190,14 +190,14 @@ export default function TeamPage() {
             <div className="tp-digital-stamp">
               <span className="tp-stamp-icon">🛡️</span>
               <div>
-                <strong>VALIDATED DIGITAL STAMP</strong>
-                <p>Verified digital stamp</p>
+                <strong> TRANSPO SA ISLA</strong>
+                <p>RSTW 2026</p>
               </div>
             </div>
             <div className="tp-island-icon">🌋</div>
           </div>
           <p className="tp-protocol-text">
-            Every route synchronized, passenger logged, and dispatch movement executed concludes a verified transport framework. Transit assets remain managed under the regional archipelago framework protocols.
+            ENJOY RSTW! ISLA-TRANSPO IN YOUR SERVICE
           </p>
         </div>
 
