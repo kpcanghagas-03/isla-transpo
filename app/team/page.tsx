@@ -104,7 +104,7 @@ export default function TeamPage() {
             </div>
             <div className="tp-meta-item">
               <span className="tp-meta-label">ABOARD</span>
-              <span className="tp-meta-val highlights">{String(totalCrew).padStart(2, "0")} OPERATIVES 👥</span>
+              <span className="tp-meta-val highlights">{String(totalCrew).padStart(2, "0")} TEAM 👥</span>
             </div>
           </div>
         </div>
@@ -160,7 +160,7 @@ export default function TeamPage() {
               <section className="tp-dept-section" key={stop.id}>
                 <div className="tp-dept-banner" style={{ background: stop.accent }}>
                   <span className="tp-dept-badge-title">
-                    {stop.id === "Members" ? "ADMIN" : stop.id === "development" ? "DEVELOPER" : "TEAM-COOR"}
+                    {stop.id === "Members" ? "ADMIN" : stop.id === "development" ? "DEVELOPER" : "PILOT"}
                   </span>
                   <h4 className="tp-dept-name">{stop.label}</h4>
                 </div>
@@ -197,7 +197,7 @@ export default function TeamPage() {
             <div className="tp-island-icon">🌋</div>
           </div>
           <p className="tp-protocol-text">
-            ENJOY RSTW! ISLA-TRANSPO IN YOUR SERVICE
+           Navigating the island, elevating the experience. Welcome aboard with ISLA-TRANSPO
           </p>
         </div>
 
