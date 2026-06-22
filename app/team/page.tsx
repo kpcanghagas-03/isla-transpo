@@ -71,7 +71,7 @@ export default function TeamPage() {
             <span className="tp-logo-text">ISLA-TRANSPO</span>
           </div>
           <div className="tp-nav-links">
-            <span className="tp-nav-item active">Team</span>
+            <span className="tp-nav-item active"> Members </span>
             <button className="tp-terminal-btn" onClick={() => router.push("/")}>
               ⚙️ Home
             </button>
@@ -88,8 +88,9 @@ export default function TeamPage() {
             </span>
             <h1 className="tp-title">Transportation Team</h1>
             <p className="tp-subcopy">
-              RSTW 2026 team on our premium transit network itinerary on Camiguin. 
-              Our modernized respective teams support code architecture and public transit pipelines.
+              Welcome aboard! Meet the incredible team keeping our island transit network alive and buzzing for RSTW 2026. 
+              Whether we're optimizing routes or welcoming you at the terminal, we are thrilled to guide your adventure across Camiguin. 
+              Your journey is our priority!
             </p>
           </div>
 
@@ -106,39 +107,6 @@ export default function TeamPage() {
               <span className="tp-meta-label">ABOARD</span>
               <span className="tp-meta-val highlights">{String(totalCrew).padStart(2, "0")} TEAM 👥</span>
             </div>
-          </div>
-        </div>
-
-        {/* ================= SYSTEM METRICS ================= */}
-        <h3 className="tp-block-heading">SYSTEM METRICS</h3>
-        <div className="tp-metrics-grid">
-          <div className="tp-metric-box">
-            <div className="tp-metric-header">
-              <span className="tp-metric-num">0{totalCrew}</span>
-              <span className="tp-metric-icon">👥</span>
-            </div>
-            <span className="tp-metric-label">TRANSPO MEMBERS</span>
-          </div>
-          <div className="tp-metric-box">
-            <div className="tp-metric-header">
-              <span className="tp-metric-num">0{stops.length}</span>
-              <span className="tp-metric-icon">🛠️</span>
-            </div>
-            <span className="tp-metric-label">Active Node Sectors</span>
-          </div>
-          <div className="tp-metric-box">
-            <div className="tp-metric-header">
-              <span className="tp-metric-num">1</span>
-              <span className="tp-metric-icon">🕸️</span>
-            </div>
-            <span className="tp-metric-label">Central Network</span>
-          </div>
-          <div className="tp-metric-box">
-            <div className="tp-metric-header">
-              <span className="tp-metric-num">∞</span>
-              <span className="tp-metric-icon">🔗</span>
-            </div>
-            <span className="tp-metric-label">Shared Commitment</span>
           </div>
         </div>
 
