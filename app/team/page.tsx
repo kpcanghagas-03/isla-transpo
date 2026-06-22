@@ -11,22 +11,16 @@ type Department = {
 
 const DEPARTMENTS: Department[] = [
   {
-    id: "leadership",
+    id: "Members",
     label: "Leadership & Coordination",
     accent: "#1F5AA6",
-    members: ["John Paul T. Balistoy", "Junvee O. Barbadillo"],
-  },
-  {
-    id: "finance",
-    label: "Finance & Administration",
-    accent: "#4C9FD6",
-    members: ["Marc Mana"],
+    members: ["John Paul T. Balistoy", "Junvee O. Barbadillo", "Marc Mana"],
   },
   {
     id: "development",
     label: "System Development",
     accent: "#F27A35",
-    members: ["Karen Canghagas", "Arjay A. Charcos"],
+    members: ["Karen P. Canghagas", "Arjay A. Charcos"],
   },
   {
     id: "operations",
@@ -80,11 +74,11 @@ export default function TeamPage() {
           <span className="tp-notchR" />
 
           <div className="tp-ticketMain">
-            <span className="tp-eyebrow">CREW BOARDING PASS</span>
+            <span className="tp-eyebrow"> TRANSPO SA ISLA</span>
             <h1 className="tp-title">Transportation Team</h1>
             <p className="tp-subcopy">
               Behind every request, route, and pickup is a person working the
-              line. Meet the crew keeping ISLA-TRANSPO moving for RSTW 2026
+              line. Meet the Team keeping ISLA-TRANSPO moving for RSTW 2026
               on Camiguin Island.
             </p>
           </div>
@@ -99,7 +93,7 @@ export default function TeamPage() {
               <span className="tp-stubValue">JUL 22–24, 2026</span>
             </div>
             <div>
-              <span className="tp-stubLabel">Crew</span>
+              <span className="tp-stubLabel">Members</span>
               <span className="tp-stubValue">{String(totalCrew).padStart(2, "0")} ABOARD</span>
             </div>
           </div>
@@ -170,8 +164,8 @@ export default function TeamPage() {
           <h2 className="tp-thanksTitle">Thank You</h2>
           <p className="tp-thanksCopy">
             Every request fulfilled, every attendee assisted, and every trip
-            coordinated reflects the work of the people on this roster.
-            ISLA-TRANSPO runs because they showed up.
+            coordinated reflects the work of the people on this.
+
           </p>
         </div>
       </div>
