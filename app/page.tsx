@@ -542,7 +542,7 @@ export default function HomePage() {
           }}>
             {[
               { label:"Track Request", href:"https://isla-transpo.vercel.app/track",   color:"#F27A35" },
-              { label:"Contact / Concerns", href:"https://isla-transpo.vercel.app/contact", color:"#A61E22" },
+              { label:"Contact Support", href:"https://isla-transpo.vercel.app/contact", color:"#A61E22" },
             ].map(({ label, href, color }) => (
               <a key={label} href={href} target="_blank" rel="noopener noreferrer"
                 style={{
