@@ -211,8 +211,69 @@ const vehicleOptions = [
   "Backup Vehicle - BKP 7777",
 ];
 
+  // ================= EMAIL SENDER (shared helper) =================
+  // Centralized so both status changes AND vehicle assignment changes
+  // always send a correct, up-to-date email using the value just
+  // submitted to the database rather than stale component state.
+  const sendStatusEmail = async (
+    request: Request,
+    status: string,
+    vehicleStringOverride?: string
+  ) => {
+    try {
+      const vehicleString =
+        vehicleStringOverride !== undefined
+          ? vehicleStringOverride
+          : request.assigned_vehicle || "";
 
-  // ================= UPDATE FIELD =================
+      const vehicles = vehicleString
+        .split(" | ")
+        .filter(Boolean)
+        .map((v) => {
+          const key = Object.keys(vehicleMap).find((k) => v.startsWith(k));
+          return key ? { vehicle: v, ...vehicleMap[key] } : null;
+        })
+        .filter(
+          (v): v is { vehicle: string; driver: string; phone: string } =>
+            v !== null
+        );
+
+      const res = await fetch("/api/send_email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: request.email || undefined,
+          name: request.requester_name,
+          status,
+
+          pickup: request.pickup_location || "",
+          destination: request.destination || "",
+
+          schedule: `${toPHDate(request.pick_up_date) || ""}${
+            request.pick_up_time
+              ? `, ${toPHTime(request.pick_up_time) || ""}`
+              : ""
+          }`,
+
+          vehicles: vehicles.map(({ vehicle, driver, phone }) => ({
+            vehicle,
+            driver,
+            phone,
+          })),
+          request_id: request.id,
+        }),
+      });
+
+      const data = await res.json();
+      console.log("EMAIL RESPONSE:", data);
+    } catch (err) {
+      console.log("EMAIL ERROR:", err);
+    }
+  };
+
+  // ================= UPDATE FIELD (status, priority, etc.) =================
   const updateField = async (
   id: number,
   field: keyof Request | string,
@@ -252,7 +313,7 @@ setTimeout(() => {
   setHighlightedId(null);
 }, 4000);
 
-  // ================= AUTO EMAIL =================
+  // ================= AUTO EMAIL (status field only) =================
 const shouldEmail =
   field === "status" &&
   request.status !== value &&
@@ -266,57 +327,75 @@ const shouldEmail =
   ].includes(value);
 
 if (shouldEmail) {
-  try {
-    const vehicles = (request.assigned_vehicle || "")
-      .split(" | ")
-      .map((v) => {
-        const key = Object.keys(vehicleMap).find((k) =>
-          v.startsWith(k)
-        );
-
-        return key ? vehicleMap[key] : null;
-      })
-      .filter(
-        (v): v is { driver: string; phone: string } => v !== null
-      );
-
-    const vehicleDetails = vehicles.map((v, i) => ({
-      vehicle: request.assigned_vehicle?.split(" | ")[i] || "",
-      driver: v.driver,
-      phone: v.phone,
-    }));
-
-    const res: Response = await fetch("/api/send_email", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: request.email || undefined,
-        name: request.requester_name,
-        status: value,
-
-        pickup: request.pickup_location || "",
-        destination: request.destination || "",
-
-        schedule: `${toPHDate(request.pick_up_date) || ""}${
-          request.pick_up_time
-            ? `, ${toPHTime(request.pick_up_time) || ""}`
-            : ""
-        }`,
-
-        vehicles: vehicleDetails,
-        request_id: request.id,
-      }),
-    });
-
-    const data = await res.json();
-    console.log("EMAIL RESPONSE:", data);
-  } catch (err) {
-    console.log("EMAIL ERROR:", err);
-  }
+  await sendStatusEmail(request, value);
 }
 };
+
+  // ================= UPDATE ASSIGNED VEHICLE =================
+  // This is the fix for the two reported bugs:
+  // 1) Assigning/changing a driver after the request is already "Approved"
+  //    used to skip the email entirely (status didn't change, so the old
+  //    code's early-return guard blocked it).
+  // 2) Because the old code made TWO separate updateField() calls (one for
+  //    assigned_vehicle, one for status) off the SAME stale `requests` state,
+  //    the email body could be built from the previous vehicle list, so a
+  //    driver swap looked like "old driver + new driver" to the requester.
+  //
+  // This function does ONE atomic update with the vehicle string you just
+  // submitted, and always emails from that exact string -- never from stale
+  // state -- whenever the vehicle assignment actually changes.
+  const updateAssignedVehicle = async (id: number, vehicleString: string) => {
+    const request = requests.find((r) => r.id === id);
+    if (!request) return;
+
+    const prevVehicleString = request.assigned_vehicle || "";
+    const newStatus = vehicleString ? "Approved" : "Pending";
+
+    // Nothing actually changed -- avoid duplicate writes/emails.
+    if (prevVehicleString === vehicleString && request.status === newStatus) {
+      return;
+    }
+
+    // Instant UI update
+    setRequests((prev) =>
+      prev.map((r) =>
+        r.id === id
+          ? { ...r, assigned_vehicle: vehicleString, status: newStatus }
+          : r
+      )
+    );
+
+    // Single atomic DB write (vehicle + status together)
+    const { error } = await supabase
+      .from("transport_requests")
+      .update({ assigned_vehicle: vehicleString, status: newStatus })
+      .eq("id", id);
+
+    if (error) {
+      alert(error.message);
+      fetchRequests();
+      return;
+    }
+
+    console.log("VEHICLE UPDATED SUCCESSFULLY");
+
+    setHighlightedId(id);
+    setTimeout(() => {
+      setHighlightedId(null);
+    }, 4000);
+
+    // Only email when the vehicle assignment itself changed. This is what
+    // makes "assign a driver to an already-Approved request" send an email,
+    // and makes "swap driver A for driver B" send a fresh email containing
+    // only the current (new) vehicle/driver -- not a stale mix of both.
+    if (prevVehicleString !== vehicleString) {
+      await sendStatusEmail(
+        { ...request, assigned_vehicle: vehicleString },
+        newStatus,
+        vehicleString
+      );
+    }
+  };
 
   // ================= FILTERED + SORTED =================
   const sortedRequests = requests
@@ -395,6 +474,19 @@ if (shouldEmail) {
     driver_lat: req.driver_lat ?? null,
     driver_lng: req.driver_lng ?? null,
   }));
+
+  // ================= OPEN MESSAGE THREAD WITH A REQUESTER =================
+  // Lets the admin start a conversation directly from the dashboard card,
+  // without the requester having to go through the contact-support page
+  // first. Opens the admin messages page in a new tab with the request's
+  // code/id/name pre-filled so a draft thread can be seeded there.
+  const openMessageThread = (req: Request) => {
+    const code = req.request_code || String(req.id);
+    const url = `/admin/messages?code=${encodeURIComponent(
+      code
+    )}&id=${req.id}&name=${encodeURIComponent(req.requester_name)}`;
+    window.open(url, "_blank");
+  };
 
   return (
     <main className="container">
@@ -826,7 +918,7 @@ if (shouldEmail) {
         <input
           type="checkbox"
           checked={selectedVehicles.includes(vehicle)}
-          onChange={async (e) => {
+          onChange={(e) => {
             let updatedVehicles = [...selectedVehicles];
 
             if (e.target.checked) {
@@ -837,28 +929,13 @@ if (shouldEmail) {
               );
             }
 
-            const vehicleString =
-              updatedVehicles.join(" | ");
+            const vehicleString = updatedVehicles.join(" | ");
 
-            await updateField(
-              req.id,
-              "assigned_vehicle",
-              vehicleString
-            );
-
-            if (vehicleString) {
-              await updateField(
-                req.id,
-                "status",
-                "Approved"
-              );
-            } else {
-              await updateField(
-                req.id,
-                "status",
-                "Pending"
-              );
-            }
+            // Single atomic update (vehicle + status) that always
+            // emails using the value just submitted -- fixes both the
+            // "no email when assigning a driver" bug and the
+            // "old driver + new driver shown together" bug.
+            updateAssignedVehicle(req.id, vehicleString);
           }}
         />
 
@@ -877,6 +954,22 @@ if (shouldEmail) {
 </div>
   </>
 )}
+
+                  <button
+                      onClick={() => openMessageThread(req)}
+                      style={{
+                        marginTop: 8,
+                        padding: "10px",
+                        borderRadius: 8,
+                        border: "none",
+                        background: "#dcfce7",
+                        color: "#166534",
+                        fontWeight: 700,
+                        cursor: "pointer",
+                      }}
+                    >
+                      💬 Message Requester
+                    </button>
                   </div>
                 );
               })}
@@ -941,6 +1034,22 @@ if (shouldEmail) {
                   >
                     Restore to Active
                   </button>
+
+                  <button
+                      onClick={() => openMessageThread(req)}
+                      style={{
+                        marginTop: 8,
+                        padding: "8px 10px",
+                        borderRadius: 8,
+                        border: "none",
+                        background: "#dcfce7",
+                        color: "#166534",
+                        fontWeight: 700,
+                        cursor: "pointer",
+                      }}
+                    >
+                      💬 Message Requester
+                    </button>
                 </div>
               ))}
             </div>
@@ -1076,4 +1185,3 @@ if (shouldEmail) {
     </main>
   );
 }
-

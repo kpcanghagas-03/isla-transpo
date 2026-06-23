@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
 // Keep this type identical in shape to the one used in the requester-facing
@@ -93,6 +94,7 @@ export default function App() {
   const [confirmDeleteCode, setConfirmDeleteCode] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const searchParams = useSearchParams();
 
   // INITIAL LOAD
   useEffect(() => {
@@ -114,6 +116,37 @@ export default function App() {
 
     load();
   }, []);
+
+  // ================= SEED A DRAFT THREAD FROM THE DASHBOARD =================
+  // When the admin clicks "Message Requester" on a request card, they land
+  // here with ?code=...&id=...&name=... in the URL. If that request_code
+  // doesn't have a thread yet (the requester never wrote in), this creates
+  // an empty draft thread locally so the admin can type the first message
+  // without the requester needing to contact support first. Nothing is
+  // written to the DB until the admin actually hits "Send reply".
+  useEffect(() => {
+    const code = searchParams.get("code");
+    if (!code) return;
+
+    setThreads((prev) => {
+      if (prev.some((t) => t.request_code === code)) return prev;
+
+      const draft: Thread = {
+        request_code: code,
+        request_id: searchParams.get("id") || "",
+        subject: "Admin note",
+        senderName: searchParams.get("name"),
+        messages: [],
+        lastAt: new Date().toISOString(),
+        hasUnread: false,
+      };
+
+      return [draft, ...prev];
+    });
+
+    setActiveCode(code);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   // REALTIME SUBSCRIPTION
   useEffect(() => {
@@ -389,6 +422,7 @@ export default function App() {
             const isCancel = t.subject?.toLowerCase().includes("cancel");
             const last = t.messages[t.messages.length - 1];
             const isConfirming = confirmDeleteCode === t.request_code;
+            const isDraft = t.messages.length === 0;
 
             return (
               <div key={t.request_code} className="adm-thread-wrap">
@@ -400,7 +434,9 @@ export default function App() {
                     <span className="adm-thread-identity">
                       {t.senderName ? `${t.senderName} · ${t.request_code}` : t.request_code}
                     </span>
-                    <span className="adm-thread-time">{timeLabel(t.lastAt)}</span>
+                    <span className="adm-thread-time">
+                      {isDraft ? "new" : timeLabel(t.lastAt)}
+                    </span>
                   </div>
                   <div className="adm-thread-bottom">
                     <span
@@ -415,8 +451,11 @@ export default function App() {
                     {t.hasUnread && <span className="adm-unread-dot" />}
                   </div>
                   <p className="adm-thread-preview">
-                    {last?.message.slice(0, 60)}
-                    {(last?.message.length || 0) > 60 ? "…" : ""}
+                    {isDraft
+                      ? "No messages yet — start the conversation"
+                      : `${last?.message.slice(0, 60)}${
+                          (last?.message.length || 0) > 60 ? "…" : ""
+                        }`}
                   </p>
                 </button>
 
@@ -503,19 +542,21 @@ export default function App() {
               >
                 {activeThread.subject || "Concern"}
               </span>
-              <button
-                className="adm-chat-delete-btn"
-                onClick={() => setConfirmDeleteCode(activeThread.request_code)}
-                aria-label="Delete conversation"
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="3 6 5 6 21 6" />
-                  <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-                  <path d="M10 11v6" />
-                  <path d="M14 11v6" />
-                  <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
-                </svg>
-              </button>
+              {activeThread.messages.length > 0 && (
+                <button
+                  className="adm-chat-delete-btn"
+                  onClick={() => setConfirmDeleteCode(activeThread.request_code)}
+                  aria-label="Delete conversation"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="3 6 5 6 21 6" />
+                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                    <path d="M10 11v6" />
+                    <path d="M14 11v6" />
+                    <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+                  </svg>
+                </button>
+              )}
             </div>
 
             {confirmDeleteCode === activeThread.request_code && (
@@ -541,6 +582,12 @@ export default function App() {
             )}
 
             <div className="adm-messages">
+              {activeThread.messages.length === 0 && (
+                <p className="adm-dim-text" style={{ marginTop: 12 }}>
+                  No messages yet. Type below to start the conversation with{" "}
+                  {activeThread.senderName || "this requester"}.
+                </p>
+              )}
               {activeThread.messages.map((msg) => (
                 <div
                   key={msg.id}
