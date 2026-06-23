@@ -475,18 +475,6 @@ if (shouldEmail) {
     driver_lng: req.driver_lng ?? null,
   }));
 
-  // ================= OPEN MESSAGE THREAD WITH A REQUESTER =================
-  // Lets the admin start a conversation directly from the dashboard card,
-  // without the requester having to go through the contact-support page
-  // first. Opens the admin messages page in a new tab with the request's
-  // code/id/name pre-filled so a draft thread can be seeded there.
-  const openMessageThread = (req: Request) => {
-    const code = req.request_code || String(req.id);
-    const url = `/admin/messages?code=${encodeURIComponent(
-      code
-    )}&id=${req.id}&name=${encodeURIComponent(req.requester_name)}`;
-    window.open(url, "_blank");
-  };
 
   return (
     <main className="container">
@@ -954,22 +942,6 @@ if (shouldEmail) {
 </div>
   </>
 )}
-
-                  <button
-                      onClick={() => openMessageThread(req)}
-                      style={{
-                        marginTop: 8,
-                        padding: "10px",
-                        borderRadius: 8,
-                        border: "none",
-                        background: "#dcfce7",
-                        color: "#166534",
-                        fontWeight: 700,
-                        cursor: "pointer",
-                      }}
-                    >
-                      💬 Message Requester
-                    </button>
                   </div>
                 );
               })}
@@ -1035,21 +1007,6 @@ if (shouldEmail) {
                     Restore to Active
                   </button>
 
-                  <button
-                      onClick={() => openMessageThread(req)}
-                      style={{
-                        marginTop: 8,
-                        padding: "8px 10px",
-                        borderRadius: 8,
-                        border: "none",
-                        background: "#dcfce7",
-                        color: "#166534",
-                        fontWeight: 700,
-                        cursor: "pointer",
-                      }}
-                    >
-                      💬 Message Requester
-                    </button>
                 </div>
               ))}
             </div>
