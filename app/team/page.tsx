@@ -14,7 +14,7 @@ const DEPARTMENTS: Department[] = [
     id: "Members",
     label: "Leadership & Coordination",
     accent: "#0ea5e9", // Bright Ocean Blue
-    members: ["John Paul T. Balistoy", "Junvee O. Barbadillo", "Marc Mana"],
+    members: ["John Paul T. Balistoy", "Junvee O. Barbadillo", "Marc Lester B. Mana"],
   },
   {
     id: "development",
