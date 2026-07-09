@@ -2,6 +2,8 @@ export async function POST(req) {
   try {
     const body = await req.json();
 
+
+    console.log("GOOGLE_SCRIPT_URL:", process.env.GOOGLE_SCRIPT_URL);
     const response = await fetch(process.env.GOOGLE_SCRIPT_URL, {
       method: "POST",
       headers: {
@@ -19,7 +21,6 @@ return Response.json({
   googleResponse: text,
 });
 
-    return Response.json(result);
   } catch (error) {
     console.error("GOOGLE SHEET ERROR:", error);
 
