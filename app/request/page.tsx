@@ -99,7 +99,7 @@ const handleSubmit = async () => {
   } = await supabase
     .from("staff")
     .select("staff_email");
-  
+
   console.log("STAFF LIST:", staffList);
 
   if (staffError) {
@@ -167,14 +167,31 @@ if (Object.keys(newErrors).length > 0) {
       status: "Pending",
       priority: "Attendee",
     };
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from("transport_requests")
-      .insert([payload]);
+      .insert([payload])
+      .select()
+      .single();
     if (error) {
       console.log("INSERT ERROR:", error);
       alert("Something went wrong submitting your request.");
       return;
     }
+    try {
+  const response = await fetch("/api/google-sheet/import", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  const result = await response.json();
+
+  console.log("Google Sheet:", result);
+} catch (err) {
+  console.error("Google Sheet Error:", err);
+}
     try {
       await fetch("/api/send_email", {
         method: "POST",
