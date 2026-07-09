@@ -238,6 +238,23 @@ const vehicleOptions = [
             v !== null
         );
 
+        const updateGoogleSheet = async (request: Request) => {
+          try {
+            const response = await fetch("/api/google-sheet/update", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(request),
+            });
+
+            const result = await response.json();
+            console.log("GOOGLE SHEET:", result);
+          } catch (err) {
+            console.error("GOOGLE SHEET ERROR:", err);
+          }
+        };
+
       const res = await fetch("/api/send_email", {
         method: "POST",
         headers: {
@@ -313,6 +330,11 @@ setTimeout(() => {
   setHighlightedId(null);
 }, 4000);
 
+await updateGoogleSheet({
+  ...request,
+  [field]: value,
+});
+
   // ================= AUTO EMAIL (status field only) =================
 const shouldEmail =
   field === "status" &&
@@ -383,6 +405,12 @@ if (shouldEmail) {
     setTimeout(() => {
       setHighlightedId(null);
     }, 4000);
+
+    await updateGoogleSheet({
+  ...request,
+  assigned_vehicle: vehicleString,
+  status: newStatus,
+});
 
     // Only email when the vehicle assignment itself changed. This is what
     // makes "assign a driver to an already-Approved request" send an email,
