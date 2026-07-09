@@ -211,6 +211,23 @@ const vehicleOptions = [
   "Backup Vehicle - BKP 7777",
 ];
 
+  const updateGoogleSheet = async (request: Request) => {
+    try {
+      const response = await fetch("/api/google-sheet/update", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(request),
+      });
+
+      const result = await response.json();
+      console.log("GOOGLE SHEET:", result);
+    } catch (err) {
+      console.error("GOOGLE SHEET ERROR:", err);
+    }
+  };
+
   // ================= EMAIL SENDER (shared helper) =================
   // Centralized so both status changes AND vehicle assignment changes
   // always send a correct, up-to-date email using the value just
@@ -237,23 +254,6 @@ const vehicleOptions = [
           (v): v is { vehicle: string; driver: string; phone: string } =>
             v !== null
         );
-
-        const updateGoogleSheet = async (request: Request) => {
-          try {
-            const response = await fetch("/api/google-sheet/update", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(request),
-            });
-
-            const result = await response.json();
-            console.log("GOOGLE SHEET:", result);
-          } catch (err) {
-            console.error("GOOGLE SHEET ERROR:", err);
-          }
-        };
 
       const res = await fetch("/api/send_email", {
         method: "POST",
