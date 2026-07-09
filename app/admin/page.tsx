@@ -213,7 +213,7 @@ const vehicleOptions = [
 
   const updateGoogleSheet = async (request: Request) => {
     try {
-      const response = await fetch("/api/google-sheet/update", {
+      const response = await fetch("/api/google-sheet/import", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -289,6 +289,23 @@ const vehicleOptions = [
       console.log("EMAIL ERROR:", err);
     }
   };
+
+  const updateGoogleSheet = async (request: Request) => {
+  try {
+    const response = await fetch("/api/google-sheet/import", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(request),
+    });
+
+    const result = await response.json();
+    console.log("GOOGLE SHEET:", result);
+  } catch (err) {
+    console.error("GOOGLE SHEET ERROR:", err);
+  }
+};
 
   // ================= UPDATE FIELD (status, priority, etc.) =================
   const updateField = async (
