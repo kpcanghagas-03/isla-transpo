@@ -99,7 +99,7 @@ const handleSubmit = async () => {
   } = await supabase
     .from("staff")
     .select("staff_email");
-
+  
   console.log("STAFF LIST:", staffList);
 
   if (staffError) {
@@ -355,7 +355,7 @@ const requiredTextStyle = {
           placeholder="Committee / Unit"
           value={formData.committee_unit}
           onChange={handleChange}
-          style={inputStyle(submitted && errors.commmittee_unit)}
+          style={inputStyle(submitted && errors.committee_unit)}
         />
         {submitted && errors.committee_unit && (
   <p style={requiredTextStyle}>Required</p>
@@ -541,7 +541,7 @@ const requiredTextStyle = {
           placeholder="Contact Person"
           value={formData.contact_person}
           onChange={handleChange}
-          style={inputStyle(submitted && errors.conatact_person)}
+          style={inputStyle(submitted && errors.contact_person)}
         />
         {submitted && errors.contact_person && (
   <p style={requiredTextStyle}>Required</p>
