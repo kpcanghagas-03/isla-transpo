@@ -210,24 +210,6 @@ const vehicleOptions = [
   "Isuzu Pick-up - SKB 3029",
   "Backup Vehicle - BKP 7777",
 ];
-
-  const updateGoogleSheet = async (request: Request) => {
-    try {
-      const response = await fetch("/api/google-sheet/import", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(request),
-      });
-
-      const result = await response.json();
-      console.log("GOOGLE SHEET:", result);
-    } catch (err) {
-      console.error("GOOGLE SHEET ERROR:", err);
-    }
-  };
-
   // ================= EMAIL SENDER (shared helper) =================
   // Centralized so both status changes AND vehicle assignment changes
   // always send a correct, up-to-date email using the value just
