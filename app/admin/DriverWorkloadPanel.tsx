@@ -2,10 +2,10 @@
 
 import { useMemo } from "react";
 import { User } from "lucide-react";
-import { Request, VehicleMap, splitVehicles, lookupDriver } from "./types";
+import { ScheduleRequest, VehicleMap, splitVehicles, lookupDriver } from "./types";
 
 type DriverWorkloadPanelProps = {
-  requests: Request[];
+  requests: ScheduleRequest[];
   vehicleMap: VehicleMap;
   activeDriver: string | null;
   onSelectDriver: (driver: string | null) => void;
