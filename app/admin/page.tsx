@@ -34,6 +34,7 @@ export type Request = {
   flight_arrival_time: string | null; // HH:mm[:ss]
   pick_up_date: string | null;        // YYYY-MM-DD
   pick_up_time: string | null;        // HH:mm[:ss]
+  drop_off_time?: string | null;      // HH:mm[:ss] -- NEW, dispatcher-set trip end time
 
   contact_person: string | null;
   contact_number: string | null;
@@ -91,6 +92,22 @@ export default function AdminPage() {
   const [showCompleted, setShowCompleted] = useState(false);
   const [highlightedId, setHighlightedId] = useState<number | null>(null);
 
+  // ================= NEW: VEHICLE STATUS (Off Duty / Maintenance) =================
+  const [vehicleStatusMap, setVehicleStatusMap] = useState<Record<string, "Available" | "Maintenance" | "Off Duty">>({});
+
+  const fetchVehicleStatus = async () => {
+    const { data, error } = await supabase.from("vehicle_status").select("*");
+    if (error) {
+      console.log("VEHICLE STATUS FETCH ERROR:", error);
+      return;
+    }
+    const map: Record<string, "Available" | "Maintenance" | "Off Duty"> = {};
+    (data || []).forEach((row: any) => {
+      map[row.vehicle] = row.status;
+    });
+    setVehicleStatusMap(map);
+  };
+
   // ================= FETCH REQUESTS =================
   const fetchRequests = async () => {
     const { data, error } = await supabase
@@ -111,6 +128,7 @@ export default function AdminPage() {
   // ================= REALTIME =================
   useEffect(() => {
     fetchRequests();
+    fetchVehicleStatus();
 
     const channel = supabase
       .channel("admin-live")
@@ -125,12 +143,43 @@ export default function AdminPage() {
           fetchRequests();
         }
       )
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "vehicle_status",
+        },
+        () => {
+          fetchVehicleStatus();
+        }
+      )
       .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
     };
   }, []);
+
+  // ================= NEW: SAVE DROP-OFF TIME =================
+  // Passed down to SchedulingBoard -> EventDetailModal so a dispatcher can
+  // set a trip's end time from the new Scheduler view. Mirrors the
+  // instant-UI-update + DB-write pattern used by updateField() above.
+  const updateDropOffTime = async (id: number, dropOffTime: string) => {
+    setRequests((prev) =>
+      prev.map((r) => (r.id === id ? { ...r, drop_off_time: dropOffTime } : r))
+    );
+
+    const { error } = await supabase
+      .from("transport_requests")
+      .update({ drop_off_time: dropOffTime })
+      .eq("id", id);
+
+    if (error) {
+      alert(error.message);
+      fetchRequests();
+    }
+  };
 
   // ================= STATUS COLOR =================
   const statusColor = (status: string) => {
@@ -556,6 +605,8 @@ if (shouldEmail) {
           toPHDate={toPHDate}
           toPHTime={toPHTime}
           statusColor={statusColor}
+          vehicleStatusMap={vehicleStatusMap}
+          onSaveDropOffTime={updateDropOffTime}
         />
       )}
 

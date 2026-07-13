@@ -1,16 +1,28 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
-import { Search, ArrowUpDown, ArrowUp, ArrowDown, CalendarX2, X } from "lucide-react";
-import { ScheduleRequest, VehicleMap, splitVehicles, lookupDriver } from "./types";
+import { Search, ArrowUpDown, ArrowUp, ArrowDown, CalendarX2, X, Table2, CalendarClock } from "lucide-react";
+import {
+  ScheduleRequest,
+  VehicleMap,
+  VehicleStatusMap,
+  splitVehicles,
+  lookupDriver,
+} from "./types";
 import DailySummaryCards from "./DailySummaryCards";
 import VehicleWorkloadPanel from "./VehicleWorkloadPanel";
 import DriverWorkloadPanel from "./DriverWorkloadPanel";
 import RequestsByDateCard from "./RequestsByDateCard";
 import UnassignedRequestsCard from "./UnassignedRequestsCard";
+import DispatchCalendar from "./DispatchCalendar";
+import DriverTimeline from "./DriverTimeline";
+import VehicleTimeline from "./VehicleTimeline";
+import DispatchBoard from "./DispatchBoard";
+import EventDetailModal from "./EventDetailModal";
 
 type SortField = "pick_up_date" | "pick_up_time";
 type SortDirection = "asc" | "desc";
+type SchedView = "table" | "scheduler";
 
 type SchedulingBoardProps = {
   requests: ScheduleRequest[];
@@ -20,6 +32,11 @@ type SchedulingBoardProps = {
   toPHDate: (isoDate: string | null) => string | null;
   toPHTime: (time: string | null) => string | null;
   statusColor: (status: string) => string;
+  // NEW -- both optional so this component still works untouched if
+  // page.tsx hasn't wired the new vehicle_status table / drop-off save
+  // handler yet. See page.tsx patch notes for how to supply these.
+  vehicleStatusMap?: VehicleStatusMap;
+  onSaveDropOffTime?: (id: number, dropOffTime: string) => void;
 };
 
 const STATUS_OPTIONS = [
@@ -31,6 +48,10 @@ const STATUS_OPTIONS = [
   "Emergency",
 ];
 
+function todayISO(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
 export default function SchedulingBoard({
   requests,
   loading,
@@ -39,6 +60,8 @@ export default function SchedulingBoard({
   toPHDate,
   toPHTime,
   statusColor,
+  vehicleStatusMap,
+  onSaveDropOffTime,
 }: SchedulingBoardProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [dateFilter, setDateFilter] = useState("All");
@@ -48,6 +71,12 @@ export default function SchedulingBoard({
   const [unassignedOnly, setUnassignedOnly] = useState(false);
   const [sortField, setSortField] = useState<SortField>("pick_up_date");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
+
+  // ================= NEW: SCHEDULER VIEW STATE =================
+  const [schedView, setSchedView] = useState<SchedView>("table");
+  const [timelineDate, setTimelineDate] = useState<string>(todayISO());
+  const [selectedRequest, setSelectedRequest] = useState<ScheduleRequest | null>(null);
+  const statusMap: VehicleStatusMap = vehicleStatusMap || {};
 
   const tableRef = useRef<HTMLDivElement | null>(null);
   const scrollToTable = () => {
@@ -65,6 +94,7 @@ export default function SchedulingBoard({
 
   const handleFocusRequest = (term: string) => {
     clearAllFilters();
+    setSchedView("table");
     setSearchTerm(term);
     scrollToTable();
   };
@@ -185,12 +215,32 @@ export default function SchedulingBoard({
 
   return (
     <section className="schedSection">
-      <h2 className="schedTitle" style={{ color: "#475569" }}>
-        Scheduling Board
-      </h2>
-      <p className="schedSubtitle">
-        A real-time dispatch dashboard: scan workload, spot gaps, then drill into the table below.
-      </p>
+      <div className="schedTitleRow">
+        <div>
+          <h2 className="schedTitle" style={{ color: "#475569" }}>
+            Scheduling Board
+          </h2>
+          <p className="schedSubtitle">
+            A real-time dispatch dashboard: scan workload, spot gaps, then drill into the table below.
+          </p>
+        </div>
+
+        {/* ================= NEW: TABLE / SCHEDULER VIEW SWITCH ================= */}
+        <div className="schedViewSwitch">
+          <button
+            className={`schedViewBtn ${schedView === "table" ? "schedViewBtnActive" : ""}`}
+            onClick={() => setSchedView("table")}
+          >
+            <Table2 size={14} /> Table
+          </button>
+          <button
+            className={`schedViewBtn ${schedView === "scheduler" ? "schedViewBtnActive" : ""}`}
+            onClick={() => setSchedView("scheduler")}
+          >
+            <CalendarClock size={14} /> Scheduler
+          </button>
+        </div>
+      </div>
 
       {/* ================= FEATURE 1: DAILY SUMMARY CARDS ================= */}
       <DailySummaryCards
@@ -199,12 +249,14 @@ export default function SchedulingBoard({
         onSelectStatus={(status) => {
           setStatusFilter(status ?? "All");
           setUnassignedOnly(false);
+          setSchedView("table");
           scrollToTable();
         }}
         unassignedOnly={unassignedOnly}
         onToggleUnassigned={() => {
           setUnassignedOnly((prev) => !prev);
           setStatusFilter("All");
+          setSchedView("table");
           scrollToTable();
         }}
       />
@@ -225,6 +277,7 @@ export default function SchedulingBoard({
           activeVehicle={vehicleFilter === "All" ? null : vehicleFilter}
           onSelectVehicle={(v) => {
             setVehicleFilter(v ?? "All");
+            setSchedView("table");
             scrollToTable();
           }}
         />
@@ -234,6 +287,7 @@ export default function SchedulingBoard({
           activeDriver={driverFilter === "All" ? null : driverFilter}
           onSelectDriver={(d) => {
             setDriverFilter(d ?? "All");
+            setSchedView("table");
             scrollToTable();
           }}
         />
@@ -242,176 +296,252 @@ export default function SchedulingBoard({
           activeDate={dateFilter === "All" ? null : dateFilter}
           onSelectDate={(d) => {
             setDateFilter(d ?? "All");
+            setSchedView("table");
             scrollToTable();
           }}
           toPHDate={toPHDate}
         />
       </div>
 
-      {/* ================= SEARCH & FILTERS ================= */}
-      <div className="schedControls">
-        <div className="schedSearchWrap">
-          <Search size={16} className="schedSearchIcon" />
-          <input
-            type="text"
-            placeholder="Search code, name, contact, flight, location..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="schedSearchInput"
+      {schedView === "scheduler" ? (
+        /* ================= NEW: DISPATCH CALENDAR / TIMELINES / BOARD ================= */
+        <div className="schedSchedulerWrap">
+          <DispatchCalendar
+            requests={requests}
+            vehicleMap={vehicleMap}
+            toPHDate={toPHDate}
+            toPHTime={toPHTime}
+            statusColor={statusColor}
+            onSelectRequest={setSelectedRequest}
           />
+
+          <DispatchBoard
+            requests={requests}
+            vehicleOptions={vehicleOptions}
+            vehicleMap={vehicleMap}
+            statusMap={statusMap}
+            toPHTime={toPHTime}
+            onSelectRequest={setSelectedRequest}
+          />
+
+          <div className="schedTimelineGrid">
+            <DriverTimeline
+              requests={requests}
+              vehicleMap={vehicleMap}
+              statusMap={statusMap}
+              date={timelineDate}
+              onDateChange={setTimelineDate}
+              toPHDate={toPHDate}
+              onSelectRequest={setSelectedRequest}
+            />
+            <VehicleTimeline
+              requests={requests}
+              vehicleOptions={vehicleOptions}
+              vehicleMap={vehicleMap}
+              statusMap={statusMap}
+              date={timelineDate}
+              onDateChange={setTimelineDate}
+              toPHDate={toPHDate}
+              onSelectRequest={setSelectedRequest}
+            />
+          </div>
         </div>
+      ) : (
+        <>
+          {/* ================= SEARCH & FILTERS ================= */}
+          <div className="schedControls">
+            <div className="schedSearchWrap">
+              <Search size={16} className="schedSearchIcon" />
+              <input
+                type="text"
+                placeholder="Search code, name, contact, flight, location..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="schedSearchInput"
+              />
+            </div>
 
-        <select value={dateFilter} onChange={(e) => setDateFilter(e.target.value)} className="schedSelect">
-          <option value="All">All Pickup Dates</option>
-          {pickupDates.map((d) => (
-            <option key={d} value={d}>
-              {toPHDate(d) || d}
-            </option>
-          ))}
-        </select>
+            <select value={dateFilter} onChange={(e) => setDateFilter(e.target.value)} className="schedSelect">
+              <option value="All">All Pickup Dates</option>
+              {pickupDates.map((d) => (
+                <option key={d} value={d}>
+                  {toPHDate(d) || d}
+                </option>
+              ))}
+            </select>
 
-        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="schedSelect">
-          <option value="All">All Statuses</option>
-          {STATUS_OPTIONS.map((st) => (
-            <option key={st} value={st}>
-              {st}
-            </option>
-          ))}
-        </select>
+            <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="schedSelect">
+              <option value="All">All Statuses</option>
+              {STATUS_OPTIONS.map((st) => (
+                <option key={st} value={st}>
+                  {st}
+                </option>
+              ))}
+            </select>
 
-        <select value={vehicleFilter} onChange={(e) => setVehicleFilter(e.target.value)} className="schedSelect">
-          <option value="All">All Vehicles</option>
-          {vehicleOptions.map((v) => (
-            <option key={v} value={v}>
-              {v}
-            </option>
-          ))}
-        </select>
+            <select value={vehicleFilter} onChange={(e) => setVehicleFilter(e.target.value)} className="schedSelect">
+              <option value="All">All Vehicles</option>
+              {vehicleOptions.map((v) => (
+                <option key={v} value={v}>
+                  {v}
+                </option>
+              ))}
+            </select>
 
-        <select value={driverFilter} onChange={(e) => setDriverFilter(e.target.value)} className="schedSelect">
-          <option value="All">All Drivers</option>
-          {driverOptions.map((d) => (
-            <option key={d} value={d}>
-              {d}
-            </option>
-          ))}
-        </select>
-      </div>
+            <select value={driverFilter} onChange={(e) => setDriverFilter(e.target.value)} className="schedSelect">
+              <option value="All">All Drivers</option>
+              {driverOptions.map((d) => (
+                <option key={d} value={d}>
+                  {d}
+                </option>
+              ))}
+            </select>
+          </div>
 
-      {activeFilterChips.length > 0 && (
-        <div className="schedChips">
-          {activeFilterChips.map((chip) => (
-            <button key={chip.label} className="schedChip" onClick={chip.clear}>
-              {chip.label}
-              <X size={12} />
-            </button>
-          ))}
-          <button className="schedChipClearAll" onClick={clearAllFilters}>
-            Clear All
-          </button>
-        </div>
+          {activeFilterChips.length > 0 && (
+            <div className="schedChips">
+              {activeFilterChips.map((chip) => (
+                <button key={chip.label} className="schedChip" onClick={chip.clear}>
+                  {chip.label}
+                  <X size={12} />
+                </button>
+              ))}
+              <button className="schedChipClearAll" onClick={clearAllFilters}>
+                Clear All
+              </button>
+            </div>
+          )}
+
+          <div className="schedCount">
+            Showing {rows.length} of {requests.length} requests
+          </div>
+
+          {/* ================= TABLE ================= */}
+          <div className="schedTableWrap" ref={tableRef}>
+            {loading ? (
+              <p className="loading">Loading...</p>
+            ) : rows.length === 0 ? (
+              <div className="schedEmpty">
+                <CalendarX2 size={28} />
+                <span>No requests match your search or filters.</span>
+              </div>
+            ) : (
+              <table className="schedTable">
+                <colgroup>
+                  <col style={{ width: "110px" }} />
+                  <col style={{ width: "100px" }} />
+                  <col style={{ width: "130px" }} />
+                  <col style={{ width: "190px" }} />
+                  <col style={{ width: "150px" }} />
+                  <col style={{ width: "90px" }} />
+                  <col style={{ width: "170px" }} />
+                  <col style={{ width: "170px" }} />
+                  <col style={{ width: "190px" }} />
+                  <col style={{ width: "210px" }} />
+                  <col style={{ width: "110px" }} />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th onClick={() => toggleSort("pick_up_date")} className="schedSortable">
+                      <span>Pickup Date {sortIcon("pick_up_date")}</span>
+                    </th>
+                    <th onClick={() => toggleSort("pick_up_time")} className="schedSortable">
+                      <span>Pickup Time {sortIcon("pick_up_time")}</span>
+                    </th>
+                    <th>Request Code</th>
+                    <th>Passenger Name(s)</th>
+                    <th>Contact Person</th>
+                    <th>Flight No.</th>
+                    <th>Pickup Location</th>
+                    <th>Drop-off Location</th>
+                    <th>Assigned Vehicle</th>
+                    <th>Assigned Driver</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((r) => {
+                    const vehicles = splitVehicles(r.assigned_vehicle);
+                    const driverNames = vehicles
+                      .map((v) => lookupDriver(v, vehicleMap)?.driver)
+                      .filter((d): d is string => Boolean(d));
+
+                    return (
+                      <tr
+                        key={r.id}
+                        className={!r.assigned_vehicle ? "schedRowUnassigned" : ""}
+                        onClick={() => setSelectedRequest(r)}
+                        style={{ cursor: "pointer" }}
+                      >
+                        <td>{toPHDate(r.pick_up_date) || "—"}</td>
+                        <td>{toPHTime(r.pick_up_time) || "—"}</td>
+                        <td className="schedMono">{r.request_code || "—"}</td>
+                        <td className="schedWrap">
+                          {r.passenger_names || r.requester_name || "—"}
+                        </td>
+                        <td className="schedWrap">{r.contact_person || "—"}</td>
+                        <td>{r.flight_no || "—"}</td>
+                        <td className="schedWrap">{r.pickup_location || "—"}</td>
+                        <td className="schedWrap">{r.destination || "—"}</td>
+                        <td className="schedWrap">
+                          {vehicles.length > 0 ? (
+                            <div className="schedMultiList">
+                              {vehicles.map((v) => (
+                                <div key={v}>{v.split(" - ")[0]}</div>
+                              ))}
+                            </div>
+                          ) : (
+                            "Unassigned"
+                          )}
+                        </td>
+                        <td className="schedWrap">
+                          {driverNames.length > 0 ? (
+                            <div className="schedMultiList">
+                              {driverNames.map((d) => (
+                                <div key={d}>{d}</div>
+                              ))}
+                            </div>
+                          ) : (
+                            "—"
+                          )}
+                        </td>
+                        <td>
+                          <span className="schedStatusBadge" style={{ background: statusColor(r.status) }}>
+                            {r.status}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </>
       )}
 
-      <div className="schedCount">
-        Showing {rows.length} of {requests.length} requests
-      </div>
-
-      {/* ================= TABLE ================= */}
-      <div className="schedTableWrap" ref={tableRef}>
-        {loading ? (
-          <p className="loading">Loading...</p>
-        ) : rows.length === 0 ? (
-          <div className="schedEmpty">
-            <CalendarX2 size={28} />
-            <span>No requests match your search or filters.</span>
-          </div>
-        ) : (
-          <table className="schedTable">
-            <colgroup>
-              <col style={{ width: "110px" }} />
-              <col style={{ width: "100px" }} />
-              <col style={{ width: "130px" }} />
-              <col style={{ width: "190px" }} />
-              <col style={{ width: "150px" }} />
-              <col style={{ width: "90px" }} />
-              <col style={{ width: "170px" }} />
-              <col style={{ width: "170px" }} />
-              <col style={{ width: "190px" }} />
-              <col style={{ width: "210px" }} />
-              <col style={{ width: "110px" }} />
-            </colgroup>
-            <thead>
-              <tr>
-                <th onClick={() => toggleSort("pick_up_date")} className="schedSortable">
-                  <span>Pickup Date {sortIcon("pick_up_date")}</span>
-                </th>
-                <th onClick={() => toggleSort("pick_up_time")} className="schedSortable">
-                  <span>Pickup Time {sortIcon("pick_up_time")}</span>
-                </th>
-                <th>Request Code</th>
-                <th>Passenger Name(s)</th>
-                <th>Contact Person</th>
-                <th>Flight No.</th>
-                <th>Pickup Location</th>
-                <th>Drop-off Location</th>
-                <th>Assigned Vehicle</th>
-                <th>Assigned Driver</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((r) => {
-                const vehicles = splitVehicles(r.assigned_vehicle);
-                const driverNames = vehicles
-                  .map((v) => lookupDriver(v, vehicleMap)?.driver)
-                  .filter((d): d is string => Boolean(d));
-
-                return (
-                  <tr key={r.id} className={!r.assigned_vehicle ? "schedRowUnassigned" : ""}>
-                    <td>{toPHDate(r.pick_up_date) || "—"}</td>
-                    <td>{toPHTime(r.pick_up_time) || "—"}</td>
-                    <td className="schedMono">{r.request_code || "—"}</td>
-                    <td className="schedWrap">
-                      {r.passenger_names || r.requester_name || "—"}
-                    </td>
-                    <td className="schedWrap">{r.contact_person || "—"}</td>
-                    <td>{r.flight_no || "—"}</td>
-                    <td className="schedWrap">{r.pickup_location || "—"}</td>
-                    <td className="schedWrap">{r.destination || "—"}</td>
-                    <td className="schedWrap">
-                      {vehicles.length > 0 ? (
-                        <div className="schedMultiList">
-                          {vehicles.map((v) => (
-                            <div key={v}>{v.split(" - ")[0]}</div>
-                          ))}
-                        </div>
-                      ) : (
-                        "Unassigned"
-                      )}
-                    </td>
-                    <td className="schedWrap">
-                      {driverNames.length > 0 ? (
-                        <div className="schedMultiList">
-                          {driverNames.map((d) => (
-                            <div key={d}>{d}</div>
-                          ))}
-                        </div>
-                      ) : (
-                        "—"
-                      )}
-                    </td>
-                    <td>
-                      <span className="schedStatusBadge" style={{ background: statusColor(r.status) }}>
-                        {r.status}
-                      </span>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        )}
-      </div>
+      {/* ================= NEW: EVENT DETAIL MODAL ================= */}
+      {selectedRequest && (
+        <EventDetailModal
+          request={selectedRequest}
+          requests={requests}
+          vehicleOptions={vehicleOptions}
+          vehicleMap={vehicleMap}
+          statusMap={statusMap}
+          toPHDate={toPHDate}
+          toPHTime={toPHTime}
+          statusColor={statusColor}
+          onClose={() => setSelectedRequest(null)}
+          onSaveDropOffTime={
+            onSaveDropOffTime
+              ? (id, val) => {
+                  onSaveDropOffTime(id, val);
+                  setSelectedRequest(null);
+                }
+              : undefined
+          }
+        />
+      )}
 
       <style jsx>{`
         .schedSection {
@@ -420,6 +550,15 @@ export default function SchedulingBoard({
           padding: 20px;
           box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
           margin-bottom: 28px;
+        }
+
+        .schedTitleRow {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          flex-wrap: wrap;
+          gap: 12px;
+          margin-bottom: 4px;
         }
 
         .schedTitle {
@@ -433,6 +572,48 @@ export default function SchedulingBoard({
           font-size: 13px;
           margin-top: -6px;
           margin-bottom: 16px;
+        }
+
+        .schedViewSwitch {
+          display: flex;
+          gap: 4px;
+          background: #f1f5f9;
+          padding: 4px;
+          border-radius: 12px;
+          height: fit-content;
+        }
+
+        .schedViewBtn {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          border: none;
+          background: transparent;
+          padding: 9px 16px;
+          border-radius: 9px;
+          font-weight: 700;
+          font-size: 13px;
+          color: #475569;
+          cursor: pointer;
+          font-family: inherit;
+        }
+
+        .schedViewBtnActive {
+          background: linear-gradient(90deg, #f27a35, #a61e22);
+          color: white;
+        }
+
+        .schedSchedulerWrap {
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+          margin-bottom: 8px;
+        }
+
+        .schedTimelineGrid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 16px;
         }
 
         .schedPanelsGrid {
@@ -643,6 +824,16 @@ export default function SchedulingBoard({
         }
 
         @media (max-width: 768px) {
+          .schedTitleRow {
+            flex-direction: column;
+          }
+          .schedViewSwitch {
+            width: 100%;
+          }
+          .schedViewBtn {
+            flex: 1;
+            justify-content: center;
+          }
           .schedControls {
             flex-direction: column;
           }
