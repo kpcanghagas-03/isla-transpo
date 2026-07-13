@@ -376,7 +376,7 @@ export default function DispatchCalendar({
           gap: 6px;
           font-weight: 700;
           font-size: 13px;
-          color: #0f172a;
+          color: #1e293b;
           padding: 0 6px;
           white-space: nowrap;
         }
@@ -412,7 +412,7 @@ export default function DispatchCalendar({
           width: 64px;
           font-size: 11px;
           font-weight: 600;
-          color: #94a3b8;
+          color: #334155;
           padding: 4px 8px;
           box-sizing: border-box;
           border-bottom: 1px dashed #f1f5f9;
@@ -454,12 +454,12 @@ export default function DispatchCalendar({
         .dcBlockTitle {
           font-size: 12.5px;
           font-weight: 700;
-          color: #111827;
+          color: #0f172;
         }
 
         .dcBlockMeta {
           font-size: 11px;
-          color: #64748b;
+          color: #334155;
           margin-top: 2px;
         }
 
@@ -496,7 +496,7 @@ export default function DispatchCalendar({
         .dcWeekColHeader {
           font-size: 11.5px;
           font-weight: 800;
-          color: #475569;
+          color: #1e293b;
           text-align: center;
         }
 
@@ -564,11 +564,12 @@ export default function DispatchCalendar({
         .dcEventPassenger{
             word-break: break-word;
             line-height:1.3;
+            color: #0f172a;
         }
 
         .dcEventRoute {
           font-size: 11px;
-          color: #64748b;
+          color: #334155;
         }
 
         .dcEventMeta{
@@ -576,10 +577,11 @@ export default function DispatchCalendar({
             flex-wrap:wrap;
             gap:6px;
             justify-content:space-between;
+            color: #1e293b;
         }
 
         .dcEventVehicle {
-          color: #a61e22;
+          color: #0B5ED72;
         }
 
         .dcEventStatus {
@@ -595,7 +597,7 @@ export default function DispatchCalendar({
         .dcMonthLabel {
           font-size: 15px;
           font-weight: 800;
-          color: #0f172a;
+          color: #0B3D91;
           margin-bottom: 8px;
         }
 
@@ -638,7 +640,7 @@ export default function DispatchCalendar({
         .dcMonthDate {
           font-size: 12px;
           font-weight: 700;
-          color: #111827;
+          color: #1e293b;
         }
 
         .dcMonthCount {
