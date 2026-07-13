@@ -2,10 +2,10 @@
 
 import { useMemo } from "react";
 import { Truck } from "lucide-react";
-import { Request, splitVehicles } from "./types";
+import { ScheduleRequest, splitVehicles } from "./types";
 
 type VehicleWorkloadPanelProps = {
-  requests: Request[];
+  requests: ScheduleRequest[];
   vehicleOptions: string[];
   activeVehicle: string | null;
   onSelectVehicle: (vehicle: string | null) => void;

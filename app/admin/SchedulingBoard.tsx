@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, useState } from "react";
 import { Search, ArrowUpDown, ArrowUp, ArrowDown, CalendarX2, X } from "lucide-react";
-import { Request, VehicleMap, splitVehicles, lookupDriver } from "./types";
+import { ScheduleRequest, VehicleMap, splitVehicles, lookupDriver } from "./types";
 import DailySummaryCards from "./DailySummaryCards";
 import VehicleWorkloadPanel from "./VehicleWorkloadPanel";
 import DriverWorkloadPanel from "./DriverWorkloadPanel";
@@ -13,7 +13,7 @@ type SortField = "pick_up_date" | "pick_up_time";
 type SortDirection = "asc" | "desc";
 
 type SchedulingBoardProps = {
-  requests: Request[];
+  requests: ScheduleRequest[];
   loading: boolean;
   vehicleOptions: string[];
   vehicleMap: VehicleMap;
@@ -185,7 +185,7 @@ export default function SchedulingBoard({
 
   return (
     <section className="schedSection">
-      <h2 className="sectionTitle" style={{ color: "#475569" }}>
+      <h2 className="schedTitle" style={{ color: "#475569" }}>
         Scheduling Board
       </h2>
       <p className="schedSubtitle">
@@ -395,6 +395,12 @@ export default function SchedulingBoard({
           padding: 20px;
           box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
           margin-bottom: 28px;
+        }
+
+        .schedTitle {
+          margin: 0 0 12px;
+          font-size: 24px;
+          font-weight: bold;
         }
 
         .schedSubtitle {

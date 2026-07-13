@@ -2,10 +2,10 @@
 
 import { useMemo } from "react";
 import { AlertTriangle } from "lucide-react";
-import { Request } from "./types";
+import { ScheduleRequest } from "./types";
 
 type UnassignedRequestsCardProps = {
-  requests: Request[];
+  requests: ScheduleRequest[];
   toPHDate: (isoDate: string | null) => string | null;
   toPHTime: (time: string | null) => string | null;
   onFocusRequest: (requestCode: string) => void;
