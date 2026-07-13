@@ -331,13 +331,13 @@ export default function SchedulingBoard({
               <col style={{ width: "110px" }} />
               <col style={{ width: "100px" }} />
               <col style={{ width: "130px" }} />
-              <col style={{ width: "170px" }} />
+              <col style={{ width: "190px" }} />
               <col style={{ width: "150px" }} />
-              <col style={{ width: "100px" }} />
+              <col style={{ width: "90px" }} />
               <col style={{ width: "170px" }} />
               <col style={{ width: "170px" }} />
-              <col style={{ width: "150px" }} />
-              <col style={{ width: "150px" }} />
+              <col style={{ width: "190px" }} />
+              <col style={{ width: "210px" }} />
               <col style={{ width: "110px" }} />
             </colgroup>
             <thead>
@@ -362,6 +362,9 @@ export default function SchedulingBoard({
             <tbody>
               {rows.map((r) => {
                 const vehicles = splitVehicles(r.assigned_vehicle);
+                const driverNames = vehicles
+                  .map((v) => lookupDriver(v, vehicleMap)?.driver)
+                  .filter((d): d is string => Boolean(d));
 
                 return (
                   <tr key={r.id} className={!r.assigned_vehicle ? "schedRowUnassigned" : ""}>
@@ -376,17 +379,26 @@ export default function SchedulingBoard({
                     <td className="schedWrap">{r.pickup_location || "—"}</td>
                     <td className="schedWrap">{r.destination || "—"}</td>
                     <td className="schedWrap">
-                      {vehicles.length > 0
-                        ? vehicles.map((v) => v.split(" - ")[0]).join(", ")
-                        : "Unassigned"}
+                      {vehicles.length > 0 ? (
+                        <div className="schedMultiList">
+                          {vehicles.map((v) => (
+                            <div key={v}>{v.split(" - ")[0]}</div>
+                          ))}
+                        </div>
+                      ) : (
+                        "Unassigned"
+                      )}
                     </td>
                     <td className="schedWrap">
-                      {vehicles.length > 0
-                        ? vehicles
-                            .map((v) => lookupDriver(v, vehicleMap)?.driver || "")
-                            .filter(Boolean)
-                            .join(", ") || "—"
-                        : "—"}
+                      {driverNames.length > 0 ? (
+                        <div className="schedMultiList">
+                          {driverNames.map((d) => (
+                            <div key={d}>{d}</div>
+                          ))}
+                        </div>
+                      ) : (
+                        "—"
+                      )}
                     </td>
                     <td>
                       <span className="schedStatusBadge" style={{ background: statusColor(r.status) }}>
@@ -531,7 +543,7 @@ export default function SchedulingBoard({
           border-collapse: collapse;
           table-layout: fixed;
           width: 100%;
-          min-width: 1310px;
+          min-width: 1620px;
           font-size: 13px;
         }
 
@@ -583,6 +595,12 @@ export default function SchedulingBoard({
           overflow: visible;
           text-overflow: clip;
           word-break: break-word;
+        }
+
+        .schedMultiList {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
         }
 
         .schedMono {
