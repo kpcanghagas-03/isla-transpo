@@ -7,11 +7,12 @@ import dynamic from "next/dynamic";
 const LiveMap = dynamic(() => import("@/components/LiveMap"), {
   ssr: false,
 });
-import { Users, Clock, CheckCircle, Truck, AlertTriangle, XCircle } from "lucide-react";
+import { Users, Clock, CheckCircle, Truck, AlertTriangle, XCircle, LayoutDashboard, CalendarDays } from "lucide-react";
+import SchedulingBoard from "./SchedulingBoard";
 
 
 // Shape from DB (allow nulls to match reality)
-type Request = {
+export type Request = {
   id: number;
 
   request_code: string | null;
@@ -78,6 +79,7 @@ type LiveMapRequest = Omit<Request, "priority" | "email" | "staff_email" | "comm
 };
 
 export default function AdminPage() {
+  const [mainTab, setMainTab] = useState<"dashboard" | "scheduling">("scheduling");
   const [requests, setRequests] = useState<Request[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -527,6 +529,38 @@ if (shouldEmail) {
           Live Dispatch & Transport Monitoring</p>
       </header>
 
+      {/* ================= PRIMARY TABS ================= */}
+      <div className="primaryTabs">
+        <button
+          onClick={() => setMainTab("dashboard")}
+          className={`primaryTab ${mainTab === "dashboard" ? "primaryTabActive" : ""}`}
+        >
+          <LayoutDashboard size={16} />
+          Dashboard
+        </button>
+        <button
+          onClick={() => setMainTab("scheduling")}
+          className={`primaryTab ${mainTab === "scheduling" ? "primaryTabActive" : ""}`}
+        >
+          <CalendarDays size={16} />
+          Scheduling Board
+        </button>
+      </div>
+
+      {mainTab === "scheduling" && (
+        <SchedulingBoard
+          requests={requests}
+          loading={loading}
+          vehicleOptions={vehicleOptions}
+          vehicleMap={vehicleMap}
+          toPHDate={toPHDate}
+          toPHTime={toPHTime}
+          statusColor={statusColor}
+        />
+      )}
+
+      {mainTab === "dashboard" && (
+      <>
       {/* ================= MAP ================= */}
       <section className="mapSection">
         <LiveMap requests={liveMapRequests} />
@@ -1043,6 +1077,8 @@ if (shouldEmail) {
           )}
         </div>
       </section>
+      </>
+      )}
 
       {/* ================= STYLES ================= */}
       <style jsx>{`
@@ -1086,6 +1122,42 @@ if (shouldEmail) {
   margin-bottom: 24px;
   box-shadow: 0 10px 30px rgba(0,0,0,.08);
 }
+
+.primaryTabs {
+  display: flex;
+  gap: 8px;
+  background: white;
+  padding: 6px;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0,0,0,.08);
+  margin-bottom: 20px;
+  width: fit-content;
+}
+
+.primaryTab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 12px;
+  border: none;
+  background: transparent;
+  color: #475569;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.primaryTab:hover { background: #f1f5f9; }
+
+.primaryTabActive {
+  background: linear-gradient(90deg,#F27A35,#A61E22);
+  color: white;
+  box-shadow: 0 6px 14px rgba(166,30,34,0.3);
+}
+
+.primaryTabActive:hover { background: linear-gradient(90deg,#F27A35,#A61E22); }
 
 .section { margin-bottom: 28px; }
 .sectionTitle { margin-bottom: 12px; font-size: 24px; font-weight: bold; }
@@ -1167,6 +1239,8 @@ if (shouldEmail) {
           .mapSection { height: 240px; }
           .grid { grid-template-columns: 1fr; }
           .statsGrid { grid-template-columns: repeat(2, 1fr); }
+          .primaryTabs { width: 100%; overflow-x: auto; }
+          .primaryTab { white-space: nowrap; }
         }
       `}</style>
     </main>
