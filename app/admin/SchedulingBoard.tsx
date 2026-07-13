@@ -327,6 +327,19 @@ export default function SchedulingBoard({
           </div>
         ) : (
           <table className="schedTable">
+            <colgroup>
+              <col style={{ width: "110px" }} />
+              <col style={{ width: "100px" }} />
+              <col style={{ width: "130px" }} />
+              <col style={{ width: "170px" }} />
+              <col style={{ width: "150px" }} />
+              <col style={{ width: "100px" }} />
+              <col style={{ width: "170px" }} />
+              <col style={{ width: "170px" }} />
+              <col style={{ width: "150px" }} />
+              <col style={{ width: "150px" }} />
+              <col style={{ width: "110px" }} />
+            </colgroup>
             <thead>
               <tr>
                 <th onClick={() => toggleSort("pick_up_date")} className="schedSortable">
@@ -358,7 +371,7 @@ export default function SchedulingBoard({
                     <td className="schedWrap">
                       {r.passenger_names || r.requester_name || "—"}
                     </td>
-                    <td>{r.contact_person || "—"}</td>
+                    <td className="schedWrap">{r.contact_person || "—"}</td>
                     <td>{r.flight_no || "—"}</td>
                     <td className="schedWrap">{r.pickup_location || "—"}</td>
                     <td className="schedWrap">{r.destination || "—"}</td>
@@ -516,8 +529,9 @@ export default function SchedulingBoard({
 
         .schedTable {
           border-collapse: collapse;
+          table-layout: fixed;
           width: 100%;
-          min-width: 1150px;
+          min-width: 1310px;
           font-size: 13px;
         }
 
@@ -531,7 +545,8 @@ export default function SchedulingBoard({
           padding: 12px 14px;
           font-weight: 700;
           font-size: 12px;
-          white-space: nowrap;
+          white-space: normal;
+          word-break: break-word;
         }
 
         .schedSortable {
@@ -555,6 +570,8 @@ export default function SchedulingBoard({
           color: #111827;
           vertical-align: top;
           white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
 
         .schedRowUnassigned {
@@ -563,7 +580,9 @@ export default function SchedulingBoard({
 
         .schedWrap {
           white-space: normal;
-          max-width: 220px;
+          overflow: visible;
+          text-overflow: clip;
+          word-break: break-word;
         }
 
         .schedMono {
