@@ -2,10 +2,10 @@
 
 import { useMemo } from "react";
 import { Users, Clock, CheckCircle, Truck, Flag, AlertTriangle } from "lucide-react";
-import { Request } from "./types";
+import { ScheduleRequest } from "./types";
 
 type DailySummaryCardsProps = {
-  requests: Request[];
+  requests: ScheduleRequest[];
   activeStatus: string | null;
   onSelectStatus: (status: string | null) => void;
   unassignedOnly: boolean;

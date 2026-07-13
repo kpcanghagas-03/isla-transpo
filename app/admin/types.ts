@@ -4,7 +4,16 @@
 // component tree doesn't depend on that file's exact path in your project.
 // If you'd rather share one definition end-to-end, move this into your own
 // central types module and import it from page.tsx as well.
-export type Request = {
+//
+// Named `ScheduleRequest` (not `Request`) on purpose: `page.tsx` already
+// declares its own local `export type Request = {...}`. Two different
+// types with the identical name `Request` in the same project is exactly
+// the kind of thing that throws "Import declaration conflicts with local
+// declaration of 'Request'" the moment both get imported into one file.
+// page.tsx's Request (the fuller shape) is structurally compatible with
+// this narrower ScheduleRequest, so passing page.tsx's `requests` prop
+// straight into these components continues to work with no changes there.
+export type ScheduleRequest = {
   id: number;
   request_code: string | null;
   requester_name: string;

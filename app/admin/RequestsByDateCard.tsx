@@ -2,10 +2,10 @@
 
 import { useMemo } from "react";
 import { CalendarRange, Flame } from "lucide-react";
-import { Request } from "./types";
+import { ScheduleRequest } from "./types";
 
 type RequestsByDateCardProps = {
-  requests: Request[];
+  requests: ScheduleRequest[];
   activeDate: string | null;
   onSelectDate: (date: string | null) => void;
   toPHDate: (isoDate: string | null) => string | null;
