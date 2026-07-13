@@ -303,10 +303,24 @@ export default function DispatchCalendar({
 
       <style jsx>{`
         .dcPanel {
-          display: flex;
-          flex-direction: column;
-          gap: 14px;
-        }
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+
+            width: 100%;
+            box-sizing: border-box;
+
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 20px;
+
+            box-shadow:
+                0 1px 3px rgba(15,23,42,.05),
+                0 8px 24px rgba(15,23,42,.06);
+
+            overflow: hidden;
+            }
 
         .dcToolbar {
           display: flex;
@@ -429,7 +443,7 @@ export default function DispatchCalendar({
           text-align: left;
           cursor: pointer;
           font-family: inherit;
-          overflow: hidden;
+          overflow: auto;
         }
 
         .dcBlockConflict {
@@ -459,9 +473,9 @@ export default function DispatchCalendar({
 
         /* ---- Week view ---- */
         .dcWeekGrid {
-          display: grid;
-          grid-template-columns: repeat(7, 1fr);
-          gap: 8px;
+        display: grid;
+        grid-template-columns: repeat(7, minmax(220px, 1fr));
+        overflow-x: auto;
         }
 
         .dcWeekCol {
@@ -547,10 +561,9 @@ export default function DispatchCalendar({
           color: #b91c1c;
         }
 
-        .dcEventPassenger {
-          font-size: 12.5px;
-          font-weight: 700;
-          color: #111827;
+        .dcEventPassenger{
+            word-break: break-word;
+            line-height:1.3;
         }
 
         .dcEventRoute {
@@ -558,12 +571,11 @@ export default function DispatchCalendar({
           color: #64748b;
         }
 
-        .dcEventMeta {
-          display: flex;
-          justify-content: space-between;
-          font-size: 10.5px;
-          color: #475569;
-          font-weight: 600;
+        .dcEventMeta{
+            display:flex;
+            flex-wrap:wrap;
+            gap:6px;
+            justify-content:space-between;
         }
 
         .dcEventVehicle {
