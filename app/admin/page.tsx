@@ -253,11 +253,11 @@ export default function AdminPage() {
     driver: " LGU Mahinog - Mr. Clint Luyahan",
     phone: "09558634264",
   },
-  "Nissan Premium - TBD ": {
+  "Nissan Urban Van - 070107  ": {
     driver: " LGU Sagay - Mr. Eric Bitas",
     phone: "09761592921",
   },
-  "Toyota Hi-Ace - TBD": {
+  "Toyota Hi-Ace - SAA 6769": {
     driver: " LGU Sagay - Mr. Ardindo Bitas",
     phone: "09491561185",
   },
@@ -281,8 +281,8 @@ const vehicleOptions = [
   "Isuzu Crewcab - SEB 403",
   "Nissan Urban Van - 070106",
   "Toyota Hilux FX4 - SKB 2310",
-  "Nissan Premium - TBD ",
-  "Toyota Hi-Ace - TBD",
+  "Nissan Urban Van - 070107  ",
+  "Toyota Hi-Ace - SAA 6769",
   "Mitsubishi L300 - TBD",
   "Isuzu Traviz - TBD"
 ];
