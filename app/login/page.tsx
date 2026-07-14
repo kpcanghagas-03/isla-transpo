@@ -11,7 +11,7 @@ export default function AdminLoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setLoading(true);
@@ -29,7 +29,7 @@ export default function AdminLoginPage() {
     }
 
     router.replace("/admin");
-  };
+  }
 
   return (
     <div className="login-shell">
