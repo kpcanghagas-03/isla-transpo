@@ -142,7 +142,7 @@ export default function DispatchCalendar({
   <button
     className="dcJumpButton"
     onClick={() => {
-      document.getElementById("jump-date-picker")?.showPicker?.();
+      (document.getElementById("jump-date-picker") as HTMLInputElement)?.showPicker?.();
     }}
   >
     <CalendarDays size={16} />
