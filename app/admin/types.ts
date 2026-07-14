@@ -238,4 +238,66 @@ export const AVAILABILITY_COLOR: Record<Availability, string> = {
   maintenance: "#ef4444",
 };
 
+// ================= NEW: DRIVER COLOR CODING =================
+// Each driver gets one consistent color across the whole calendar so a
+// dispatcher can spot a driver's full workload / any overlap at a glance,
+// instead of the card color meaning "status" (status becomes a small
+// badge instead -- see STATUS_BADGE below).
+const DRIVER_PALETTE = [
+  "#2563eb", // blue
+  "#16a34a", // green
+  "#7c3aed", // purple
+  "#f97316", // orange
+  "#db2777", // pink/red
+  "#0d9488", // teal
+  "#ca8a04", // amber
+  "#0891b2", // cyan
+  "#9333ea", // violet
+  "#65a30d", // lime
+];
+
+const UNASSIGNED_DRIVER_COLOR = "#94a3b8"; // neutral gray
+
+// Deterministic: same driver always gets the same color for a given
+// sorted driver roster, regardless of render order or filtering.
+export function getDriverColorMap(vehicleMap: VehicleMap): Record<string, string> {
+  const drivers = Array.from(new Set(Object.values(vehicleMap).map((v) => v.driver))).sort();
+  const map: Record<string, string> = {};
+  drivers.forEach((d, i) => {
+    map[d] = DRIVER_PALETTE[i % DRIVER_PALETTE.length];
+  });
+  return map;
+}
+
+export function getDriverColor(
+  driver: string | null | undefined,
+  driverColorMap: Record<string, string>
+): string {
+  if (!driver) return UNASSIGNED_DRIVER_COLOR;
+  return driverColorMap[driver] || UNASSIGNED_DRIVER_COLOR;
+}
+
+// ================= NEW: STATUS BADGE (small indicator, not card color) =================
+export const STATUS_BADGE: Record<string, string> = {
+  Pending: "🟡",
+  Approved: "🟢",
+  "On the way": "🔵",
+  Completed: "⚫",
+  Disapproved: "🔴",
+  Emergency: "🟣",
+};
+
+export function getStatusBadge(status: string): string {
+  return STATUS_BADGE[status] || "⚪";
+}
+
+// ================= NEW: PASSENGER COUNT =================
+// There's no dedicated passenger-count column -- passenger_names stores a
+// comma-separated list (or a single name). Count entries, minimum 1.
+export function getPassengerCount(r: ScheduleRequest): number {
+  const raw = (r.passenger_names || "").trim();
+  if (!raw) return 1;
+  return raw.split(",").map((s) => s.trim()).filter(Boolean).length || 1;
+}
+
 export {};

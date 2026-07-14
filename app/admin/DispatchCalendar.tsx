@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ChevronLeft, ChevronRight, CalendarDays } from "lucide-react";
+import { ChevronLeft, ChevronRight, CalendarDays, Search } from "lucide-react";
 import {
   ScheduleRequest,
   VehicleMap,
@@ -10,6 +10,9 @@ import {
   getTripWindow,
   minutesToTime,
   getConflicts,
+  getDriverColor,
+  getStatusBadge,
+  getPassengerCount,
 } from "./types";
 
 type CalendarView = "day" | "week" | "month";
@@ -17,15 +20,21 @@ type CalendarView = "day" | "week" | "month";
 type DispatchCalendarProps = {
   requests: ScheduleRequest[];
   vehicleMap: VehicleMap;
+  vehicleOptions: string[];
+  driverColorMap: Record<string, string>;
+  loading?: boolean;
   toPHDate: (isoDate: string | null) => string | null;
   toPHTime: (time: string | null) => string | null;
-  statusColor: (status: string) => string;
+  activeDate: string;
+  onDateChange: (date: string) => void;
+  activeRequestId: number | null;
   onSelectRequest: (request: ScheduleRequest) => void;
 };
 
 const DAY_START_MIN = 5 * 60; // 5:00 AM
 const DAY_END_MIN = 22 * 60; // 10:00 PM
 const PX_PER_MIN = 1.1;
+const MAX_VISIBLE_PER_CELL = 3;
 
 function toISODate(d: Date): string {
   return d.toISOString().slice(0, 10);
@@ -39,7 +48,7 @@ function addDays(iso: string, days: number): string {
 
 function startOfWeek(iso: string): string {
   const d = new Date(`${iso}T00:00:00`);
-  const day = d.getDay(); // 0 = Sunday
+  const day = d.getDay();
   d.setDate(d.getDate() - day);
   return toISODate(d);
 }
@@ -53,66 +62,120 @@ function startOfMonth(iso: string): string {
 export default function DispatchCalendar({
   requests,
   vehicleMap,
+  vehicleOptions,
+  driverColorMap,
+  loading,
   toPHDate,
   toPHTime,
-  statusColor,
+  activeDate,
+  onDateChange,
+  activeRequestId,
   onSelectRequest,
 }: DispatchCalendarProps) {
   const [view, setView] = useState<CalendarView>("day");
-  const [anchor, setAnchor] = useState<string>(() => toISODate(new Date()));
+  const [search, setSearch] = useState("");
+  const [vehicleFilter, setVehicleFilter] = useState("All");
+  const [driverFilter, setDriverFilter] = useState("All");
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [expandedCells, setExpandedCells] = useState<Set<string>>(new Set());
 
   const conflicts = useMemo(() => getConflicts(requests, vehicleMap), [requests, vehicleMap]);
 
-  const eventLabel = (r: ScheduleRequest) => {
-    const win = getTripWindow(r);
-    const vehicles = splitVehicles(r.assigned_vehicle);
-    const drivers = vehicles
-      .map((v) => lookupDriver(v, vehicleMap)?.driver)
-      .filter(Boolean)
-      .join(", ");
-    return { win, vehicles, drivers };
+  const driverOptions = useMemo(
+    () => Array.from(new Set(Object.values(vehicleMap).map((v) => v.driver))).sort(),
+    [vehicleMap]
+  );
+
+  const filtered = useMemo(() => {
+    const s = search.trim().toLowerCase();
+    return requests.filter((r) => {
+      const vehicles = splitVehicles(r.assigned_vehicle);
+      const driver = vehicles.map((v) => lookupDriver(v, vehicleMap)?.driver).find(Boolean) || null;
+
+      if (vehicleFilter !== "All" && !vehicles.includes(vehicleFilter)) return false;
+      if (driverFilter !== "All" && driver !== driverFilter) return false;
+      if (statusFilter !== "All" && r.status !== statusFilter) return false;
+      if (!s) return true;
+
+      return (
+        (r.passenger_names || "").toLowerCase().includes(s) ||
+        (r.requester_name || "").toLowerCase().includes(s) ||
+        (r.request_code || "").toLowerCase().includes(s) ||
+        (r.pickup_location || "").toLowerCase().includes(s) ||
+        (r.destination || "").toLowerCase().includes(s) ||
+        (driver || "").toLowerCase().includes(s)
+      );
+    });
+  }, [requests, search, vehicleFilter, driverFilter, statusFilter, vehicleMap]);
+
+  const toggleExpanded = (key: string) => {
+    setExpandedCells((prev) => {
+      const next = new Set(prev);
+      next.has(key) ? next.delete(key) : next.add(key);
+      return next;
+    });
   };
 
-  const renderEventCard = (r: ScheduleRequest, compact = false) => {
-    const { win, vehicles, drivers } = eventLabel(r);
+  // ---- Shared compact card renderer ----
+  const renderCard = (r: ScheduleRequest, keyPrefix: string) => {
+    const win = getTripWindow(r);
+    const vehicles = splitVehicles(r.assigned_vehicle);
+    const driver = vehicles.map((v) => lookupDriver(v, vehicleMap)?.driver).find(Boolean) || null;
+    const color = getDriverColor(driver, driverColorMap);
     const hasConflict = conflicts.has(r.id);
+    const isActive = activeRequestId === r.id;
+
     return (
       <button
-        key={r.id}
-        className={`dcEvent ${hasConflict ? "dcEventConflict" : ""} ${compact ? "dcEventCompact" : ""}`}
+        key={`${keyPrefix}-${r.id}`}
+        className={`dcCard ${isActive ? "dcCardActive" : ""}`}
+        style={{ background: `${color}14`, borderLeftColor: color }}
         onClick={() => onSelectRequest(r)}
-        style={{ borderLeftColor: statusColor(r.status) }}
+        title={`${r.passenger_names || r.requester_name} · ${r.pickup_location || "?"} → ${r.destination || "?"}`}
       >
-        <div className="dcEventTop">
-          <span className="dcEventTime">
-            {win ? `${minutesToTime(win.start)}–${minutesToTime(win.end)}` : "No time"}
-          </span>
-          {hasConflict && <span className="dcConflictBadge">⚠ Conflict</span>}
+        {hasConflict && <span className="dcCardWarn">⚠</span>}
+        <div className="dcCardTime">
+          {win ? `${minutesToTime(win.start)}–${minutesToTime(win.end)}` : r.pick_up_time || "No time"}
         </div>
-        <div className="dcEventPassenger">{r.passenger_names || r.requester_name}</div>
-        {!compact && (
-          <div className="dcEventRoute">
-            📍 {r.pickup_location || "N/A"} → 🎯 {r.destination || "N/A"}
-          </div>
-        )}
-        <div className="dcEventMeta">
-          <span>{drivers || "Unassigned"}</span>
-          <span className="dcEventVehicle">{vehicles.map((v) => v.split(" - ")[0]).join(", ") || "No vehicle"}</span>
+        <div className="dcCardRow">👥 {getPassengerCount(r)}</div>
+        <div className="dcCardRow">🚐 {vehicles.map((v) => v.split(" - ")[0]).join(", ") || "No vehicle"}</div>
+        <div className="dcCardRow" style={{ color, fontWeight: 700 }}>
+          👨 {driver || "Unassigned"}
         </div>
-        <span className="dcEventStatus" style={{ background: statusColor(r.status) }}>
-          {r.status}
-        </span>
+        <span className="dcCardBadge">{getStatusBadge(r.status)}</span>
       </button>
+    );
+  };
+
+  const renderCellList = (dayReqs: ScheduleRequest[], cellKey: string) => {
+    const expanded = expandedCells.has(cellKey);
+    const visible = expanded ? dayReqs : dayReqs.slice(0, MAX_VISIBLE_PER_CELL);
+    const hidden = dayReqs.length - visible.length;
+
+    return (
+      <>
+        {visible.map((r) => renderCard(r, cellKey))}
+        {hidden > 0 && (
+          <button className="dcMoreBtn" onClick={() => toggleExpanded(cellKey)}>
+            +{hidden} more
+          </button>
+        )}
+        {expanded && dayReqs.length > MAX_VISIBLE_PER_CELL && (
+          <button className="dcMoreBtn" onClick={() => toggleExpanded(cellKey)}>
+            Show less
+          </button>
+        )}
+      </>
     );
   };
 
   // ================= DAY VIEW =================
   const dayRequests = useMemo(
     () =>
-      requests
-        .filter((r) => r.pick_up_date === anchor)
+      filtered
+        .filter((r) => r.pick_up_date === activeDate)
         .sort((a, b) => (a.pick_up_time || "").localeCompare(b.pick_up_time || "")),
-    [requests, anchor]
+    [filtered, activeDate]
   );
 
   const hours = useMemo(() => {
@@ -140,23 +203,28 @@ export default function DispatchCalendar({
           const win = getTripWindow(r);
           if (!win) return null;
           const top = Math.max(0, (win.start - DAY_START_MIN) * PX_PER_MIN);
-          const height = Math.max(28, (win.end - win.start) * PX_PER_MIN);
+          const height = Math.max(46, (win.end - win.start) * PX_PER_MIN);
+          const vehicles = splitVehicles(r.assigned_vehicle);
+          const driver = vehicles.map((v) => lookupDriver(v, vehicleMap)?.driver).find(Boolean) || null;
+          const color = getDriverColor(driver, driverColorMap);
           const hasConflict = conflicts.has(r.id);
-          const { vehicles, drivers } = eventLabel(r);
+          const isActive = activeRequestId === r.id;
+
           return (
             <button
               key={r.id}
-              className={`dcBlock ${hasConflict ? "dcBlockConflict" : ""}`}
-              style={{ top, height, borderLeftColor: statusColor(r.status) }}
+              className={`dcBlock ${isActive ? "dcBlockActive" : ""}`}
+              style={{ top, height, background: `${color}14`, borderLeftColor: color }}
               onClick={() => onSelectRequest(r)}
             >
               <div className="dcBlockTitle">
-                {minutesToTime(win.start)}–{minutesToTime(win.end)} · {r.passenger_names || r.requester_name}
+                {minutesToTime(win.start)}–{minutesToTime(win.end)} · 👥 {getPassengerCount(r)}
               </div>
-              <div className="dcBlockMeta">
-                {drivers || "Unassigned"} · {vehicles.map((v) => v.split(" - ")[0]).join(", ") || "No vehicle"}
-                {hasConflict && <span className="dcConflictBadge"> ⚠ Conflict</span>}
+              <div className="dcBlockMeta" style={{ color }}>
+                👨 {driver || "Unassigned"} · 🚐 {vehicles.map((v) => v.split(" - ")[0]).join(", ") || "No vehicle"}
               </div>
+              <span className="dcBlockBadge">{getStatusBadge(r.status)}</span>
+              {hasConflict && <span className="dcBlockWarn">⚠</span>}
             </button>
           );
         })}
@@ -170,25 +238,23 @@ export default function DispatchCalendar({
   );
 
   // ================= WEEK VIEW =================
-  const weekStart = startOfWeek(anchor);
+  const weekStart = startOfWeek(activeDate);
   const weekDays = useMemo(() => Array.from({ length: 7 }, (_, i) => addDays(weekStart, i)), [weekStart]);
 
   const renderWeekView = () => (
     <div className="dcWeekGrid">
       {weekDays.map((iso) => {
-        const dayReqs = requests
+        const dayReqs = filtered
           .filter((r) => r.pick_up_date === iso)
           .sort((a, b) => (a.pick_up_time || "").localeCompare(b.pick_up_time || ""));
         const isToday = iso === toISODate(new Date());
         return (
           <div key={iso} className={`dcWeekCol ${isToday ? "dcWeekColToday" : ""}`}>
-            <div className="dcWeekColHeader">{toPHDate(iso) || iso}</div>
+            <button className="dcWeekColHeader" onClick={() => { onDateChange(iso); setView("day"); }}>
+              {toPHDate(iso) || iso}
+            </button>
             <div className="dcWeekColBody">
-              {dayReqs.length === 0 ? (
-                <p className="dcEmptySmall">No trips</p>
-              ) : (
-                dayReqs.map((r) => renderEventCard(r, true))
-              )}
+              {dayReqs.length === 0 ? <p className="dcEmptySmall">No trips</p> : renderCellList(dayReqs, `week-${iso}`)}
             </div>
           </div>
         );
@@ -197,29 +263,11 @@ export default function DispatchCalendar({
   );
 
   // ================= MONTH VIEW =================
-  const monthStart = startOfMonth(anchor);
+  const monthStart = startOfMonth(activeDate);
   const monthGridStart = startOfWeek(monthStart);
-  const monthDate = new Date(`${anchor}T00:00:00`);
+  const monthDate = new Date(`${activeDate}T00:00:00`);
   const monthLabel = monthDate.toLocaleDateString("en-PH", { month: "long", year: "numeric" });
-
   const monthCells = useMemo(() => Array.from({ length: 42 }, (_, i) => addDays(monthGridStart, i)), [monthGridStart]);
-
-  const countsByDate = useMemo(() => {
-    const map = new Map<string, number>();
-    requests.forEach((r) => {
-      if (!r.pick_up_date) return;
-      map.set(r.pick_up_date, (map.get(r.pick_up_date) || 0) + 1);
-    });
-    return map;
-  }, [requests]);
-
-  const conflictDatesSet = useMemo(() => {
-    const set = new Set<string>();
-    requests.forEach((r) => {
-      if (conflicts.has(r.id) && r.pick_up_date) set.add(r.pick_up_date);
-    });
-    return set;
-  }, [requests, conflicts]);
 
   const renderMonthView = () => (
     <div>
@@ -232,24 +280,24 @@ export default function DispatchCalendar({
         ))}
         {monthCells.map((iso) => {
           const inMonth = iso.slice(0, 7) === monthStart.slice(0, 7);
-          const count = countsByDate.get(iso) || 0;
-          const hasConflict = conflictDatesSet.has(iso);
+          const dayReqs = filtered
+            .filter((r) => r.pick_up_date === iso)
+            .sort((a, b) => (a.pick_up_time || "").localeCompare(b.pick_up_time || ""));
           return (
-            <button
-              key={iso}
-              className={`dcMonthCell ${inMonth ? "" : "dcMonthCellMuted"}`}
-              onClick={() => {
-                setAnchor(iso);
-                setView("day");
-              }}
-            >
-              <span className="dcMonthDate">{Number(iso.slice(8, 10))}</span>
-              {count > 0 && (
-                <span className={`dcMonthCount ${hasConflict ? "dcMonthCountConflict" : ""}`}>
-                  {count} trip{count === 1 ? "" : "s"}
-                </span>
-              )}
-            </button>
+            <div key={iso} className={`dcMonthCell ${inMonth ? "" : "dcMonthCellMuted"}`}>
+              <button
+                className="dcMonthDate"
+                onClick={() => {
+                  onDateChange(iso);
+                  setView("day");
+                }}
+              >
+                {Number(iso.slice(8, 10))}
+              </button>
+              <div className="dcMonthCellBody">
+                {dayReqs.length === 0 ? null : renderCellList(dayReqs, `month-${iso}`)}
+              </div>
+            </div>
           );
         })}
       </div>
@@ -257,12 +305,12 @@ export default function DispatchCalendar({
   );
 
   const shiftAnchor = (dir: 1 | -1) => {
-    if (view === "day") setAnchor((a) => addDays(a, dir));
-    else if (view === "week") setAnchor((a) => addDays(a, dir * 7));
+    if (view === "day") onDateChange(addDays(activeDate, dir));
+    else if (view === "week") onDateChange(addDays(activeDate, dir * 7));
     else {
-      const d = new Date(`${anchor}T00:00:00`);
+      const d = new Date(`${activeDate}T00:00:00`);
       d.setMonth(d.getMonth() + dir);
-      setAnchor(toISODate(d));
+      onDateChange(toISODate(d));
     }
   };
 
@@ -286,41 +334,78 @@ export default function DispatchCalendar({
           </button>
           <span className="dcNavLabel">
             <CalendarDays size={14} />
-            {view === "month" ? monthLabel : toPHDate(anchor) || anchor}
+            {view === "month" ? monthLabel : toPHDate(activeDate) || activeDate}
           </span>
           <button className="dcNavBtn" onClick={() => shiftAnchor(1)}>
             <ChevronRight size={16} />
           </button>
-          <button className="dcTodayBtn" onClick={() => setAnchor(toISODate(new Date()))}>
+          <button className="dcTodayBtn" onClick={() => onDateChange(toISODate(new Date()))}>
             Today
           </button>
         </div>
       </div>
 
-      {view === "day" && renderDayView()}
-      {view === "week" && renderWeekView()}
-      {view === "month" && renderMonthView()}
+      <div className="dcFilterRow">
+        <div className="dcSearchWrap">
+          <Search size={14} className="dcSearchIcon" />
+          <input
+            className="dcSearchInput"
+            placeholder="Search trips..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+        <select className="dcSelect" value={vehicleFilter} onChange={(e) => setVehicleFilter(e.target.value)}>
+          <option value="All">All Vehicles</option>
+          {vehicleOptions.map((v) => (
+            <option key={v} value={v}>
+              {v.split(" - ")[0]}
+            </option>
+          ))}
+        </select>
+        <select className="dcSelect" value={driverFilter} onChange={(e) => setDriverFilter(e.target.value)}>
+          <option value="All">All Drivers</option>
+          {driverOptions.map((d) => (
+            <option key={d} value={d}>
+              {d}
+            </option>
+          ))}
+        </select>
+        <select className="dcSelect" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+          <option value="All">All Statuses</option>
+          {["Pending", "Approved", "On the way", "Completed", "Disapproved", "Emergency"].map((s) => (
+            <option key={s} value={s}>
+              {s}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {loading ? (
+        <div className="dcSkeletonWrap">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="dcSkeletonRow" />
+          ))}
+        </div>
+      ) : (
+        <>
+          {view === "day" && renderDayView()}
+          {view === "week" && renderWeekView()}
+          {view === "month" && renderMonthView()}
+        </>
+      )}
 
       <style jsx>{`
         .dcPanel {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-
-            width: 100%;
-            box-sizing: border-box;
-
-            background: #fff;
-            border: 1px solid #e5e7eb;
-            border-radius: 16px;
-            padding: 20px;
-
-            box-shadow:
-                0 1px 3px rgba(15,23,42,.05),
-                0 8px 24px rgba(15,23,42,.06);
-
-            overflow: hidden;
-            }
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+          background: white;
+          border-radius: 16px;
+          padding: 16px;
+          box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
+          border: 1px solid rgba(0, 0, 0, 0.05);
+        }
 
         .dcToolbar {
           display: flex;
@@ -376,7 +461,7 @@ export default function DispatchCalendar({
           gap: 6px;
           font-weight: 700;
           font-size: 13px;
-          color: #1e293b;
+          color: #0f172a;
           padding: 0 6px;
           white-space: nowrap;
         }
@@ -390,6 +475,69 @@ export default function DispatchCalendar({
           font-weight: 700;
           color: #1f5aa6;
           cursor: pointer;
+        }
+
+        .dcFilterRow {
+          display: flex;
+          gap: 8px;
+          flex-wrap: wrap;
+        }
+
+        .dcSearchWrap {
+          position: relative;
+          flex: 2;
+          min-width: 180px;
+        }
+
+        .dcSearchIcon {
+          position: absolute;
+          left: 10px;
+          top: 50%;
+          transform: translateY(-50%);
+          color: #94a3b8;
+        }
+
+        .dcSearchInput {
+          width: 100%;
+          padding: 8px 10px 8px 30px;
+          border-radius: 9px;
+          border: 1px solid #cbd5e1;
+          font-size: 12.5px;
+          color: #111827;
+          box-sizing: border-box;
+        }
+
+        .dcSelect {
+          flex: 1;
+          min-width: 130px;
+          padding: 8px 10px;
+          border-radius: 9px;
+          border: 1px solid #cbd5e1;
+          color: #111827;
+          font-size: 12.5px;
+        }
+
+        .dcSkeletonWrap {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .dcSkeletonRow {
+          height: 48px;
+          border-radius: 10px;
+          background: linear-gradient(90deg, #f1f5f9 25%, #e8edf3 37%, #f1f5f9 63%);
+          background-size: 400% 100%;
+          animation: dcShimmer 1.4s ease infinite;
+        }
+
+        @keyframes dcShimmer {
+          0% {
+            background-position: 100% 50%;
+          }
+          100% {
+            background-position: 0 50%;
+          }
         }
 
         /* ---- Day view ---- */
@@ -406,13 +554,17 @@ export default function DispatchCalendar({
           flex-direction: column;
           border-right: 1px solid #e2e8f0;
           flex-shrink: 0;
+          position: sticky;
+          left: 0;
+          background: white;
+          z-index: 2;
         }
 
         .dcHourRow {
           width: 64px;
           font-size: 11px;
           font-weight: 600;
-          color: #334155;
+          color: #94a3b8;
           padding: 4px 8px;
           box-sizing: border-box;
           border-bottom: 1px dashed #f1f5f9;
@@ -435,32 +587,45 @@ export default function DispatchCalendar({
           position: absolute;
           left: 8px;
           right: 8px;
-          background: #f8fafc;
           border: 1px solid #e2e8f0;
-          border-left: 4px solid #1f5aa6;
+          border-left: 4px solid #94a3b8;
           border-radius: 10px;
           padding: 6px 10px;
           text-align: left;
           cursor: pointer;
           font-family: inherit;
-          overflow: auto;
+          overflow: hidden;
         }
 
-        .dcBlockConflict {
-          background: #fef2f2;
-          border-color: #fecaca;
+        .dcBlockActive {
+          box-shadow: 0 0 0 2px #1f5aa6;
         }
 
         .dcBlockTitle {
-          font-size: 12.5px;
+          font-size: 12px;
           font-weight: 700;
-          color: #0f172;
+          color: #111827;
         }
 
         .dcBlockMeta {
-          font-size: 11px;
-          color: #334155;
+          font-size: 10.5px;
+          font-weight: 700;
           margin-top: 2px;
+        }
+
+        .dcBlockBadge {
+          position: absolute;
+          bottom: 6px;
+          right: 10px;
+          font-size: 13px;
+        }
+
+        .dcBlockWarn {
+          position: absolute;
+          top: 6px;
+          right: 8px;
+          color: #b91c1c;
+          font-weight: 800;
         }
 
         .dcNoTimeNote {
@@ -473,9 +638,9 @@ export default function DispatchCalendar({
 
         /* ---- Week view ---- */
         .dcWeekGrid {
-        display: grid;
-        grid-template-columns: repeat(7, minmax(220px, 1fr));
-        overflow-x: auto;
+          display: grid;
+          grid-template-columns: repeat(7, 1fr);
+          gap: 8px;
         }
 
         .dcWeekCol {
@@ -496,8 +661,12 @@ export default function DispatchCalendar({
         .dcWeekColHeader {
           font-size: 11.5px;
           font-weight: 800;
-          color: #1e293b;
+          color: #475569;
           text-align: center;
+          background: transparent;
+          border: none;
+          cursor: pointer;
+          font-family: inherit;
         }
 
         .dcWeekColBody {
@@ -515,89 +684,72 @@ export default function DispatchCalendar({
           font-weight: 600;
         }
 
-        /* ---- Event card (used in week view + list contexts) ---- */
-        .dcEvent {
+        /* ---- Compact dispatch card (week + month) ---- */
+        .dcCard {
+          position: relative;
           text-align: left;
-          background: white;
           border: 1px solid #e2e8f0;
-          border-left: 4px solid #1f5aa6;
+          border-left: 4px solid #94a3b8;
           border-radius: 10px;
-          padding: 8px 10px;
+          padding: 6px 8px 6px 8px;
           cursor: pointer;
           font-family: inherit;
           display: flex;
           flex-direction: column;
-          gap: 4px;
+          gap: 2px;
         }
 
-        .dcEvent:hover {
-          background: #f8fafc;
+        .dcCardActive {
+          box-shadow: 0 0 0 2px #1f5aa6;
         }
 
-        .dcEventConflict {
-          background: #fef2f2;
-          border-color: #fecaca;
-        }
-
-        .dcEventCompact {
-          padding: 6px 8px;
-        }
-
-        .dcEventTop {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
-
-        .dcEventTime {
-          font-size: 11px;
-          font-weight: 800;
-          color: #1f5aa6;
-        }
-
-        .dcConflictBadge {
-          font-size: 10px;
-          font-weight: 800;
+        .dcCardWarn {
+          position: absolute;
+          top: 4px;
+          right: 6px;
           color: #b91c1c;
-        }
-
-        .dcEventPassenger{
-            word-break: break-word;
-            line-height:1.3;
-            color: #0f172a;
-        }
-
-        .dcEventRoute {
+          font-weight: 800;
           font-size: 11px;
-          color: #334155;
         }
 
-        .dcEventMeta{
-            display:flex;
-            flex-wrap:wrap;
-            gap:6px;
-            justify-content:space-between;
-            color: #1e293b;
+        .dcCardTime {
+          font-size: 11px;
+          font-weight: 800;
+          color: #111827;
         }
 
-        .dcEventVehicle {
-          color: #0B5ED72;
-        }
-
-        .dcEventStatus {
-          align-self: flex-start;
-          color: white;
+        .dcCardRow {
           font-size: 10px;
+          color: #475569;
+          font-weight: 600;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .dcCardBadge {
+          align-self: flex-end;
+          font-size: 12px;
+          margin-top: -2px;
+        }
+
+        .dcMoreBtn {
+          font-size: 10.5px;
           font-weight: 700;
-          padding: 2px 8px;
-          border-radius: 999px;
+          color: #1f5aa6;
+          background: #eef2ff;
+          border: 1px dashed #c7d7f5;
+          border-radius: 8px;
+          padding: 4px 6px;
+          cursor: pointer;
+          font-family: inherit;
         }
 
         /* ---- Month view ---- */
         .dcMonthLabel {
           font-size: 15px;
           font-weight: 800;
-          color: #0B3D91;
+          color: #0f172a;
           margin-bottom: 8px;
         }
 
@@ -619,18 +771,11 @@ export default function DispatchCalendar({
           border: 1px solid #e2e8f0;
           border-radius: 10px;
           background: white;
-          min-height: 64px;
+          min-height: 96px;
           padding: 6px;
           display: flex;
           flex-direction: column;
           gap: 4px;
-          cursor: pointer;
-          font-family: inherit;
-          text-align: left;
-        }
-
-        .dcMonthCell:hover {
-          background: #f8fafc;
         }
 
         .dcMonthCellMuted {
@@ -640,22 +785,19 @@ export default function DispatchCalendar({
         .dcMonthDate {
           font-size: 12px;
           font-weight: 700;
-          color: #1e293b;
+          color: #111827;
+          background: transparent;
+          border: none;
+          cursor: pointer;
+          text-align: left;
+          padding: 0;
+          font-family: inherit;
         }
 
-        .dcMonthCount {
-          font-size: 10px;
-          font-weight: 700;
-          color: #1f5aa6;
-          background: #eaf1fb;
-          border-radius: 999px;
-          padding: 2px 6px;
-          width: fit-content;
-        }
-
-        .dcMonthCountConflict {
-          color: #b91c1c;
-          background: #fee2e2;
+        .dcMonthCellBody {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
         }
 
         @media (max-width: 900px) {
@@ -663,12 +805,12 @@ export default function DispatchCalendar({
             grid-template-columns: 1fr;
           }
           .dcMonthGrid {
-            grid-template-columns: repeat(7, minmax(32px, 1fr));
+            grid-template-columns: repeat(7, minmax(34px, 1fr));
           }
           .dcMonthCell {
-            min-height: 48px;
+            min-height: 60px;
           }
-          .dcMonthCount {
+          .dcCardRow {
             font-size: 9px;
           }
         }

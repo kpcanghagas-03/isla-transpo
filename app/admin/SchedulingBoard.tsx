@@ -8,6 +8,7 @@ import {
   VehicleStatusMap,
   splitVehicles,
   lookupDriver,
+  getDriverColorMap,
 } from "./types";
 import DailySummaryCards from "./DailySummaryCards";
 import VehicleWorkloadPanel from "./VehicleWorkloadPanel";
@@ -18,7 +19,9 @@ import DispatchCalendar from "./DispatchCalendar";
 import DriverTimeline from "./DriverTimeline";
 import VehicleTimeline from "./VehicleTimeline";
 import DispatchBoard from "./DispatchBoard";
-import EventDetailModal from "./EventDetailModal";
+import DispatchLegends from "./DispatchLegends";
+import TodaysDispatchQueue from "./TodaysDispatchQueue";
+import TripDetailPanel from "./TripDetailPanel";
 
 type SortField = "pick_up_date" | "pick_up_time";
 type SortDirection = "asc" | "desc";
@@ -77,6 +80,7 @@ export default function SchedulingBoard({
   const [timelineDate, setTimelineDate] = useState<string>(todayISO());
   const [selectedRequest, setSelectedRequest] = useState<ScheduleRequest | null>(null);
   const statusMap: VehicleStatusMap = vehicleStatusMap || {};
+  const driverColorMap = useMemo(() => getDriverColorMap(vehicleMap), [vehicleMap]);
 
   const tableRef = useRef<HTMLDivElement | null>(null);
   const scrollToTable = () => {
@@ -306,14 +310,32 @@ export default function SchedulingBoard({
       {schedView === "scheduler" ? (
         /* ================= NEW: DISPATCH CALENDAR / TIMELINES / BOARD ================= */
         <div className="schedSchedulerWrap">
-          <DispatchCalendar
-            requests={requests}
-            vehicleMap={vehicleMap}
-            toPHDate={toPHDate}
-            toPHTime={toPHTime}
-            statusColor={statusColor}
-            onSelectRequest={setSelectedRequest}
-          />
+          <DispatchLegends vehicleMap={vehicleMap} driverColorMap={driverColorMap} />
+
+          <div className="schedCalendarRow">
+            <DispatchCalendar
+              requests={requests}
+              vehicleMap={vehicleMap}
+              vehicleOptions={vehicleOptions}
+              driverColorMap={driverColorMap}
+              loading={loading}
+              toPHDate={toPHDate}
+              toPHTime={toPHTime}
+              activeDate={timelineDate}
+              onDateChange={setTimelineDate}
+              activeRequestId={selectedRequest?.id ?? null}
+              onSelectRequest={setSelectedRequest}
+            />
+            <TodaysDispatchQueue
+              requests={requests}
+              vehicleMap={vehicleMap}
+              driverColorMap={driverColorMap}
+              date={timelineDate}
+              toPHDate={toPHDate}
+              activeRequestId={selectedRequest?.id ?? null}
+              onSelectRequest={setSelectedRequest}
+            />
+          </div>
 
           <DispatchBoard
             requests={requests}
@@ -470,7 +492,10 @@ export default function SchedulingBoard({
                       <tr
                         key={r.id}
                         className={!r.assigned_vehicle ? "schedRowUnassigned" : ""}
-                        onClick={() => setSelectedRequest(r)}
+                        onClick={() => {
+                          setSelectedRequest(r);
+                          if (r.pick_up_date) setTimelineDate(r.pick_up_date);
+                        }}
                         style={{ cursor: "pointer" }}
                       >
                         <td>{toPHDate(r.pick_up_date) || "—"}</td>
@@ -520,26 +545,32 @@ export default function SchedulingBoard({
         </>
       )}
 
-      {/* ================= NEW: EVENT DETAIL MODAL ================= */}
+      {/* ================= NEW: TRIP DETAIL SLIDE-OVER PANEL ================= */}
       {selectedRequest && (
-        <EventDetailModal
+        <TripDetailPanel
           request={selectedRequest}
           requests={requests}
           vehicleOptions={vehicleOptions}
           vehicleMap={vehicleMap}
           statusMap={statusMap}
+          driverColorMap={driverColorMap}
           toPHDate={toPHDate}
           toPHTime={toPHTime}
-          statusColor={statusColor}
           onClose={() => setSelectedRequest(null)}
           onSaveDropOffTime={
             onSaveDropOffTime
               ? (id, val) => {
                   onSaveDropOffTime(id, val);
-                  setSelectedRequest(null);
+                  setSelectedRequest((prev) => (prev && prev.id === id ? { ...prev, drop_off_time: val } : prev));
                 }
               : undefined
           }
+          // onAssignVehicle / onAssignDriver / onEditSchedule / onUpdateStatus / onCompleteTrip
+          // are intentionally left unset here -- wire them to your existing
+          // assignment + status-update functions in page.tsx (the same ones
+          // the Dashboard tab's vehicle-picker checkboxes and status dropdown
+          // already call) and pass them down as props, same pattern as
+          // onSaveDropOffTime above. Each button hides itself until wired.
         />
       )}
 
@@ -608,6 +639,13 @@ export default function SchedulingBoard({
           flex-direction: column;
           gap: 20px;
           margin-bottom: 8px;
+        }
+
+        .schedCalendarRow {
+          display: grid;
+          grid-template-columns: 1fr 320px;
+          gap: 16px;
+          align-items: start;
         }
 
         .schedTimelineGrid {
@@ -815,6 +853,12 @@ export default function SchedulingBoard({
         .loading {
           text-align: center;
           padding: 40px 0;
+        }
+
+        @media (max-width: 1100px) {
+          .schedCalendarRow {
+            grid-template-columns: 1fr;
+          }
         }
 
         @media (max-width: 1024px) {
