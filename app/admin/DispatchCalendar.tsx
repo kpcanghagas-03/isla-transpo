@@ -134,22 +134,53 @@ export default function DispatchCalendar({
   const renderMiniCalendar = () => (
     <div className="dcMiniCal">
       <div className="dcMiniHeader">
-        <button className="dcMiniNavBtn" onClick={() => setMonthAnchor((m) => shiftMonth(m, -1))} aria-label="Previous month">
+        <button
+          className="dcMiniNavBtn"
+          style={{ color: "#374151" }}
+          onClick={() => setMonthAnchor((m) => shiftMonth(m, -1))}
+          aria-label="Previous month"
+        >
           <ChevronLeft size={16} />
         </button>
-        <span className="dcMiniMonthLabel">{monthLabel}</span>
-        <button className="dcMiniNavBtn" onClick={() => setMonthAnchor((m) => shiftMonth(m, 1))} aria-label="Next month">
+        <span className="dcMiniMonthLabel" style={{ color: "#111827" }}>
+          {monthLabel}
+        </span>
+        <button
+          className="dcMiniNavBtn"
+          style={{ color: "#374151" }}
+          onClick={() => setMonthAnchor((m) => shiftMonth(m, 1))}
+          aria-label="Next month"
+        >
           <ChevronRight size={16} />
         </button>
       </div>
 
-      <button className="dcTodayBtn" onClick={goToToday}>
+      <button className="dcTodayBtn" style={{ color: "#1f5aa6" }} onClick={goToToday}>
         Today
       </button>
 
+      <div className="dcJumpToDate">
+        <label className="dcJumpLabel" style={{ color: "#374151" }} htmlFor="dcJumpDateInput">
+          Jump to date
+        </label>
+        <input
+          id="dcJumpDateInput"
+          type="date"
+          className="dcJumpInput"
+          style={{ color: "#111827" }}
+          value={activeDate}
+          onChange={(e) => {
+            const v = e.target.value;
+            if (!v) return;
+            onDateChange(v);
+            setMonthAnchor(startOfMonth(v));
+          }}
+        />
+      </div>
+
       <div className="dcMiniDowRow">
         {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
-          <span key={i} className="dcMiniDow">
+          <span key={i} className="dcMiniDow" style={{ color: "#6b7280" }}>
             {d}
           </span>
         ))}
@@ -165,21 +196,32 @@ export default function DispatchCalendar({
           return (
             <button
               key={iso}
-              className={[
-                "dcMiniCell",
-                inMonth ? "" : "dcMiniCellMuted",
-                isToday ? "dcMiniCellToday" : "",
-                isSelected ? "dcMiniCellSelected" : "",
-              ].join(" ")}
+              className="dcMiniCell"
+              style={{
+                background: isSelected ? "#1f5aa6" : "white",
+                border: isToday ? "1.5px solid #1f5aa6" : "1px solid #e5e7eb",
+                opacity: inMonth ? 1 : 0.35,
+              }}
               onClick={() => onDateChange(iso)}
             >
-              <span className="dcMiniDate">{Number(iso.slice(8, 10))}</span>
-              {count > 0 && (
-                <span className="dcMiniDotRow">
-                  <span className="dcMiniDot" />
-                  {count > 1 && <span className="dcMiniDotCount">{count}</span>}
-                </span>
-              )}
+              <span
+                className="dcMiniDate"
+                style={{ color: isSelected ? "white" : isToday ? "#1f5aa6" : "#111827" }}
+              >
+                {Number(iso.slice(8, 10))}
+              </span>
+              <span className="dcMiniDotRow">
+                {count > 0 && (
+                  <>
+                    <span className="dcMiniDot" style={{ background: isSelected ? "white" : "#1f5aa6" }} />
+                    {count > 1 && (
+                      <span className="dcMiniDotCount" style={{ color: isSelected ? "white" : "#1f5aa6" }}>
+                        {count}
+                      </span>
+                    )}
+                  </>
+                )}
+              </span>
             </button>
           );
         })}
@@ -208,10 +250,10 @@ export default function DispatchCalendar({
       <button
         key={r.id}
         className={`dcTripCard ${isActive ? "dcTripCardActive" : ""}`}
-        style={{ borderLeftColor: color }}
+        style={{ borderLeftColor: color, background: "white" }}
         onClick={() => onSelectRequest(r)}
       >
-        <div className="dcTripTime">
+        <div className="dcTripTime" style={{ color: "#111827" }}>
           {win ? minutesToTime12h(win.start) : toPHTime(r.pick_up_time) || "No time set"}
           {hasConflict && (
             <span className="dcTripWarn" title="Scheduling conflict">
@@ -219,11 +261,13 @@ export default function DispatchCalendar({
             </span>
           )}
         </div>
-        <div className="dcTripDriver" title={driver || "Unassigned"}>
+        <div className="dcTripDriver" style={{ color: "#111827" }} title={driver || "Unassigned"}>
           👤 {driver || "Unassigned"}
         </div>
-        <div className="dcTripPax">👥 {getPassengerCount(r)} Passenger{getPassengerCount(r) === 1 ? "" : "s"}</div>
-        <div className="dcTripStatus">
+        <div className="dcTripPax" style={{ color: "#374151" }}>
+          👥 {getPassengerCount(r)} Passenger{getPassengerCount(r) === 1 ? "" : "s"}
+        </div>
+        <div className="dcTripStatus" style={{ color: "#374151" }}>
           {getStatusBadge(r.status)} {r.status}
         </div>
       </button>
@@ -238,8 +282,12 @@ export default function DispatchCalendar({
             <CalendarDays size={20} />
           </div>
           <div>
-            <div className="dcTitle">Dispatch Calendar</div>
-            <div className="dcSubtitle">View and manage all scheduled trips</div>
+            <div className="dcTitle" style={{ color: "#111827" }}>
+              Dispatch Calendar
+            </div>
+            <div className="dcSubtitle" style={{ color: "#374151" }}>
+              View and manage all scheduled trips
+            </div>
           </div>
         </div>
       </div>
@@ -251,8 +299,10 @@ export default function DispatchCalendar({
         {/* ================= RIGHT: DAILY DISPATCH DASHBOARD ================= */}
         <div className="dcRightCol">
           <div className="dcDayHeader">
-            <span className="dcDayHeaderDate">{fullDateLabel(activeDate)}</span>
-            <span className="dcDayHeaderCount">
+            <span className="dcDayHeaderDate" style={{ color: "#111827" }}>
+              {fullDateLabel(activeDate)}
+            </span>
+            <span className="dcDayHeaderCount" style={{ color: "#374151" }}>
               {dayTrips.length} Trip{dayTrips.length === 1 ? "" : "s"} Scheduled
             </span>
           </div>
@@ -262,12 +312,18 @@ export default function DispatchCalendar({
               <Search size={14} className="dcSearchIcon" />
               <input
                 className="dcSearchInput"
+                style={{ color: "#111827" }}
                 placeholder="Search trip, passenger, flight..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
-            <select className="dcSelect" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+            <select
+              className="dcSelect"
+              style={{ color: "#111827" }}
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
               <option value="All">All Status</option>
               {["Pending", "Approved", "On the way", "Completed", "Disapproved", "Emergency"].map((s) => (
                 <option key={s} value={s}>
@@ -275,7 +331,12 @@ export default function DispatchCalendar({
                 </option>
               ))}
             </select>
-            <select className="dcSelect" value={driverFilter} onChange={(e) => setDriverFilter(e.target.value)}>
+            <select
+              className="dcSelect"
+              style={{ color: "#111827" }}
+              value={driverFilter}
+              onChange={(e) => setDriverFilter(e.target.value)}
+            >
               <option value="All">All Drivers</option>
               {driverOptions.map((d) => (
                 <option key={d} value={d}>
@@ -283,7 +344,12 @@ export default function DispatchCalendar({
                 </option>
               ))}
             </select>
-            <select className="dcSelect" value={vehicleFilter} onChange={(e) => setVehicleFilter(e.target.value)}>
+            <select
+              className="dcSelect"
+              style={{ color: "#111827" }}
+              value={vehicleFilter}
+              onChange={(e) => setVehicleFilter(e.target.value)}
+            >
               <option value="All">All Vehicles</option>
               {vehicleOptions.map((v) => (
                 <option key={v} value={v}>
@@ -309,7 +375,7 @@ export default function DispatchCalendar({
             <div className="dcTripList">{dayTrips.map(renderTripCard)}</div>
           )}
 
-          <DispatchLegends vehicleMap={vehicleMap} driverColorMap={driverColorMap} />
+          <DispatchLegends vehicleMap={vehicleMap} driverColorMap={driverColorMap} embedded />
         </div>
       </div>
 
@@ -379,7 +445,8 @@ export default function DispatchCalendar({
           padding: 14px;
           display: flex;
           flex-direction: column;
-          gap: 10px;
+          gap: 12px;
+          background: white;
         }
 
         .dcMiniHeader {
@@ -395,19 +462,16 @@ export default function DispatchCalendar({
           padding: 6px;
           cursor: pointer;
           display: flex;
-          color: #374151;
         }
 
         .dcMiniMonthLabel {
           font-size: 15px;
           font-weight: 800;
-          color: #111827;
         }
 
         .dcTodayBtn {
           border: 1px solid #1f5aa6;
           background: white;
-          color: #1f5aa6;
           border-radius: 9px;
           padding: 7px;
           font-size: 13px;
@@ -420,29 +484,52 @@ export default function DispatchCalendar({
           background: #eef2ff;
         }
 
+        .dcJumpToDate {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
+
+        .dcJumpLabel {
+          font-size: 11px;
+          font-weight: 800;
+          text-transform: uppercase;
+          letter-spacing: 0.02em;
+        }
+
+        .dcJumpInput {
+          border: 1px solid #cbd5e1;
+          border-radius: 9px;
+          padding: 8px 10px;
+          font-size: 13px;
+          font-weight: 600;
+          width: 100%;
+          box-sizing: border-box;
+          background: white;
+        }
+
         .dcMiniDowRow {
           display: grid;
-          grid-template-columns: repeat(7, 1fr);
+          grid-template-columns: repeat(7, minmax(0, 1fr));
+          gap: 4px;
         }
 
         .dcMiniDow {
           text-align: center;
           font-size: 11px;
           font-weight: 800;
-          color: #9ca3af;
         }
 
         .dcMiniGrid {
           display: grid;
-          grid-template-columns: repeat(7, 1fr);
-          gap: 3px;
+          grid-template-columns: repeat(7, minmax(0, 1fr));
+          gap: 4px;
         }
 
         .dcMiniCell {
-          aspect-ratio: 1;
-          border: none;
-          background: transparent;
-          border-radius: 9px;
+          width: 100%;
+          height: 36px;
+          border-radius: 8px;
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -450,60 +537,36 @@ export default function DispatchCalendar({
           gap: 2px;
           cursor: pointer;
           font-family: inherit;
+          box-sizing: border-box;
+          padding: 0;
         }
 
         .dcMiniCell:hover {
-          background: #f1f5f9;
-        }
-
-        .dcMiniCellMuted {
-          opacity: 0.35;
+          filter: brightness(0.97);
         }
 
         .dcMiniDate {
           font-size: 13px;
           font-weight: 700;
-          color: #111827;
-        }
-
-        .dcMiniCellToday .dcMiniDate {
-          color: #1f5aa6;
-        }
-
-        .dcMiniCellSelected {
-          background: #1f5aa6;
-        }
-
-        .dcMiniCellSelected .dcMiniDate {
-          color: white;
+          line-height: 1;
         }
 
         .dcMiniDotRow {
           display: flex;
           align-items: center;
           gap: 3px;
-          height: 8px;
+          height: 6px;
         }
 
         .dcMiniDot {
           width: 5px;
           height: 5px;
           border-radius: 999px;
-          background: #1f5aa6;
-        }
-
-        .dcMiniCellSelected .dcMiniDot {
-          background: white;
         }
 
         .dcMiniDotCount {
           font-size: 8.5px;
           font-weight: 800;
-          color: #1f5aa6;
-        }
-
-        .dcMiniCellSelected .dcMiniDotCount {
-          color: white;
         }
 
         /* ================= RIGHT: DAILY DISPATCH DASHBOARD ================= */
