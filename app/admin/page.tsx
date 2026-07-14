@@ -241,14 +241,34 @@ export default function AdminPage() {
     driver: "Mr. Leonel Quidet",
     phone: "09178579197",
   },
-  "Isuzu Pick-up - SKB 3029": {
+  "Isuzu Crewcab - SEB 403": {
     driver: "Mr. Junve O. Barbadillo",
     phone: "09178579129",
   },
-  "Backup Vehicle - BKP 7777": {
-    driver: "Driver 8",
-    phone: "09999999999",
+  "Nissan Urban Van - 070106": {
+    driver: "LGU Catarman-Mr. Toping",
+    phone: "09263310628",
+  }, 
+  "Toyota Hilux FX4 - SKB 2310": {
+    driver: " LGU Mahinog - Mr. Clint Luyahan",
+    phone: "09558634264",
   },
+  "Nissan Premium - TBD ": {
+    driver: " LGU Sagay - Mr. Eric Bitas",
+    phone: "09761592921",
+  },
+  "Toyota Hi-Ace - TBD": {
+    driver: " LGU Sagay - Mr. Ardindo Bitas",
+    phone: "09491561185",
+  },
+  "Mitsubishi L300 - TBD": {
+    driver: " MDRRMO Mambajao - Mr. Bean",
+    phone: " No phone Number",
+  },
+  "Isuzu Traviz - TBD": {
+    driver: " MDRRMO Mambajao - Mr. Tarzan",
+    phone: " No phone Number",
+  }
 };
 
 const vehicleOptions = [
@@ -258,8 +278,13 @@ const vehicleOptions = [
   "Toyota Innova - SJS 302",
   "Isuzu Pick-up - SKB 3028",
   "Isuzu Pick-up - SKB 3030",
-  "Isuzu Pick-up - SKB 3029",
-  "Backup Vehicle - BKP 7777",
+  "Isuzu Crewcab - SEB 403",
+  "Nissan Urban Van - 070106",
+  "Toyota Hilux FX4 - SKB 2310",
+  "Nissan Premium - TBD ",
+  "Toyota Hi-Ace - TBD",
+  "Mitsubishi L300 - TBD",
+  "Isuzu Traviz - TBD"
 ];
   // ================= EMAIL SENDER (shared helper) =================
   // Centralized so both status changes AND vehicle assignment changes
