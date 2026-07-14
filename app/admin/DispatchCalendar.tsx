@@ -134,19 +134,95 @@ export default function DispatchCalendar({
   const renderMiniCalendar = () => (
     <div className="dcMiniCal">
       <div className="dcJumpDate">
+
   <label className="dcJumpLabel">
-    📅 Go to Date
+    Jump to Date
   </label>
 
-  <input
-    type="date"
-    className="dcJumpInput"
-    value={activeDate}
-    onChange={(e) => {
-      onDateChange(e.target.value);
-      setMonthAnchor(startOfMonth(e.target.value));
+  <button
+    className="dcJumpButton"
+    onClick={() => {
+      document.getElementById("jump-date-picker")?.showPicker?.();
     }}
+  >
+    <CalendarDays size={16} />
+
+    <span>
+      {fullDateLabel(activeDate)}
+    </span>
+
+    <ChevronRight
+      size={16}
+      style={{
+        transform: "rotate(90deg)"
+      }}
+    />
+  </button>
+
+  <input
+    id="jump-date-picker"
+    type="date"
+    className="dcHiddenDate"
+
+    value={activeDate}
+
+    onChange={(e) => {
+
+      onDateChange(e.target.value);
+
+      setMonthAnchor(
+        startOfMonth(e.target.value)
+      );
+
+    }}
+
   />
+
+</div>
+<div className="dcQuickNav">
+
+    <button
+        onClick={() => {
+
+            const d = new Date(activeDate);
+
+            d.setDate(d.getDate() - 1);
+
+            const iso = d.toISOString().slice(0,10);
+
+            onDateChange(iso);
+
+            setMonthAnchor(startOfMonth(iso));
+
+        }}
+    >
+        ← Previous
+    </button>
+
+    <button
+        onClick={goToToday}
+    >
+        Today
+    </button>
+
+    <button
+        onClick={() => {
+
+            const d = new Date(activeDate);
+
+            d.setDate(d.getDate() + 1);
+
+            const iso = d.toISOString().slice(0,10);
+
+            onDateChange(iso);
+
+            setMonthAnchor(startOfMonth(iso));
+
+        }}
+    >
+        Next →
+    </button>
+
 </div>
       <div className="dcMiniHeader">
         <button
@@ -449,17 +525,62 @@ export default function DispatchCalendar({
           gap: 12px;
           background: white;
         }
-          .dcJumpDate {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-bottom: 14px;
+       .dcJumpDate{
+
+display:flex;
+
+flex-direction:column;
+
+gap:8px;
+
+margin-bottom:16px;
+
 }
 
-.dcJumpLabel {
-  font-size: 12px;
-  font-weight: 700;
-  color: #64748b;
+.dcJumpLabel{
+
+font-size:12px;
+
+font-weight:700;
+
+color:#64748b;
+
+text-transform:uppercase;
+
+letter-spacing:.05em;
+
+}
+
+.dcJumpButton{
+
+width:100%;
+
+display:flex;
+
+align-items:center;
+
+justify-content:space-between;
+
+padding:12px 14px;
+
+background:white;
+
+border:1px solid #dbe3ef;
+
+border-radius:12px;
+
+cursor:pointer;
+
+font-size:14px;
+
+font-weight:700;
+
+color:#1F2937;
+
+transition:.25s;
+
+font-family:inherit;
+
 }
 
 .dcJumpInput {
@@ -474,14 +595,103 @@ export default function DispatchCalendar({
   transition: all .2s ease;
 }
 
-.dcJumpInput:hover {
-  border-color: #1F5AA6;
+.dcJumpButton:hover{
+
+border-color:#1F5AA6;
+
+background:#EFF6FF;
+
+transform:translateY(-1px);
+
+box-shadow:0 8px 18px rgba(31,90,166,.12);
+
+}
+.dcHiddenDate{
+
+position:absolute;
+
+opacity:0;
+
+pointer-events:none;
+
+width:0;
+
+height:0;
+
+}
+.dcQuickNav{
+
+display:flex;
+
+justify-content:space-between;
+
+gap:8px;
+
+margin-bottom:18px;
+
+}
+.dcQuickNav button{
+
+flex:1;
+
+padding:8px 10px;
+
+border:none;
+
+border-radius:10px;
+
+background:#F1F5F9;
+
+font-weight:700;
+
+cursor:pointer;
+
+color:#475569;
+
+transition:.2s;
+
+}
+.dcQuickNav button:hover{
+
+background:#1F5AA6;
+
+color:white;
+
 }
 
-.dcJumpInput:focus {
-  outline: none;
-  border-color: #1F5AA6;
-  box-shadow: 0 0 0 4px rgba(31,90,166,.12);
+.dcJumpInput {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #dbe3ef;
+  font-size: 14px;
+  font-family: inherit;
+
+  background: #ffffff;
+  color: #111827;
+
+  appearance: none;
+  -webkit-appearance: none;
+
+  transition: all .2s ease;
+}
+  .dcJumpInput::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.9;
+}
+
+.dcJumpInput::-webkit-datetime-edit {
+  color: #111827;
+}
+
+.dcJumpInput::-webkit-datetime-edit-text {
+  color: #64748b;
+}
+
+.dcJumpInput::-webkit-datetime-edit-month-field,
+.dcJumpInput::-webkit-datetime-edit-day-field,
+.dcJumpInput::-webkit-datetime-edit-year-field {
+  color: #111827;
 }
 
         .dcMiniHeader {
