@@ -133,6 +133,21 @@ export default function DispatchCalendar({
 
   const renderMiniCalendar = () => (
     <div className="dcMiniCal">
+      <div className="dcJumpDate">
+  <label className="dcJumpLabel">
+    📅 Go to Date
+  </label>
+
+  <input
+    type="date"
+    className="dcJumpInput"
+    value={activeDate}
+    onChange={(e) => {
+      onDateChange(e.target.value);
+      setMonthAnchor(startOfMonth(e.target.value));
+    }}
+  />
+</div>
       <div className="dcMiniHeader">
         <button
           className="dcMiniNavBtn"
@@ -434,6 +449,40 @@ export default function DispatchCalendar({
           gap: 12px;
           background: white;
         }
+          .dcJumpDate {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.dcJumpLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.dcJumpInput {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #dbe3ef;
+  font-size: 14px;
+  color: #111827;
+  background: white;
+  font-family: inherit;
+  transition: all .2s ease;
+}
+
+.dcJumpInput:hover {
+  border-color: #1F5AA6;
+}
+
+.dcJumpInput:focus {
+  outline: none;
+  border-color: #1F5AA6;
+  box-shadow: 0 0 0 4px rgba(31,90,166,.12);
+}
 
         .dcMiniHeader {
           display: flex;
