@@ -96,8 +96,9 @@ export default function TodaysDispatchQueue({
                 </div>
                 <div className="tdqMetaRow">👥 {getPassengerCount(r)} pax</div>
                 <div className="tdqMetaRow">🚐 {vehicles.map((v) => v.split(" - ")[0]).join(", ") || "No vehicle"}</div>
-                <div className="tdqMetaRow" style={{ color }}>
-                  👤 {driver || "Unassigned"}
+                <div className="tdqMetaRow">
+                  <span className="tdqDot" style={{ background: color }} />
+                  {driver || "Unassigned"}
                 </div>
                 {hasConflict && <div className="tdqConflict">⚠ Conflict</div>}
               </button>
@@ -182,20 +183,22 @@ export default function TodaysDispatchQueue({
 
         .tdqCard {
           text-align: left;
-          background: #f8fafc;
+          background: white;
           border: 1px solid #e2e8f0;
           border-left: 4px solid #94a3b8;
           border-radius: 10px;
-          padding: 9px 11px;
+          padding: 10px 12px;
           cursor: pointer;
           font-family: inherit;
           display: flex;
           flex-direction: column;
-          gap: 3px;
+          gap: 4px;
+          box-shadow: 0 1px 4px rgba(15, 23, 42, 0.05);
+          transition: box-shadow 0.15s ease;
         }
 
         .tdqCard:hover {
-          background: #f1f5f9;
+          box-shadow: 0 6px 14px rgba(15, 23, 42, 0.1);
         }
 
         .tdqCardActive {
@@ -227,9 +230,19 @@ export default function TodaysDispatchQueue({
         }
 
         .tdqMetaRow {
+          display: flex;
+          align-items: center;
+          gap: 5px;
           font-size: 11px;
           font-weight: 600;
           color: #475569;
+        }
+
+        .tdqDot {
+          width: 7px;
+          height: 7px;
+          border-radius: 999px;
+          flex-shrink: 0;
         }
 
         .tdqConflict {

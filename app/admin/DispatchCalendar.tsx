@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -18,7 +18,6 @@ import {
   minutesToTime,
   getConflicts,
   getDriverColor,
-  getStatusBadge,
   getStatusColor,
   getPassengerCount,
 } from "./types";
@@ -46,7 +45,9 @@ const MAX_VISIBLE_PER_CELL = 3;
 
 const WEEK_START_MIN = 6 * 60; // 6:00 AM
 const WEEK_END_MIN = 20 * 60; // 8:00 PM
-const WEEK_PX_PER_MIN = 0.95;
+const WEEK_PX_PER_MIN = 1.05;
+const WEEK_COL_MIN_WIDTH = 152; // px -- guarantees columns never squish; grid scrolls instead
+const WEEK_GUTTER_WIDTH = 60;
 
 const MAX_VISIBLE_DRIVER_CHIPS = 4;
 
@@ -77,6 +78,11 @@ function fmt(iso: string, opts: Intl.DateTimeFormatOptions): string {
   return new Date(`${iso}T00:00:00`).toLocaleDateString("en-PH", opts);
 }
 
+function nowMinutes(): number {
+  const d = new Date();
+  return d.getHours() * 60 + d.getMinutes();
+}
+
 export default function DispatchCalendar({
   requests,
   vehicleMap,
@@ -101,6 +107,13 @@ export default function DispatchCalendar({
   const [conflictsOnly, setConflictsOnly] = useState(false);
   const [unassignedOnly, setUnassignedOnly] = useState(false);
   const [showAllDrivers, setShowAllDrivers] = useState(false);
+
+  // Live "now" line -- ticks once a minute, cheap.
+  const [nowMin, setNowMin] = useState(nowMinutes());
+  useEffect(() => {
+    const t = setInterval(() => setNowMin(nowMinutes()), 60_000);
+    return () => clearInterval(t);
+  }, []);
 
   const conflicts = useMemo(() => getConflicts(requests, vehicleMap), [requests, vehicleMap]);
 
@@ -146,6 +159,9 @@ export default function DispatchCalendar({
   };
 
   // ---- Shared compact card renderer (month view) ----
+  // Cards are solid white with a colored left rail + a small color dot --
+  // color never sits *behind* text, so contrast is never an issue no matter
+  // which driver color lands on which card.
   const renderCard = (r: ScheduleRequest, keyPrefix: string) => {
     const win = getTripWindow(r);
     const vehicles = splitVehicles(r.assigned_vehicle);
@@ -158,7 +174,7 @@ export default function DispatchCalendar({
       <button
         key={`${keyPrefix}-${r.id}`}
         className={`dcCard ${isActive ? "dcCardActive" : ""}`}
-        style={{ background: `${color}14`, borderLeftColor: color }}
+        style={{ borderLeftColor: color }}
         onClick={() => onSelectRequest(r)}
         title={`${r.passenger_names || r.requester_name} · ${r.pickup_location || "?"} → ${r.destination || "?"}`}
       >
@@ -167,11 +183,13 @@ export default function DispatchCalendar({
           {win ? `${minutesToTime(win.start)}–${minutesToTime(win.end)}` : r.pick_up_time || "No time"}
         </div>
         <div className="dcCardRow">👥 {getPassengerCount(r)}</div>
-        <div className="dcCardRow">🚐 {vehicles.map((v) => v.split(" - ")[0]).join(", ") || "No vehicle"}</div>
-        <div className="dcCardRow" style={{ color, fontWeight: 700 }}>
-          👨 {driver || "Unassigned"}
+        <div className="dcCardRow">
+          <span className="dcDot" style={{ background: color }} />
+          {driver || "Unassigned"}
         </div>
-        <span className="dcCardBadge">{getStatusBadge(r.status)}</span>
+        <span className="dcCardStatusPill" style={{ background: getStatusColor(r.status) }}>
+          {r.status}
+        </span>
       </button>
     );
   };
@@ -214,6 +232,9 @@ export default function DispatchCalendar({
   }, []);
 
   const trackHeight = (DAY_END_MIN - DAY_START_MIN) * PX_PER_MIN;
+  const todayIso = toISODate(new Date());
+  const isViewingToday = activeDate === todayIso;
+  const nowLineTop = (nowMin - DAY_START_MIN) * PX_PER_MIN;
 
   const renderDayView = () => (
     <div className="dcDayWrap">
@@ -228,11 +249,16 @@ export default function DispatchCalendar({
         {hours.map((h) => (
           <div key={h} className="dcHourLine" style={{ top: (h - DAY_START_MIN) * PX_PER_MIN }} />
         ))}
+        {isViewingToday && nowMin >= DAY_START_MIN && nowMin <= DAY_END_MIN && (
+          <div className="dcNowLine" style={{ top: nowLineTop }}>
+            <span className="dcNowDot" />
+          </div>
+        )}
         {dayRequests.map((r) => {
           const win = getTripWindow(r);
           if (!win) return null;
           const top = Math.max(0, (win.start - DAY_START_MIN) * PX_PER_MIN);
-          const height = Math.max(46, (win.end - win.start) * PX_PER_MIN);
+          const height = Math.max(52, (win.end - win.start) * PX_PER_MIN);
           const vehicles = splitVehicles(r.assigned_vehicle);
           const driver = vehicles.map((v) => lookupDriver(v, vehicleMap)?.driver).find(Boolean) || null;
           const color = getDriverColor(driver, driverColorMap);
@@ -243,19 +269,23 @@ export default function DispatchCalendar({
             <button
               key={r.id}
               className={`dcBlock ${isActive ? "dcBlockActive" : ""}`}
-              style={{ top, height, background: `${color}14`, borderLeftColor: color }}
+              style={{ top, height, borderLeftColor: color }}
               onClick={() => onSelectRequest(r)}
             >
-              <div className="dcBlockTitle">
-                {minutesToTime(win.start)}–{minutesToTime(win.end)} · 👥 {getPassengerCount(r)}
+              <div className="dcBlockTop">
+                <span className="dcBlockTime">
+                  {minutesToTime(win.start)}–{minutesToTime(win.end)}
+                </span>
+                <span className="dcBlockStatusPill" style={{ background: getStatusColor(r.status) }}>
+                  {r.status}
+                </span>
               </div>
-              <div className="dcBlockMeta" style={{ color }}>
-                👨 {driver || "Unassigned"} · 🚐 {vehicles.map((v) => v.split(" - ")[0]).join(", ") || "No vehicle"}
+              <div className="dcBlockMeta">👥 {getPassengerCount(r)} pax · 🚐 {vehicles.map((v) => v.split(" - ")[0]).join(", ") || "No vehicle"}</div>
+              <div className="dcBlockMeta">
+                <span className="dcDot" style={{ background: color }} />
+                {driver || "Unassigned"}
               </div>
-              <span className="dcBlockStatusPill" style={{ background: getStatusColor(r.status) }}>
-                {r.status}
-              </span>
-              {hasConflict && <span className="dcBlockWarn">⚠</span>}
+              {hasConflict && <span className="dcBlockWarn">⚠ Conflict</span>}
             </button>
           );
         })}
@@ -268,11 +298,13 @@ export default function DispatchCalendar({
     </div>
   );
 
-  // ================= WEEK VIEW (real hour grid, like a proper dispatch calendar) =================
+  // ================= WEEK VIEW =================
+  // Built as ONE css-grid so the header row, hour gutter, and day tracks all
+  // live in the same scroll container -- they can never drift out of sync,
+  // and columns have a real minimum width so dates never overlap/squish.
   const weekStart = startOfWeek(activeDate);
   const weekEnd = addDays(weekStart, 6);
   const weekDays = useMemo(() => Array.from({ length: 7 }, (_, i) => addDays(weekStart, i)), [weekStart]);
-  const todayIso = toISODate(new Date());
 
   const weekHours = useMemo(() => {
     const list: number[] = [];
@@ -283,7 +315,7 @@ export default function DispatchCalendar({
 
   const renderWeekBlock = (r: ScheduleRequest, win: { start: number; end: number }) => {
     const top = Math.max(0, (win.start - WEEK_START_MIN) * WEEK_PX_PER_MIN);
-    const height = Math.max(52, (win.end - win.start) * WEEK_PX_PER_MIN);
+    const height = Math.max(58, (win.end - win.start) * WEEK_PX_PER_MIN);
     const vehicles = splitVehicles(r.assigned_vehicle);
     const driver = vehicles.map((v) => lookupDriver(v, vehicleMap)?.driver).find(Boolean) || null;
     const color = getDriverColor(driver, driverColorMap);
@@ -294,37 +326,42 @@ export default function DispatchCalendar({
       <button
         key={r.id}
         className={`dcWkBlock ${isActive ? "dcWkBlockActive" : ""}`}
-        style={{ top, height, background: `${color}17`, borderLeftColor: color }}
+        style={{ top, height, borderLeftColor: color }}
         onClick={() => onSelectRequest(r)}
       >
         <div className="dcWkBlockTop">
           <span className="dcWkBlockTime">
             {minutesToTime(win.start)}–{minutesToTime(win.end)}
           </span>
-          <span className="dcWkBlockPill" style={{ background: getStatusColor(r.status) }}>
-            {r.status}
-          </span>
+          {hasConflict && <span className="dcWkBlockWarn">⚠</span>}
         </div>
+        <span className="dcWkBlockPill" style={{ background: getStatusColor(r.status) }}>
+          {r.status}
+        </span>
         <div className="dcWkBlockRow">👥 {getPassengerCount(r)} pax</div>
         <div className="dcWkBlockRow">🚐 {vehicles.map((v) => v.split(" - ")[0]).join(", ") || "No vehicle"}</div>
-        <div className="dcWkBlockRow dcWkBlockDriver" style={{ color }}>
-          👤 {driver || "Unassigned"}
+        <div className="dcWkBlockRow">
+          <span className="dcDot" style={{ background: color }} />
+          {driver || "Unassigned"}
         </div>
-        {hasConflict && <span className="dcWkBlockWarn">⚠</span>}
       </button>
     );
   };
 
   const renderWeekView = () => (
-    <div className="dcWkWrap">
-      <div className="dcWkHeaderRow">
-        <div className="dcWkGutterSpacer" />
+    <div className="dcWkOuter">
+      <div
+        className="dcWkGrid"
+        style={{ gridTemplateColumns: `${WEEK_GUTTER_WIDTH}px repeat(7, minmax(${WEEK_COL_MIN_WIDTH}px, 1fr))` }}
+      >
+        {/* -- Row 1: sticky corner + 7 sticky day headers -- */}
+        <div className="dcWkCorner" />
         {weekDays.map((iso) => {
           const isToday = iso === todayIso;
           const isSun = new Date(`${iso}T00:00:00`).getDay() === 0;
           return (
             <button
-              key={iso}
+              key={`hdr-${iso}`}
               className={`dcWkDayHeader ${isToday ? "dcWkDayHeaderToday" : ""}`}
               onClick={() => {
                 onDateChange(iso);
@@ -338,58 +375,58 @@ export default function DispatchCalendar({
             </button>
           );
         })}
-      </div>
 
-      <div className="dcWkBody">
-        <div className="dcWkGutter">
+        {/* -- Row 2: sticky hour gutter + 7 day tracks -- */}
+        <div className="dcWkGutter" style={{ height: weekTrackHeight }}>
           {weekHours.map((h) => (
-            <div key={h} className="dcWkHourRow" style={{ height: 60 * WEEK_PX_PER_MIN }}>
+            <div key={h} className="dcWkHourLabel" style={{ top: (h - WEEK_START_MIN) * WEEK_PX_PER_MIN }}>
               {minutesToTime(h)}
             </div>
           ))}
         </div>
 
-        <div className="dcWkColsScroll">
-          {weekDays.map((iso) => {
-            const isToday = iso === todayIso;
-            const dayReqs = filtered
-              .filter((r) => r.pick_up_date === iso)
-              .sort((a, b) => (a.pick_up_time || "").localeCompare(b.pick_up_time || ""));
+        {weekDays.map((iso) => {
+          const isToday = iso === todayIso;
+          const dayReqs = filtered
+            .filter((r) => r.pick_up_date === iso)
+            .sort((a, b) => (a.pick_up_time || "").localeCompare(b.pick_up_time || ""));
 
-            const withWindow = dayReqs
-              .map((r) => ({ r, win: getTripWindow(r) }))
-              .filter((x): x is { r: ScheduleRequest; win: { start: number; end: number } } => x.win !== null);
+          const withWindow = dayReqs
+            .map((r) => ({ r, win: getTripWindow(r) }))
+            .filter((x): x is { r: ScheduleRequest; win: { start: number; end: number } } => x.win !== null);
 
-            const inRange = withWindow.filter(({ win }) => win.start >= WEEK_START_MIN && win.start <= WEEK_END_MIN);
-            const overflowCount = withWindow.length - inRange.length;
+          const inRange = withWindow.filter(({ win }) => win.start >= WEEK_START_MIN && win.start <= WEEK_END_MIN);
+          const overflowCount = withWindow.length - inRange.length;
 
-            return (
-              <div key={iso} className={`dcWkDayCol ${isToday ? "dcWkDayColToday" : ""}`}>
-                <div className="dcWkDayTrack" style={{ height: weekTrackHeight }}>
-                  {weekHours.map((h) => (
-                    <div key={h} className="dcHourLine" style={{ top: (h - WEEK_START_MIN) * WEEK_PX_PER_MIN }} />
-                  ))}
-                  {inRange.map(({ r, win }) => renderWeekBlock(r, win))}
+          return (
+            <div
+              key={`col-${iso}`}
+              className={`dcWkDayTrack ${isToday ? "dcWkDayTrackToday" : ""}`}
+              style={{ height: weekTrackHeight }}
+            >
+              {weekHours.map((h) => (
+                <div key={h} className="dcHourLine" style={{ top: (h - WEEK_START_MIN) * WEEK_PX_PER_MIN }} />
+              ))}
+              {isToday && nowMin >= WEEK_START_MIN && nowMin <= WEEK_END_MIN && (
+                <div className="dcNowLine" style={{ top: (nowMin - WEEK_START_MIN) * WEEK_PX_PER_MIN }}>
+                  <span className="dcNowDot" />
                 </div>
-                <div className="dcWkColFooter">
-                  {overflowCount > 0 ? (
-                    <button
-                      className="dcWkMoreBtn"
-                      onClick={() => {
-                        onDateChange(iso);
-                        setView("day");
-                      }}
-                    >
-                      +{overflowCount} more
-                    </button>
-                  ) : (
-                    <span className="dcWkMoreBtnGhost">+0 more</span>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
+              )}
+              {inRange.map(({ r, win }) => renderWeekBlock(r, win))}
+              {overflowCount > 0 && (
+                <button
+                  className="dcWkMoreChip"
+                  onClick={() => {
+                    onDateChange(iso);
+                    setView("day");
+                  }}
+                >
+                  +{overflowCount} more
+                </button>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -412,11 +449,12 @@ export default function DispatchCalendar({
         ))}
         {monthCells.map((iso) => {
           const inMonth = iso.slice(0, 7) === monthStart.slice(0, 7);
+          const isToday = iso === todayIso;
           const dayReqs = filtered
             .filter((r) => r.pick_up_date === iso)
             .sort((a, b) => (a.pick_up_time || "").localeCompare(b.pick_up_time || ""));
           return (
-            <div key={iso} className={`dcMonthCell ${inMonth ? "" : "dcMonthCellMuted"}`}>
+            <div key={iso} className={`dcMonthCell ${inMonth ? "" : "dcMonthCellMuted"} ${isToday ? "dcMonthCellToday" : ""}`}>
               <button
                 className="dcMonthDate"
                 onClick={() => {
@@ -473,7 +511,7 @@ export default function DispatchCalendar({
             <div className="dcDriverChips">
               {visibleDriverChips.map((d) => (
                 <span key={d} className="dcDriverChip">
-                  <span className="dcDriverDot" style={{ background: getDriverColor(d, driverColorMap) }} />
+                  <span className="dcDot" style={{ background: getDriverColor(d, driverColorMap) }} />
                   {d}
                 </span>
               ))}
@@ -482,19 +520,12 @@ export default function DispatchCalendar({
                   +{hiddenDriverCount} more
                 </button>
               )}
-              {showAllDrivers && hiddenDriverCount === 0 && driverOptions.length > MAX_VISIBLE_DRIVER_CHIPS && (
+              {showAllDrivers && driverOptions.length > MAX_VISIBLE_DRIVER_CHIPS && (
                 <button className="dcDriverMoreBtn" onClick={() => setShowAllDrivers(false)}>
                   Show less
                 </button>
               )}
             </div>
-            <button
-              className="dcDriverCollapseBtn"
-              onClick={() => setShowAllDrivers((s) => !s)}
-              title={showAllDrivers ? "Collapse driver list" : "Expand driver list"}
-            >
-              <ChevronDown size={14} style={{ transform: showAllDrivers ? "rotate(180deg)" : "none" }} />
-            </button>
           </div>
         )}
       </div>
@@ -611,12 +642,12 @@ export default function DispatchCalendar({
         .dcPanel {
           display: flex;
           flex-direction: column;
-          gap: 14px;
+          gap: 16px;
           background: white;
-          border-radius: 16px;
-          padding: 16px;
-          box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
-          border: 1px solid rgba(0, 0, 0, 0.05);
+          border-radius: 18px;
+          padding: 18px;
+          box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+          border: 1px solid rgba(15, 23, 42, 0.06);
         }
 
         /* ---- Header ---- */
@@ -626,36 +657,36 @@ export default function DispatchCalendar({
           align-items: flex-start;
           flex-wrap: wrap;
           gap: 14px;
-          padding-bottom: 4px;
         }
 
         .dcHeaderLeft {
           display: flex;
           align-items: center;
-          gap: 10px;
+          gap: 12px;
         }
 
         .dcHeaderIcon {
-          width: 38px;
-          height: 38px;
-          border-radius: 10px;
-          background: #eef2ff;
-          color: #1f5aa6;
+          width: 42px;
+          height: 42px;
+          border-radius: 12px;
+          background: linear-gradient(135deg, #2563eb, #1e40af);
+          color: white;
           display: flex;
           align-items: center;
           justify-content: center;
           flex-shrink: 0;
+          box-shadow: 0 6px 14px rgba(37, 99, 235, 0.3);
         }
 
         .dcTitle {
-          font-size: 17px;
+          font-size: 18px;
           font-weight: 800;
           color: #0f172a;
           margin: 0;
         }
 
         .dcSubtitle {
-          font-size: 12px;
+          font-size: 12.5px;
           font-weight: 600;
           color: #94a3b8;
           margin: 2px 0 0;
@@ -673,7 +704,7 @@ export default function DispatchCalendar({
           font-weight: 800;
           color: #94a3b8;
           text-transform: uppercase;
-          letter-spacing: 0.02em;
+          letter-spacing: 0.04em;
         }
 
         .dcDriverChips {
@@ -689,13 +720,13 @@ export default function DispatchCalendar({
           background: #f8fafc;
           border: 1px solid #e2e8f0;
           border-radius: 999px;
-          padding: 5px 12px 5px 8px;
+          padding: 6px 12px 6px 9px;
           font-size: 12px;
           font-weight: 700;
-          color: #334155;
+          color: #1e293b;
         }
 
-        .dcDriverDot {
+        .dcDot {
           width: 8px;
           height: 8px;
           border-radius: 999px;
@@ -706,26 +737,12 @@ export default function DispatchCalendar({
           border: 1px dashed #cbd5e1;
           background: transparent;
           border-radius: 999px;
-          padding: 5px 12px;
+          padding: 6px 12px;
           font-size: 12px;
           font-weight: 700;
           color: #64748b;
           cursor: pointer;
           font-family: inherit;
-        }
-
-        .dcDriverCollapseBtn {
-          border: 1px solid #e2e8f0;
-          background: white;
-          border-radius: 8px;
-          width: 26px;
-          height: 26px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: #64748b;
-          cursor: pointer;
-          flex-shrink: 0;
         }
 
         /* ---- Toolbar ---- */
@@ -748,7 +765,7 @@ export default function DispatchCalendar({
         .dcViewBtn {
           border: none;
           background: transparent;
-          padding: 7px 14px;
+          padding: 7px 16px;
           border-radius: 8px;
           font-weight: 700;
           font-size: 13px;
@@ -760,12 +777,13 @@ export default function DispatchCalendar({
         .dcViewBtnActive {
           background: #1f5aa6;
           color: white;
+          box-shadow: 0 4px 10px rgba(31, 90, 166, 0.3);
         }
 
         .dcNav {
           display: flex;
           align-items: center;
-          gap: 6px;
+          gap: 8px;
         }
 
         .dcNavBtn {
@@ -780,10 +798,10 @@ export default function DispatchCalendar({
         .dcNavLabel {
           display: flex;
           align-items: center;
-          font-weight: 700;
-          font-size: 13px;
+          font-weight: 800;
+          font-size: 13.5px;
           color: #0f172a;
-          padding: 0 6px;
+          padding: 0 4px;
           white-space: nowrap;
         }
 
@@ -791,7 +809,7 @@ export default function DispatchCalendar({
           border: 1px solid #e2e8f0;
           background: #f8fafc;
           border-radius: 8px;
-          padding: 6px 12px;
+          padding: 7px 14px;
           font-size: 12px;
           font-weight: 700;
           color: #1f5aa6;
@@ -840,8 +858,8 @@ export default function DispatchCalendar({
 
         .dcSearchInput {
           width: 100%;
-          padding: 8px 10px 8px 30px;
-          border-radius: 9px;
+          padding: 9px 10px 9px 30px;
+          border-radius: 10px;
           border: 1px solid #cbd5e1;
           font-size: 12.5px;
           color: #111827;
@@ -851,8 +869,8 @@ export default function DispatchCalendar({
         .dcSelect {
           flex: 1;
           min-width: 120px;
-          padding: 8px 10px;
-          border-radius: 9px;
+          padding: 9px 10px;
+          border-radius: 10px;
           border: 1px solid #cbd5e1;
           color: #111827;
           font-size: 12.5px;
@@ -869,8 +887,8 @@ export default function DispatchCalendar({
           border: 1px solid #1f5aa6;
           background: white;
           color: #1f5aa6;
-          border-radius: 9px;
-          padding: 8px 14px;
+          border-radius: 10px;
+          padding: 9px 14px;
           font-size: 12.5px;
           font-weight: 700;
           cursor: pointer;
@@ -890,12 +908,12 @@ export default function DispatchCalendar({
           background: white;
           border: 1px solid #e2e8f0;
           border-radius: 10px;
-          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+          box-shadow: 0 10px 24px rgba(15, 23, 42, 0.14);
           padding: 10px 12px;
           display: flex;
           flex-direction: column;
           gap: 8px;
-          z-index: 10;
+          z-index: 20;
           min-width: 160px;
         }
 
@@ -956,7 +974,7 @@ export default function DispatchCalendar({
         .dcHourRow {
           width: 64px;
           font-size: 11px;
-          font-weight: 600;
+          font-weight: 700;
           color: #94a3b8;
           padding: 4px 8px;
           box-sizing: border-box;
@@ -966,63 +984,97 @@ export default function DispatchCalendar({
         .dcDayTrack {
           position: relative;
           flex: 1;
-          min-width: 280px;
+          min-width: 320px;
         }
 
         .dcHourLine {
           position: absolute;
           left: 0;
           right: 0;
-          border-top: 1px dashed #f1f5f9;
+          border-top: 1px dashed #eef2f7;
+        }
+
+        .dcNowLine {
+          position: absolute;
+          left: 0;
+          right: 0;
+          border-top: 2px solid #ef4444;
+          z-index: 3;
+        }
+
+        .dcNowDot {
+          position: absolute;
+          left: -4px;
+          top: -4px;
+          width: 8px;
+          height: 8px;
+          border-radius: 999px;
+          background: #ef4444;
         }
 
         .dcBlock {
           position: absolute;
-          left: 8px;
-          right: 8px;
+          left: 10px;
+          right: 10px;
+          background: white;
           border: 1px solid #e2e8f0;
-          border-left: 4px solid #94a3b8;
+          border-left: 5px solid #94a3b8;
           border-radius: 10px;
-          padding: 6px 10px;
+          padding: 8px 12px;
           text-align: left;
           cursor: pointer;
           font-family: inherit;
           overflow: hidden;
+          box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
+        }
+
+        .dcBlock:hover {
+          box-shadow: 0 6px 16px rgba(15, 23, 42, 0.12);
         }
 
         .dcBlockActive {
           box-shadow: 0 0 0 2px #1f5aa6;
         }
 
-        .dcBlockTitle {
-          font-size: 12px;
-          font-weight: 700;
-          color: #111827;
+        .dcBlockTop {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 8px;
         }
 
-        .dcBlockMeta {
-          font-size: 10.5px;
-          font-weight: 700;
-          margin-top: 2px;
+        .dcBlockTime {
+          font-size: 12.5px;
+          font-weight: 800;
+          color: #0f172a;
         }
 
         .dcBlockStatusPill {
-          position: absolute;
-          bottom: 6px;
-          right: 10px;
           font-size: 9.5px;
           font-weight: 800;
           color: white;
           padding: 2px 8px;
           border-radius: 999px;
+          white-space: nowrap;
+          letter-spacing: 0.02em;
+        }
+
+        .dcBlockMeta {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          font-size: 11px;
+          font-weight: 600;
+          color: #475569;
+          margin-top: 3px;
         }
 
         .dcBlockWarn {
-          position: absolute;
-          top: 6px;
-          right: 8px;
-          color: #b91c1c;
+          display: inline-block;
+          margin-top: 3px;
+          font-size: 10.5px;
           font-weight: 800;
+          color: #b91c1c;
         }
 
         .dcNoTimeNote {
@@ -1033,37 +1085,41 @@ export default function DispatchCalendar({
           font-weight: 600;
         }
 
-        /* ---- Week view (real hour grid) ---- */
-        .dcWkWrap {
+        /* ---- Week view: single CSS grid, everything scrolls together ---- */
+        .dcWkOuter {
           border: 1px solid #e2e8f0;
           border-radius: 14px;
-          overflow: hidden;
+          overflow: auto;
+          max-height: 640px;
         }
 
-        .dcWkHeaderRow {
-          display: flex;
-          border-bottom: 1px solid #e2e8f0;
+        .dcWkGrid {
+          display: grid;
+          grid-template-rows: auto 1fr;
+        }
+
+        .dcWkCorner {
+          position: sticky;
+          top: 0;
+          left: 0;
+          z-index: 6;
           background: #f8fafc;
-        }
-
-        .dcWkGutterSpacer {
-          width: 56px;
-          flex-shrink: 0;
+          border-bottom: 1px solid #e2e8f0;
+          border-right: 1px solid #e2e8f0;
         }
 
         .dcWkDayHeader {
-          flex: 1;
-          min-width: 0;
+          position: sticky;
+          top: 0;
+          z-index: 5;
+          background: #f8fafc;
+          border-bottom: 1px solid #e2e8f0;
+          border-right: 1px solid #eef2f7;
+          padding: 12px 6px;
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 2px;
-          padding: 10px 4px;
-          border-left: 1px solid #eef2f7;
-          background: transparent;
-          border-top: none;
-          border-bottom: none;
-          border-right: none;
+          gap: 4px;
           cursor: pointer;
           font-family: inherit;
         }
@@ -1073,10 +1129,10 @@ export default function DispatchCalendar({
         }
 
         .dcWkDow {
-          font-size: 10.5px;
+          font-size: 11px;
           font-weight: 800;
           color: #94a3b8;
-          letter-spacing: 0.03em;
+          letter-spacing: 0.05em;
         }
 
         .dcWkDowSun {
@@ -1084,9 +1140,10 @@ export default function DispatchCalendar({
         }
 
         .dcWkDateNum {
-          font-size: 12.5px;
+          font-size: 13.5px;
           font-weight: 800;
           color: #0f172a;
+          white-space: nowrap;
         }
 
         .dcWkDateNumSun {
@@ -1097,89 +1154,70 @@ export default function DispatchCalendar({
           color: #1f5aa6;
         }
 
-        .dcWkBody {
-          display: flex;
-          max-height: 560px;
-          overflow: auto;
-        }
-
         .dcWkGutter {
-          display: flex;
-          flex-direction: column;
-          border-right: 1px solid #e2e8f0;
-          flex-shrink: 0;
           position: sticky;
           left: 0;
+          z-index: 4;
           background: white;
-          z-index: 2;
+          border-right: 1px solid #e2e8f0;
         }
 
-        .dcWkHourRow {
-          width: 56px;
+        .dcWkHourLabel {
+          position: absolute;
+          left: 0;
+          right: 0;
           font-size: 10.5px;
-          font-weight: 600;
+          font-weight: 700;
           color: #94a3b8;
-          padding: 3px 6px;
+          padding: 2px 6px;
           box-sizing: border-box;
-          border-bottom: 1px dashed #f1f5f9;
-        }
-
-        .dcWkColsScroll {
-          display: flex;
-          flex: 1;
-          min-width: 0;
-        }
-
-        .dcWkDayCol {
-          flex: 1;
-          min-width: 130px;
-          display: flex;
-          flex-direction: column;
-          border-left: 1px solid #eef2f7;
-        }
-
-        .dcWkDayColToday {
-          background: #f8fbff;
+          transform: translateY(-6px);
         }
 
         .dcWkDayTrack {
           position: relative;
+          border-right: 1px solid #eef2f7;
+          background: white;
         }
 
-        .dcWkColFooter {
-          padding: 6px;
-          border-top: 1px solid #eef2f7;
-          text-align: center;
+        .dcWkDayTrackToday {
+          background: #f8fbff;
         }
 
-        .dcWkMoreBtn {
+        .dcWkMoreChip {
+          position: absolute;
+          bottom: 6px;
+          left: 6px;
+          right: 6px;
           font-size: 10.5px;
-          font-weight: 700;
+          font-weight: 800;
           color: #1f5aa6;
-          background: transparent;
-          border: none;
+          background: #eef2ff;
+          border: 1px dashed #c7d7f5;
+          border-radius: 8px;
+          padding: 4px 0;
           cursor: pointer;
           font-family: inherit;
-        }
-
-        .dcWkMoreBtnGhost {
-          font-size: 10.5px;
-          font-weight: 700;
-          color: #cbd5e1;
         }
 
         .dcWkBlock {
           position: absolute;
-          left: 3px;
-          right: 3px;
+          left: 6px;
+          right: 6px;
+          background: white;
           border: 1px solid #e2e8f0;
-          border-left: 3px solid #94a3b8;
-          border-radius: 8px;
-          padding: 5px 7px;
+          border-left: 4px solid #94a3b8;
+          border-radius: 9px;
+          padding: 6px 8px;
           text-align: left;
           cursor: pointer;
           font-family: inherit;
           overflow: hidden;
+          box-shadow: 0 2px 5px rgba(15, 23, 42, 0.05);
+        }
+
+        .dcWkBlock:hover {
+          box-shadow: 0 6px 14px rgba(15, 23, 42, 0.12);
         }
 
         .dcWkBlockActive {
@@ -1194,60 +1232,60 @@ export default function DispatchCalendar({
         }
 
         .dcWkBlockTime {
-          font-size: 10px;
+          font-size: 10.5px;
           font-weight: 800;
-          color: #111827;
+          color: #0f172a;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
         }
 
-        .dcWkBlockPill {
-          font-size: 8px;
+        .dcWkBlockWarn {
+          color: #b91c1c;
           font-weight: 800;
-          color: white;
-          padding: 1.5px 6px;
-          border-radius: 999px;
-          white-space: nowrap;
+          font-size: 11px;
           flex-shrink: 0;
         }
 
+        .dcWkBlockPill {
+          display: inline-block;
+          margin-top: 3px;
+          font-size: 8.5px;
+          font-weight: 800;
+          color: white;
+          padding: 1.5px 7px;
+          border-radius: 999px;
+          white-space: nowrap;
+        }
+
         .dcWkBlockRow {
+          display: flex;
+          align-items: center;
+          gap: 4px;
           font-size: 9.5px;
           font-weight: 600;
           color: #475569;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
-          margin-top: 1px;
-        }
-
-        .dcWkBlockDriver {
-          font-weight: 800;
-        }
-
-        .dcWkBlockWarn {
-          position: absolute;
-          top: 4px;
-          right: 6px;
-          color: #b91c1c;
-          font-weight: 800;
-          font-size: 10px;
+          margin-top: 3px;
         }
 
         /* ---- Compact dispatch card (month) ---- */
         .dcCard {
           position: relative;
           text-align: left;
+          background: white;
           border: 1px solid #e2e8f0;
           border-left: 4px solid #94a3b8;
           border-radius: 10px;
-          padding: 6px 8px 6px 8px;
+          padding: 6px 8px;
           cursor: pointer;
           font-family: inherit;
           display: flex;
           flex-direction: column;
-          gap: 2px;
+          gap: 3px;
+          box-shadow: 0 1px 4px rgba(15, 23, 42, 0.05);
         }
 
         .dcCardActive {
@@ -1266,10 +1304,13 @@ export default function DispatchCalendar({
         .dcCardTime {
           font-size: 11px;
           font-weight: 800;
-          color: #111827;
+          color: #0f172a;
         }
 
         .dcCardRow {
+          display: flex;
+          align-items: center;
+          gap: 5px;
           font-size: 10px;
           color: #475569;
           font-weight: 600;
@@ -1278,10 +1319,13 @@ export default function DispatchCalendar({
           white-space: nowrap;
         }
 
-        .dcCardBadge {
-          align-self: flex-end;
-          font-size: 12px;
-          margin-top: -2px;
+        .dcCardStatusPill {
+          align-self: flex-start;
+          font-size: 8.5px;
+          font-weight: 800;
+          color: white;
+          padding: 1.5px 7px;
+          border-radius: 999px;
         }
 
         .dcMoreBtn {
@@ -1329,6 +1373,11 @@ export default function DispatchCalendar({
           gap: 4px;
         }
 
+        .dcMonthCellToday {
+          border-color: #1f5aa6;
+          background: #f5f9ff;
+        }
+
         .dcMonthCellMuted {
           opacity: 0.4;
         }
@@ -1360,9 +1409,6 @@ export default function DispatchCalendar({
           }
           .dcCardRow {
             font-size: 9px;
-          }
-          .dcWkDayCol {
-            min-width: 96px;
           }
           .dcHeaderRow {
             flex-direction: column;
