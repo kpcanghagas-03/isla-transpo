@@ -5,15 +5,19 @@ import { VehicleMap, getStatusColor, getDriverColor } from "./types";
 type DispatchLegendsProps = {
   vehicleMap: VehicleMap;
   driverColorMap: Record<string, string>;
+  // When nested inside another card (e.g. under the Daily Dispatch list),
+  // drop the border/shadow/padding so it reads as part of that card
+  // instead of a second floating panel.
+  embedded?: boolean;
 };
 
 const STATUS_ORDER = ["Pending", "Approved", "On the way", "Completed", "Disapproved", "Emergency"];
 
-export default function DispatchLegends({ vehicleMap, driverColorMap }: DispatchLegendsProps) {
+export default function DispatchLegends({ vehicleMap, driverColorMap, embedded }: DispatchLegendsProps) {
   const drivers = Array.from(new Set(Object.values(vehicleMap).map((v) => v.driver))).sort();
 
   return (
-    <div className="dlWrap">
+    <div className={`dlWrap ${embedded ? "dlWrapEmbedded" : ""}`}>
       <div className="dlBlock">
         <span className="dlLabel">Status Legend</span>
         <div className="dlChips">
@@ -52,6 +56,16 @@ export default function DispatchLegends({ vehicleMap, driverColorMap }: Dispatch
           padding: 12px 16px;
           box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
           border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .dlWrapEmbedded {
+          background: transparent;
+          box-shadow: none;
+          border: none;
+          border-top: 1px solid #f1f5f9;
+          border-radius: 0;
+          padding: 12px 0 0;
+          margin-top: 2px;
         }
 
         .dlBlock {

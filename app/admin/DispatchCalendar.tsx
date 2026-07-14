@@ -11,7 +11,7 @@ import {
   minutesToTime12h,
   getConflicts,
   getDriverColor,
-  getStatusBadge,
+  getStatusColor,
   getPassengerCount,
 } from "./types";
 import DispatchLegends from "./DispatchLegends";
@@ -136,46 +136,30 @@ export default function DispatchCalendar({
       <div className="dcMiniHeader">
         <button
           className="dcMiniNavBtn"
-          style={{ color: "#374151" }}
           onClick={() => setMonthAnchor((m) => shiftMonth(m, -1))}
           aria-label="Previous month"
         >
-          <ChevronLeft size={16} />
+          <ChevronLeft size={15} />
         </button>
         <span className="dcMiniMonthLabel" style={{ color: "#111827" }}>
           {monthLabel}
         </span>
         <button
           className="dcMiniNavBtn"
-          style={{ color: "#374151" }}
           onClick={() => setMonthAnchor((m) => shiftMonth(m, 1))}
           aria-label="Next month"
         >
-          <ChevronRight size={16} />
+          <ChevronRight size={15} />
         </button>
       </div>
 
-      <button className="dcTodayBtn" style={{ color: "#1f5aa6" }} onClick={goToToday}>
-        Today
-      </button>
-
-      <div className="dcJumpToDate">
-        <label className="dcJumpLabel" style={{ color: "#374151" }} htmlFor="dcJumpDateInput">
-          Jump to date
-        </label>
-        <input
-          id="dcJumpDateInput"
-          type="date"
-          className="dcJumpInput"
-          style={{ color: "#111827" }}
-          value={activeDate}
-          onChange={(e) => {
-            const v = e.target.value;
-            if (!v) return;
-            onDateChange(v);
-            setMonthAnchor(startOfMonth(v));
-          }}
-        />
+      <div className="dcMiniSubRow">
+        <span className="dcMiniHint">{activeDate === todayIso ? "Today selected" : "Tap a date"}</span>
+        {activeDate !== todayIso && (
+          <button className="dcTodayLink" onClick={goToToday}>
+            Today
+          </button>
+        )}
       </div>
 
       <div className="dcMiniDowRow">
@@ -196,32 +180,17 @@ export default function DispatchCalendar({
           return (
             <button
               key={iso}
-              className="dcMiniCell"
-              style={{
-                background: isSelected ? "#1f5aa6" : "white",
-                border: isToday ? "1.5px solid #1f5aa6" : "1px solid #e5e7eb",
-                opacity: inMonth ? 1 : 0.35,
-              }}
+              className={`dcMiniCell ${isSelected ? "dcMiniCellSelected" : ""} ${
+                isToday && !isSelected ? "dcMiniCellToday" : ""
+              }`}
+              style={{ opacity: inMonth ? 1 : 0.32 }}
               onClick={() => onDateChange(iso)}
+              title={count > 0 ? `${count} trip${count === 1 ? "" : "s"}` : undefined}
             >
-              <span
-                className="dcMiniDate"
-                style={{ color: isSelected ? "white" : isToday ? "#1f5aa6" : "#111827" }}
-              >
-                {Number(iso.slice(8, 10))}
-              </span>
-              <span className="dcMiniDotRow">
-                {count > 0 && (
-                  <>
-                    <span className="dcMiniDot" style={{ background: isSelected ? "white" : "#1f5aa6" }} />
-                    {count > 1 && (
-                      <span className="dcMiniDotCount" style={{ color: isSelected ? "white" : "#1f5aa6" }}>
-                        {count}
-                      </span>
-                    )}
-                  </>
-                )}
-              </span>
+              <span className="dcMiniDate">{Number(iso.slice(8, 10))}</span>
+              {count > 0 && (
+                <span className="dcMiniDot" style={{ background: isSelected ? "white" : "#1f5aa6" }} />
+              )}
             </button>
           );
         })}
@@ -239,38 +208,55 @@ export default function DispatchCalendar({
     [filtered, activeDate]
   );
 
-  const renderTripCard = ({ r, win }: { r: ScheduleRequest; win: { start: number; end: number } | null }) => {
+  const renderTripCard = (
+    { r, win }: { r: ScheduleRequest; win: { start: number; end: number } | null },
+    idx: number,
+    arr: { r: ScheduleRequest; win: { start: number; end: number } | null }[]
+  ) => {
     const vehicles = splitVehicles(r.assigned_vehicle);
     const driver = vehicles.map((v) => lookupDriver(v, vehicleMap)?.driver).find(Boolean) || null;
     const color = getDriverColor(driver, driverColorMap);
     const hasConflict = conflicts.has(r.id);
     const isActive = activeRequestId === r.id;
+    const pax = getPassengerCount(r);
+    const isLast = idx === arr.length - 1;
 
     return (
-      <button
-        key={r.id}
-        className={`dcTripCard ${isActive ? "dcTripCardActive" : ""}`}
-        style={{ borderLeftColor: color, background: "white" }}
-        onClick={() => onSelectRequest(r)}
-      >
-        <div className="dcTripTime" style={{ color: "#111827" }}>
-          {win ? minutesToTime12h(win.start) : toPHTime(r.pick_up_time) || "No time set"}
-          {hasConflict && (
-            <span className="dcTripWarn" title="Scheduling conflict">
-              <AlertTriangle size={14} />
+      <div className="dcTimelineRow" key={r.id}>
+        <div className="dcTimelineRail">
+          <span className="dcTimelineDot" style={{ background: color }} />
+          {!isLast && <span className="dcTimelineLine" />}
+        </div>
+
+        <button
+          className={`dcTripCard ${isActive ? "dcTripCardActive" : ""}`}
+          style={{ borderLeftColor: color }}
+          onClick={() => onSelectRequest(r)}
+        >
+          <div className="dcTripCardTop">
+            <span className="dcTripTime">
+              {win ? minutesToTime12h(win.start) : toPHTime(r.pick_up_time) || "No time set"}
             </span>
-          )}
-        </div>
-        <div className="dcTripDriver" style={{ color: "#111827" }} title={driver || "Unassigned"}>
-          👤 {driver || "Unassigned"}
-        </div>
-        <div className="dcTripPax" style={{ color: "#374151" }}>
-          👥 {getPassengerCount(r)} Passenger{getPassengerCount(r) === 1 ? "" : "s"}
-        </div>
-        <div className="dcTripStatus" style={{ color: "#374151" }}>
-          {getStatusBadge(r.status)} {r.status}
-        </div>
-      </button>
+            {hasConflict && (
+              <span className="dcTripWarn" title="Scheduling conflict">
+                <AlertTriangle size={13} />
+              </span>
+            )}
+            <span className="dcStatusPill" style={{ background: getStatusColor(r.status) }}>
+              {r.status}
+            </span>
+          </div>
+          <div className="dcTripCardBottom">
+            <span className="dcTripDriver" style={{ color }} title={driver || "Unassigned"}>
+              👤 {driver || "Unassigned"}
+            </span>
+            <span className="dcTripSep">•</span>
+            <span className="dcTripPax">
+              👥 {pax} pax
+            </span>
+          </div>
+        </button>
+      </div>
     );
   };
 
@@ -372,10 +358,10 @@ export default function DispatchCalendar({
               <p className="dcEmptySub">Select another date to view trips.</p>
             </div>
           ) : (
-            <div className="dcTripList">{dayTrips.map(renderTripCard)}</div>
+            <div className="dcTripList">{dayTrips.map((entry, i, arr) => renderTripCard(entry, i, arr))}</div>
           )}
 
-          <DispatchLegends vehicleMap={vehicleMap} driverColorMap={driverColorMap} />
+          <DispatchLegends vehicleMap={vehicleMap} driverColorMap={driverColorMap} embedded />
         </div>
       </div>
 
@@ -456,80 +442,80 @@ export default function DispatchCalendar({
         }
 
         .dcMiniNavBtn {
-          border: 1px solid #e2e8f0;
-          background: white;
-          border-radius: 8px;
-          padding: 6px;
+          border: none;
+          background: transparent;
+          color: #64748b;
+          border-radius: 999px;
+          width: 28px;
+          height: 28px;
           cursor: pointer;
           display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: background 0.15s ease;
+        }
+
+        .dcMiniNavBtn:hover {
+          background: #f1f5f9;
+          color: #1f5aa6;
         }
 
         .dcMiniMonthLabel {
-          font-size: 15px;
+          font-size: 14.5px;
           font-weight: 800;
         }
 
-        .dcTodayBtn {
-          border: 1px solid #1f5aa6;
-          background: white;
-          border-radius: 9px;
-          padding: 7px;
-          font-size: 13px;
-          font-weight: 700;
-          cursor: pointer;
-          width: 100%;
-        }
-
-        .dcTodayBtn:hover {
-          background: #eef2ff;
-        }
-
-        .dcJumpToDate {
+        .dcMiniSubRow {
           display: flex;
-          flex-direction: column;
-          gap: 4px;
+          align-items: center;
+          justify-content: space-between;
+          margin-top: -6px;
         }
 
-        .dcJumpLabel {
+        .dcMiniHint {
           font-size: 11px;
-          font-weight: 800;
-          text-transform: uppercase;
-          letter-spacing: 0.02em;
+          font-weight: 600;
+          color: #94a3b8;
         }
 
-        .dcJumpInput {
-          border: 1px solid #cbd5e1;
-          border-radius: 9px;
-          padding: 8px 10px;
-          font-size: 13px;
-          font-weight: 600;
-          width: 100%;
-          box-sizing: border-box;
-          background: white;
+        .dcTodayLink {
+          border: none;
+          background: transparent;
+          color: #1f5aa6;
+          font-size: 11.5px;
+          font-weight: 800;
+          cursor: pointer;
+          padding: 2px 0;
+          font-family: inherit;
+        }
+
+        .dcTodayLink:hover {
+          text-decoration: underline;
         }
 
         .dcMiniDowRow {
           display: grid;
           grid-template-columns: repeat(7, minmax(0, 1fr));
-          gap: 4px;
         }
 
         .dcMiniDow {
           text-align: center;
-          font-size: 11px;
+          font-size: 10.5px;
           font-weight: 800;
+          color: #9ca3af;
         }
 
         .dcMiniGrid {
           display: grid;
           grid-template-columns: repeat(7, minmax(0, 1fr));
-          gap: 4px;
+          row-gap: 3px;
         }
 
         .dcMiniCell {
-          width: 100%;
-          height: 36px;
-          border-radius: 8px;
+          width: 32px;
+          height: 32px;
+          margin: 0 auto;
+          border-radius: 999px;
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -539,34 +525,40 @@ export default function DispatchCalendar({
           font-family: inherit;
           box-sizing: border-box;
           padding: 0;
+          background: transparent;
+          border: 1.5px solid transparent;
+          color: #111827;
         }
 
         .dcMiniCell:hover {
-          filter: brightness(0.97);
+          background: #f1f5f9;
+        }
+
+        .dcMiniCellToday {
+          border-color: #1f5aa6;
+          color: #1f5aa6;
+          font-weight: 800;
+        }
+
+        .dcMiniCellSelected {
+          background: #1f5aa6;
+          color: white;
+        }
+
+        .dcMiniCellSelected:hover {
+          background: #1a4c8f;
         }
 
         .dcMiniDate {
-          font-size: 13px;
+          font-size: 12.5px;
           font-weight: 700;
           line-height: 1;
         }
 
-        .dcMiniDotRow {
-          display: flex;
-          align-items: center;
-          gap: 3px;
-          height: 6px;
-        }
-
         .dcMiniDot {
-          width: 5px;
-          height: 5px;
+          width: 4px;
+          height: 4px;
           border-radius: 999px;
-        }
-
-        .dcMiniDotCount {
-          font-size: 8.5px;
-          font-weight: 800;
         }
 
         /* ================= RIGHT: DAILY DISPATCH DASHBOARD ================= */
@@ -687,40 +679,74 @@ export default function DispatchCalendar({
         .dcTripList {
           display: flex;
           flex-direction: column;
-          gap: 12px;
           max-height: 620px;
           overflow-y: auto;
           padding-right: 2px;
         }
 
+        .dcTimelineRow {
+          display: flex;
+          gap: 10px;
+        }
+
+        .dcTimelineRail {
+          width: 16px;
+          flex-shrink: 0;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          padding-top: 14px;
+        }
+
+        .dcTimelineDot {
+          width: 8px;
+          height: 8px;
+          border-radius: 999px;
+          flex-shrink: 0;
+        }
+
+        .dcTimelineLine {
+          width: 2px;
+          flex: 1;
+          background: #e2e8f0;
+          margin-top: 2px;
+        }
+
         .dcTripCard {
+          flex: 1;
+          min-width: 0;
           text-align: left;
           background: white;
           border: 1px solid #e2e8f0;
-          border-left: 6px solid #94a3b8;
-          border-radius: 14px;
-          padding: 16px 18px;
+          border-left: 3px solid #94a3b8;
+          border-radius: 10px;
+          padding: 9px 12px;
+          margin-bottom: 8px;
           cursor: pointer;
           font-family: inherit;
           display: flex;
           flex-direction: column;
-          gap: 6px;
-          box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
+          gap: 4px;
+          box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+          transition: box-shadow 0.15s ease;
         }
 
         .dcTripCard:hover {
-          box-shadow: 0 8px 18px rgba(15, 23, 42, 0.1);
+          box-shadow: 0 6px 14px rgba(15, 23, 42, 0.1);
         }
 
         .dcTripCardActive {
           box-shadow: 0 0 0 2px #1f5aa6;
         }
 
-        .dcTripTime {
+        .dcTripCardTop {
           display: flex;
           align-items: center;
           gap: 8px;
-          font-size: 17px;
+        }
+
+        .dcTripTime {
+          font-size: 14px;
           font-weight: 800;
           color: #111827;
         }
@@ -730,25 +756,40 @@ export default function DispatchCalendar({
           display: inline-flex;
         }
 
+        .dcStatusPill {
+          margin-left: auto;
+          color: white;
+          font-size: 10.5px;
+          font-weight: 800;
+          padding: 3px 9px;
+          border-radius: 999px;
+          white-space: nowrap;
+          flex-shrink: 0;
+        }
+
+        .dcTripCardBottom {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 13px;
+          font-weight: 600;
+          color: #374151;
+        }
+
         .dcTripDriver {
-          font-size: 15px;
           font-weight: 700;
-          color: #111827;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
         }
 
-        .dcTripPax {
-          font-size: 14px;
-          font-weight: 600;
-          color: #374151;
+        .dcTripSep {
+          color: #cbd5e1;
         }
 
-        .dcTripStatus {
-          font-size: 14px;
-          font-weight: 700;
+        .dcTripPax {
           color: #374151;
+          white-space: nowrap;
         }
 
         @media (max-width: 900px) {
