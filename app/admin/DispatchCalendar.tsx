@@ -309,7 +309,7 @@ export default function DispatchCalendar({
             <div className="dcTripList">{dayTrips.map(renderTripCard)}</div>
           )}
 
-          <DispatchLegends vehicleMap={vehicleMap} driverColorMap={driverColorMap} embedded />
+          <DispatchLegends vehicleMap={vehicleMap} driverColorMap={driverColorMap} />
         </div>
       </div>
 
