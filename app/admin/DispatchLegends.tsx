@@ -1,6 +1,6 @@
 "use client";
 
-import { VehicleMap, STATUS_BADGE, getDriverColor } from "./types";
+import { VehicleMap, getStatusColor, getDriverColor } from "./types";
 
 type DispatchLegendsProps = {
   vehicleMap: VehicleMap;
@@ -15,6 +15,18 @@ export default function DispatchLegends({ vehicleMap, driverColorMap }: Dispatch
   return (
     <div className="dlWrap">
       <div className="dlBlock">
+        <span className="dlLabel">Status Legend</span>
+        <div className="dlChips">
+          {STATUS_ORDER.map((s) => (
+            <span key={s} className="dlChip">
+              <span className="dlDot" style={{ background: getStatusColor(s) }} />
+              {s}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div className="dlBlock">
         <span className="dlLabel">Driver Legend</span>
         <div className="dlChips">
           {drivers.map((d) => (
@@ -27,17 +39,6 @@ export default function DispatchLegends({ vehicleMap, driverColorMap }: Dispatch
             <span className="dlDot" style={{ background: "#94a3b8" }} />
             Unassigned
           </span>
-        </div>
-      </div>
-
-      <div className="dlBlock">
-        <span className="dlLabel">Status Legend</span>
-        <div className="dlChips">
-          {STATUS_ORDER.map((s) => (
-            <span key={s} className="dlChip">
-              {STATUS_BADGE[s]} {s}
-            </span>
-          ))}
         </div>
       </div>
 

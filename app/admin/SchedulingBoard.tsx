@@ -310,8 +310,6 @@ export default function SchedulingBoard({
       {schedView === "scheduler" ? (
         /* ================= NEW: DISPATCH CALENDAR / TIMELINES / BOARD ================= */
         <div className="schedSchedulerWrap">
-          <DispatchLegends vehicleMap={vehicleMap} driverColorMap={driverColorMap} />
-
           <div className="schedCalendarRow">
             <DispatchCalendar
               requests={requests}
@@ -334,8 +332,15 @@ export default function SchedulingBoard({
               toPHDate={toPHDate}
               activeRequestId={selectedRequest?.id ?? null}
               onSelectRequest={setSelectedRequest}
+              onViewAll={() => {
+                setDateFilter(timelineDate);
+                setSchedView("table");
+                scrollToTable();
+              }}
             />
           </div>
+
+          <DispatchLegends vehicleMap={vehicleMap} driverColorMap={driverColorMap} />
 
           <DispatchBoard
             requests={requests}

@@ -11,7 +11,7 @@ import {
   minutesToTime,
   getConflicts,
   getDriverColor,
-  getStatusBadge,
+  getStatusColor,
   getPassengerCount,
 } from "./types";
 
@@ -23,7 +23,16 @@ type TodaysDispatchQueueProps = {
   toPHDate: (isoDate: string | null) => string | null;
   activeRequestId: number | null;
   onSelectRequest: (request: ScheduleRequest) => void;
+  // Optional: wire this up to jump the parent view to a full/table listing
+  // of this day's trips. Omit and the footer button just hides itself.
+  onViewAll?: () => void;
 };
+
+function fullDateLabel(iso: string): string {
+  const d = new Date(`${iso}T00:00:00`);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString("en-PH", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+}
 
 export default function TodaysDispatchQueue({
   requests,
@@ -33,6 +42,7 @@ export default function TodaysDispatchQueue({
   toPHDate,
   activeRequestId,
   onSelectRequest,
+  onViewAll,
 }: TodaysDispatchQueueProps) {
   const conflicts = useMemo(() => getConflicts(requests, vehicleMap), [requests, vehicleMap]);
 
@@ -47,9 +57,14 @@ export default function TodaysDispatchQueue({
   return (
     <div className="tdqPanel">
       <div className="tdqHeader">
-        <ListOrdered size={16} />
-        <span>Today's Dispatch Queue</span>
-        <span className="tdqDate">{toPHDate(date) || date}</span>
+        <div className="tdqHeaderTop">
+          <div className="tdqHeaderTitle">
+            <ListOrdered size={16} />
+            <span>Today's Trips</span>
+          </div>
+          <span className="tdqCountBadge">{queue.length}</span>
+        </div>
+        <span className="tdqDate">{fullDateLabel(date) || toPHDate(date) || date}</span>
       </div>
 
       <div className="tdqList">
@@ -73,14 +88,16 @@ export default function TodaysDispatchQueue({
               >
                 <div className="tdqTop">
                   <span className="tdqTime">
-                    {win ? `${minutesToTime(win.start)}–${minutesToTime(win.end)}` : r.pick_up_time || "No time"}
+                    {win ? `${minutesToTime(win.start)} – ${minutesToTime(win.end)}` : r.pick_up_time || "No time"}
                   </span>
-                  <span className="tdqBadge">{getStatusBadge(r.status)}</span>
+                  <span className="tdqStatusPill" style={{ background: getStatusColor(r.status) }}>
+                    {r.status}
+                  </span>
                 </div>
-                <div className="tdqMetaRow">👥 {getPassengerCount(r)} Passenger{getPassengerCount(r) === 1 ? "" : "s"}</div>
+                <div className="tdqMetaRow">👥 {getPassengerCount(r)} pax</div>
                 <div className="tdqMetaRow">🚐 {vehicles.map((v) => v.split(" - ")[0]).join(", ") || "No vehicle"}</div>
                 <div className="tdqMetaRow" style={{ color }}>
-                  👨 {driver || "Unassigned"}
+                  👤 {driver || "Unassigned"}
                 </div>
                 {hasConflict && <div className="tdqConflict">⚠ Conflict</div>}
               </button>
@@ -88,6 +105,12 @@ export default function TodaysDispatchQueue({
           })
         )}
       </div>
+
+      {onViewAll && (
+        <button className="tdqViewAllBtn" onClick={onViewAll}>
+          View All Today's Trips
+        </button>
+      )}
 
       <style jsx>{`
         .tdqPanel {
@@ -104,16 +127,40 @@ export default function TodaysDispatchQueue({
 
         .tdqHeader {
           display: flex;
+          flex-direction: column;
+          gap: 2px;
+        }
+
+        .tdqHeaderTop {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .tdqHeaderTitle {
+          display: flex;
           align-items: center;
           gap: 8px;
-          font-weight: 700;
+          font-weight: 800;
           color: #0f172a;
           font-size: 14px;
-          flex-wrap: wrap;
+        }
+
+        .tdqCountBadge {
+          background: #1f5aa6;
+          color: white;
+          font-size: 11px;
+          font-weight: 800;
+          min-width: 20px;
+          height: 20px;
+          border-radius: 999px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0 6px;
         }
 
         .tdqDate {
-          margin-left: auto;
           font-size: 11px;
           font-weight: 700;
           color: #64748b;
@@ -160,6 +207,7 @@ export default function TodaysDispatchQueue({
           display: flex;
           justify-content: space-between;
           align-items: center;
+          gap: 6px;
         }
 
         .tdqTime {
@@ -168,8 +216,14 @@ export default function TodaysDispatchQueue({
           color: #111827;
         }
 
-        .tdqBadge {
-          font-size: 13px;
+        .tdqStatusPill {
+          font-size: 9.5px;
+          font-weight: 800;
+          color: white;
+          padding: 2px 8px;
+          border-radius: 999px;
+          white-space: nowrap;
+          flex-shrink: 0;
         }
 
         .tdqMetaRow {
@@ -183,6 +237,22 @@ export default function TodaysDispatchQueue({
           font-weight: 800;
           color: #b91c1c;
           margin-top: 2px;
+        }
+
+        .tdqViewAllBtn {
+          border: 1px solid #1f5aa6;
+          background: white;
+          color: #1f5aa6;
+          border-radius: 10px;
+          padding: 9px 12px;
+          font-size: 12.5px;
+          font-weight: 700;
+          cursor: pointer;
+          font-family: inherit;
+        }
+
+        .tdqViewAllBtn:hover {
+          background: #eef2ff;
         }
       `}</style>
     </div>

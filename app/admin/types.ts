@@ -291,6 +291,22 @@ export function getStatusBadge(status: string): string {
   return STATUS_BADGE[status] || "⚪";
 }
 
+// Solid colors for the status "pill" chips (Dispatch Calendar header cards,
+// Today's Dispatch Queue, Status Legend). Separate from STATUS_BADGE (which
+// is just the little emoji dot) since the pill needs a real background color.
+export const STATUS_COLOR: Record<string, string> = {
+  Pending: "#f59e0b",
+  Approved: "#22c55e",
+  "On the way": "#3b82f6",
+  Completed: "#64748b",
+  Disapproved: "#ef4444",
+  Emergency: "#a855f7",
+};
+
+export function getStatusColor(status: string): string {
+  return STATUS_COLOR[status] || "#94a3b8";
+}
+
 // ================= NEW: PASSENGER COUNT =================
 // There's no dedicated passenger-count column -- passenger_names stores a
 // comma-separated list (or a single name). Count entries, minimum 1.
