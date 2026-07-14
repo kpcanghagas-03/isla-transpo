@@ -92,6 +92,19 @@ export function minutesToTime(mins: number): string {
   return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
 }
 
+// 12-hour display format ("6:00 AM", "1:30 PM") for the daily dispatch
+// list -- dispatchers scan this list constantly, and 24-hour time is
+// slower to read at a glance. minutesToTime (24h) is left untouched since
+// other components (DispatchBoard, timelines) already rely on it.
+export function minutesToTime12h(mins: number): string {
+  const wrapped = ((mins % 1440) + 1440) % 1440;
+  const h24 = Math.floor(wrapped / 60);
+  const m = wrapped % 60;
+  const period = h24 >= 12 ? "PM" : "AM";
+  const h12 = h24 % 12 === 0 ? 12 : h24 % 12;
+  return `${h12}:${String(m).padStart(2, "0")} ${period}`;
+}
+
 export type TripWindow = { start: number; end: number };
 
 // Resolves a request's blocking window on its pickup day. Falls back to

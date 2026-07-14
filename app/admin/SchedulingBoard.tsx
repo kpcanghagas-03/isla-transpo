@@ -19,8 +19,6 @@ import DispatchCalendar from "./DispatchCalendar";
 import DriverTimeline from "./DriverTimeline";
 import VehicleTimeline from "./VehicleTimeline";
 import DispatchBoard from "./DispatchBoard";
-import DispatchLegends from "./DispatchLegends";
-import TodaysDispatchQueue from "./TodaysDispatchQueue";
 import TripDetailPanel from "./TripDetailPanel";
 
 type SortField = "pick_up_date" | "pick_up_time";
@@ -308,39 +306,21 @@ export default function SchedulingBoard({
       </div>
 
       {schedView === "scheduler" ? (
-        /* ================= NEW: DISPATCH CALENDAR / TIMELINES / BOARD ================= */
+        /* ================= DISPATCH CALENDAR (mini calendar + daily list) / BOARD / TIMELINES ================= */
         <div className="schedSchedulerWrap">
-          <div className="schedCalendarRow">
-            <DispatchCalendar
-              requests={requests}
-              vehicleMap={vehicleMap}
-              vehicleOptions={vehicleOptions}
-              driverColorMap={driverColorMap}
-              loading={loading}
-              toPHDate={toPHDate}
-              toPHTime={toPHTime}
-              activeDate={timelineDate}
-              onDateChange={setTimelineDate}
-              activeRequestId={selectedRequest?.id ?? null}
-              onSelectRequest={setSelectedRequest}
-            />
-            <TodaysDispatchQueue
-              requests={requests}
-              vehicleMap={vehicleMap}
-              driverColorMap={driverColorMap}
-              date={timelineDate}
-              toPHDate={toPHDate}
-              activeRequestId={selectedRequest?.id ?? null}
-              onSelectRequest={setSelectedRequest}
-              onViewAll={() => {
-                setDateFilter(timelineDate);
-                setSchedView("table");
-                scrollToTable();
-              }}
-            />
-          </div>
-
-          <DispatchLegends vehicleMap={vehicleMap} driverColorMap={driverColorMap} />
+          <DispatchCalendar
+            requests={requests}
+            vehicleMap={vehicleMap}
+            vehicleOptions={vehicleOptions}
+            driverColorMap={driverColorMap}
+            loading={loading}
+            toPHDate={toPHDate}
+            toPHTime={toPHTime}
+            activeDate={timelineDate}
+            onDateChange={setTimelineDate}
+            activeRequestId={selectedRequest?.id ?? null}
+            onSelectRequest={setSelectedRequest}
+          />
 
           <DispatchBoard
             requests={requests}
@@ -646,13 +626,6 @@ export default function SchedulingBoard({
           margin-bottom: 8px;
         }
 
-        .schedCalendarRow {
-          display: grid;
-          grid-template-columns: 1fr 320px;
-          gap: 16px;
-          align-items: start;
-        }
-
         .schedTimelineGrid {
           display: grid;
           grid-template-columns: 1fr;
@@ -858,12 +831,6 @@ export default function SchedulingBoard({
         .loading {
           text-align: center;
           padding: 40px 0;
-        }
-
-        @media (max-width: 1100px) {
-          .schedCalendarRow {
-            grid-template-columns: 1fr;
-          }
         }
 
         @media (max-width: 1024px) {
