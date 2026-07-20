@@ -261,13 +261,17 @@ export default function AdminPage() {
     driver: " LGU Sagay - Mr. Ardindo Bitas",
     phone: "09491561185",
   },
-  "Mitsubishi L300 - TBD": {
-    driver: " MDRRMO Mambajao - Mr. Bean",
-    phone: " No phone Number",
+  "Mitsubishi L300 - Plate Number": {
+    driver: " MDRRMO Mambajao - Mr. Cabil",
+    phone: " 09121607242",
   },
-  "Isuzu Traviz - TBD": {
-    driver: " MDRRMO Mambajao - Mr. Tarzan",
-    phone: " No phone Number",
+  "Toyota Super Grand 1 Elite - S9M475": {
+    driver: " MDRRMO Mambajao - Mr. Rolan Domangcas",
+    phone: " 09172413608",
+  },
+  "Toyota Super Grandia LXV" :{
+    driver:"Jevals Balaba",
+    phone: "No Number"
   }
 };
 
@@ -283,8 +287,9 @@ const vehicleOptions = [
   "Toyota Hilux FX4 - SKB 2310",
   "Nissan Urban Van - 070107  ",
   "Toyota Hi-Ace - SAA 6769",
-  "Mitsubishi L300 - TBD",
-  "Isuzu Traviz - TBD"
+  "Mitsubishi L300 - Plate Number",
+  "Toyota Super Grand 1 Elite - S9M475",
+  "Toyota Super Grandia LXV",
 ];
   // ================= EMAIL SENDER (shared helper) =================
   // Centralized so both status changes AND vehicle assignment changes
