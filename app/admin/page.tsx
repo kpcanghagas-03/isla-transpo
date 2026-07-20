@@ -272,7 +272,23 @@ export default function AdminPage() {
   "Toyota Super Grandia LXV" :{
     driver:"Jevals Balaba",
     phone: "No Number"
-  }
+  }, 
+   " Nissan Premium - KBB 6185" :{
+    driver:"Aaron Abecia",
+    phone: " 09670499562"
+  }, 
+  "Nissan Premium - NCA 9485" :{
+    driver:"Niel Vallar",
+    phone: "09153755105"
+  }, 
+  "Nissan Premium - KBB 9362" :{
+    driver:"JP Mazo",
+    phone: "09621732579"
+  }, 
+  "Toyota Grandia - KCB 6114" :{
+    driver:"Jevals Balaba",
+    phone: "09758217898"
+  }, 
 };
 
 const vehicleOptions = [
@@ -290,6 +306,10 @@ const vehicleOptions = [
   "Mitsubishi L300 - Plate Number",
   "Toyota Super Grand 1 Elite - S9M475",
   "Toyota Super Grandia LXV",
+  "Nissan Premium - KBB 6185",
+  "Nissan Premium - NCA 9485",
+  "Nissan Premium - KBB 9362",
+  "Toyota Grandia - KCB 6114",
 ];
   // ================= EMAIL SENDER (shared helper) =================
   // Centralized so both status changes AND vehicle assignment changes
