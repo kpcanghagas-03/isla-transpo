@@ -241,10 +241,9 @@ export default function AdminPage() {
     driver: "Mr. Leonel Quidet",
     phone: "09178579197",
   },
-  "Isuzu Crewcab - SEB 403": {
-    driver: "Mr. Junve O. Barbadillo",
-    phone: "09178579129",
-  },
+
+
+
   "Nissan Urban Van - 070106": {
     driver: "LGU Catarman-Mr. Toping",
     phone: "09263310628",
@@ -273,9 +272,12 @@ export default function AdminPage() {
     driver:"Jevals Balaba",
     phone: "No Number"
   }, 
-   " Nissan Premium - KBB 6185" :{
+
+
+  "Nissan Premium - KBB 6185" :{
     driver:"Aaron Abecia",
-    phone: " 09670499562"
+
+    phone: "09670499562"
   }, 
   "Nissan Premium - NCA 9485" :{
     driver:"Niel Vallar",
@@ -289,6 +291,14 @@ export default function AdminPage() {
     driver:"Jevals Balaba",
     phone: "09758217898"
   }, 
+  "Nissan Premium - KAR 5814" : {
+    driver: "Pier Hinampas",
+    phone: "09169196171"
+  }, 
+  "Camiguin Province Van" :{
+    driver: " Remor"
+    phone: "09756773916"
+  },
 };
 
 const vehicleOptions = [
@@ -298,7 +308,6 @@ const vehicleOptions = [
   "Toyota Innova - SJS 302",
   "Isuzu Pick-up - SKB 3028",
   "Isuzu Pick-up - SKB 3030",
-  "Isuzu Crewcab - SEB 403",
   "Nissan Urban Van - 070106",
   "Toyota Hilux FX4 - SKB 2310",
   "Nissan Urban Van - 070107  ",
@@ -310,6 +319,8 @@ const vehicleOptions = [
   "Nissan Premium - NCA 9485",
   "Nissan Premium - KBB 9362",
   "Toyota Grandia - KCB 6114",
+  "Nissan Premium - KAR 5814",
+  "Camiguin Province Van",
 ];
   // ================= EMAIL SENDER (shared helper) =================
   // Centralized so both status changes AND vehicle assignment changes
