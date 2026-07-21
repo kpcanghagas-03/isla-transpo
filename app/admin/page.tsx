@@ -274,7 +274,6 @@ export default function AdminPage() {
   }, 
   "Nissan Premium - KBB 6185" :{
     driver:"Aaron Abecia",
-
     phone: "09670499562"
   }, 
   "Nissan Premium - NCA 9485" :{
