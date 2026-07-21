@@ -272,8 +272,6 @@ export default function AdminPage() {
     driver:"Jevals Balaba",
     phone: "No Number"
   }, 
-
-
   "Nissan Premium - KBB 6185" :{
     driver:"Aaron Abecia",
 
@@ -296,7 +294,7 @@ export default function AdminPage() {
     phone: "09169196171"
   }, 
   "Camiguin Province Van" :{
-    driver: " Remor"
+    driver: "Remor",
     phone: "09756773916"
   },
 };
