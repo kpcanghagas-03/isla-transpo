@@ -272,10 +272,7 @@ export default function AdminPage() {
     driver:"Jevals Balaba",
     phone: "No Number"
   }, 
-  "Nissan Premium - KBB 6185" :{
-    driver:"Aaron Abecia",
-    phone: "09670499562"
-  }, 
+
   "Nissan Premium - NCA 9485" :{
     driver:"Niel Vallar",
     phone: "09153755105"
@@ -296,6 +293,10 @@ export default function AdminPage() {
     driver: "Remor",
     phone: "09756773916"
   },
+   "Nissan Premium - KBB 6185" :{
+    driver:"Aaron Abecia",
+    phone: "09670499562"
+  }, 
 };
 
 const vehicleOptions = [
@@ -312,12 +313,12 @@ const vehicleOptions = [
   "Mitsubishi L300 - Plate Number",
   "Toyota Super Grand 1 Elite - S9M475",
   "Toyota Super Grandia LXV",
-  "Nissan Premium - KBB 6185",
   "Nissan Premium - NCA 9485",
   "Nissan Premium - KBB 9362",
   "Toyota Grandia - KCB 6114",
   "Nissan Premium - KAR 5814",
   "Camiguin Province Van",
+  "Nissan Premium - KBB 6185",
 ];
   // ================= EMAIL SENDER (shared helper) =================
   // Centralized so both status changes AND vehicle assignment changes
