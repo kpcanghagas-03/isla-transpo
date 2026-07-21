@@ -268,9 +268,9 @@ export default function AdminPage() {
     driver: " MDRRMO Mambajao - Mr. Rolan Domangcas",
     phone: " 09172413608",
   },
-  "Toyota Super Grandia LXV" :{
-    driver:"Jevals Balaba",
-    phone: "No Number"
+  " MDRRMO Mambajao" :{
+    driver:"Allan",
+    phone: "09554293272"
   }, 
 
   "Nissan Premium - NCA 9485" :{
@@ -312,7 +312,7 @@ const vehicleOptions = [
   "Toyota Hi-Ace - SAA 6769",
   "Mitsubishi L300 - Plate Number",
   "Toyota Super Grand 1 Elite - S9M475",
-  "Toyota Super Grandia LXV",
+  " MDRRMO Mambajao",
   "Nissan Premium - NCA 9485",
   "Nissan Premium - KBB 9362",
   "Toyota Grandia - KCB 6114",
