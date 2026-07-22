@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { X, AlertTriangle, RefreshCcw, CheckCircle2, Pencil } from "lucide-react";
+import { X, AlertTriangle, RefreshCcw, CheckCircle2, Pencil, Mail } from "lucide-react";
 import {
   ScheduleRequest,
   VehicleMap,
@@ -69,6 +69,44 @@ export default function TripDetailPanel({
   // from the dropdown replaces the full list with just that selection.
   // For multi-vehicle assignment, use the checkboxes on the Dashboard tab.
   const [vehicleDraft, setVehicleDraft] = useState(splitVehicles(request.assigned_vehicle)[0] || "");
+
+  // -------- Message Requester (direct, dispatcher-initiated email) --------
+  const [showMessageBox, setShowMessageBox] = useState(false);
+  const [messageSubject, setMessageSubject] = useState("");
+  const [messageBody, setMessageBody] = useState("");
+  const [sending, setSending] = useState(false);
+  const [sendResult, setSendResult] = useState<{ ok: boolean; text: string } | null>(null);
+
+  const handleSendMessage = async () => {
+    if (!messageBody.trim() || sending) return;
+    setSending(true);
+    setSendResult(null);
+    try {
+      const res = await fetch("/api/message_requester", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: request.email,
+          name: request.passenger_names || request.requester_name,
+          subject: messageSubject,
+          message: messageBody,
+          request_code: request.request_code,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSendResult({ ok: true, text: "Message sent." });
+        setMessageBody("");
+        setMessageSubject("");
+      } else {
+        setSendResult({ ok: false, text: data.error || "Failed to send." });
+      }
+    } catch (err: any) {
+      setSendResult({ ok: false, text: err?.message || "Failed to send." });
+    } finally {
+      setSending(false);
+    }
+  };
 
   // Re-sync drafts when the panel switches to a different request (e.g.
   // clicking another row/card while the panel is already open) so stale
@@ -262,6 +300,47 @@ export default function TripDetailPanel({
               </>
             )}
           </div>
+        </div>
+
+        <div className="tdMessageWrap">
+          <button
+            className="tdActionBtn"
+            onClick={() => setShowMessageBox((v) => !v)}
+            disabled={!request.email}
+            title={!request.email ? "No email on file for this requester" : undefined}
+          >
+            <Mail size={14} /> {showMessageBox ? "Hide Message Box" : "Message Requester"}
+          </button>
+
+          {!request.email && <span className="tdMessageNoEmail">No email on file for this requester.</span>}
+
+          {showMessageBox && request.email && (
+            <div className="tdMessageBox">
+              <span className="tdMessageTo">To: {request.email}</span>
+              <input
+                className="tdMessageSubject"
+                type="text"
+                placeholder={`Regarding your transport request${request.request_code ? ` (${request.request_code})` : ""}`}
+                value={messageSubject}
+                onChange={(e) => setMessageSubject(e.target.value)}
+              />
+              <textarea
+                className="tdMessageTextarea"
+                placeholder="Type your message or concern to the requester..."
+                rows={4}
+                value={messageBody}
+                onChange={(e) => setMessageBody(e.target.value)}
+              />
+              <div className="tdMessageActions">
+                <button className="tdSaveBtn" onClick={handleSendMessage} disabled={sending || !messageBody.trim()}>
+                  {sending ? "Sending..." : "Send"}
+                </button>
+                {sendResult && (
+                  <span className={sendResult.ok ? "tdMessageSuccess" : "tdMessageError"}>{sendResult.text}</span>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="tdActions">
@@ -610,6 +689,73 @@ export default function TripDetailPanel({
           .tdGrid {
             grid-template-columns: 1fr;
           }
+        }
+
+        .tdMessageWrap {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          padding-top: 12px;
+          border-top: 1px solid #eef2f7;
+        }
+
+        .tdMessageNoEmail {
+          font-size: 11.5px;
+          color: #94a3b8;
+          font-weight: 600;
+        }
+
+        .tdMessageBox {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: 12px;
+          padding: 12px;
+        }
+
+        .tdMessageTo {
+          font-size: 11.5px;
+          font-weight: 700;
+          color: #64748b;
+        }
+
+        .tdMessageSubject {
+          border: 1px solid #cbd5e1;
+          border-radius: 8px;
+          padding: 7px 10px;
+          font-size: 13px;
+          font-family: inherit;
+          color: #111827;
+        }
+
+        .tdMessageTextarea {
+          border: 1px solid #cbd5e1;
+          border-radius: 8px;
+          padding: 8px 10px;
+          font-size: 13px;
+          font-family: inherit;
+          color: #111827;
+          resize: vertical;
+        }
+
+        .tdMessageActions {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .tdMessageSuccess {
+          font-size: 12px;
+          font-weight: 700;
+          color: #16a34a;
+        }
+
+        .tdMessageError {
+          font-size: 12px;
+          font-weight: 700;
+          color: #dc2626;
         }
       `}</style>
     </div>
