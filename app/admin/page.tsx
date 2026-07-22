@@ -86,6 +86,7 @@ export default function AdminPage() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<"All" | Request["status"]>("All");
+  const [pickupDateFilter, setPickupDateFilter] = useState<string>(""); // YYYY-MM-DD, "" = all dates
   const [activeTab, setActiveTab] = useState<"All" | "Pending" | "Approved" | "On the way" | "Completed">("All");
   const [expandedCard, setExpandedCard] = useState<number | null>(null);
   const [vehicleExpanded, setVehicleExpanded] = useState<number | null>(null);
@@ -539,10 +540,20 @@ if (shouldEmail) {
     }
   };
 
+  // Sortable timestamp built from pick_up_date + pick_up_time.
+  // Requests with no pickup date/time sink to the bottom (Infinity) instead
+  // of breaking the sort or showing up first.
+  const getPickupTimestamp = (r: Request) => {
+    if (!r.pick_up_date) return Infinity;
+    const dt = new Date(`${r.pick_up_date}T${r.pick_up_time || "00:00:00"}`);
+    return isNaN(dt.getTime()) ? Infinity : dt.getTime();
+  };
+
   // ================= FILTERED + SORTED =================
   const sortedRequests = requests
     .filter((r) => {
       if (statusFilter !== "All" && r.status !== statusFilter) return false;
+      if (pickupDateFilter && r.pick_up_date !== pickupDateFilter) return false;
       const s = searchTerm.trim().toLowerCase();
       if (!s) return true;
 
@@ -577,7 +588,14 @@ if (shouldEmail) {
         (field || "").toLowerCase().includes(s)
       );
     })
-    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    .sort((a, b) => {
+      const pa = getPickupTimestamp(a);
+      const pb = getPickupTimestamp(b);
+      if (pa !== pb) return pa - pb; // earliest pickup time first -> who to dispatch first
+      // Tie-break (both same pickup time, or both missing pickup info):
+      // fall back to original newest-created-first ordering.
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    });
 
   const activeRequests = sortedRequests.filter((r) => {
   const isActiveStatus = [
@@ -830,6 +848,39 @@ if (shouldEmail) {
           <option>Disapproved</option>
           <option>Emergency</option>
         </select>
+
+        <input
+          type="date"
+          value={pickupDateFilter}
+          onChange={(e) => setPickupDateFilter(e.target.value)}
+          style={{
+            padding: 14,
+            borderRadius: 12,
+            border: "2px solid #cbd5e1",
+            color: "#111827",
+            minWidth: 180,
+            background: "white",
+            outline: "none",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
+          }}
+        />
+
+        {pickupDateFilter && (
+          <button
+            onClick={() => setPickupDateFilter("")}
+            style={{
+              padding: "0 16px",
+              borderRadius: 12,
+              border: "2px solid #cbd5e1",
+              background: "white",
+              color: "#475569",
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
+          >
+            Clear date
+          </button>
+        )}
       </div>
 
       {/* ================= ACTIVE REQUESTS ================= */}
