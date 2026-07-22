@@ -174,20 +174,16 @@ export default function TripDetailPanel({
 
         <div className="tdGrid">
           <div className="tdField">
-            <span className="tdLabel">Contact Person</span>
-            <span className="tdValue">{request.contact_person || "N/A"}</span>
-          </div>
-          <div className="tdField">
-            <span className="tdLabel">Flight No.</span>
-            <span className="tdValue">{request.flight_no || "N/A"}</span>
-          </div>
-          <div className="tdField">
             <span className="tdLabel">Pickup Date/Time</span>
             <span className="tdValue">
               {toPHDate(request.pick_up_date) || "N/A"} {toPHTime(request.pick_up_time) || ""}
             </span>
           </div>
           <div className="tdField">
+            <span className="tdLabel">Flight No.</span>
+            <span className="tdValue">{request.flight_no || "N/A"}</span>
+          </div>
+          <div className="tdField tdFieldWide">
             <span className="tdLabel">Drop-off Time</span>
             {onSaveDropOffTime ? (
               <div className="tdDropOffEdit">
@@ -219,6 +215,10 @@ export default function TripDetailPanel({
             <span className="tdValue">{request.destination || "N/A"}</span>
           </div>
           <div className="tdField">
+            <span className="tdLabel">Contact Person</span>
+            <span className="tdValue">{request.contact_person || "N/A"}</span>
+          </div>
+          <div className="tdField tdFieldWide">
             <span className="tdLabel">Assigned Vehicle & Driver</span>
             {onAssignVehicle ? (
               <select
@@ -472,13 +472,17 @@ export default function TripDetailPanel({
         .tdGrid {
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 12px 16px;
+          gap: 10px 16px;
         }
 
         .tdField {
           display: flex;
           flex-direction: column;
           gap: 3px;
+        }
+
+        .tdFieldWide {
+          grid-column: 1 / -1;
         }
 
         .tdLabel {
