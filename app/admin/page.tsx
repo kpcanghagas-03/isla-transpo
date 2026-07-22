@@ -297,6 +297,10 @@ export default function AdminPage() {
     driver:"Aaron Abecia",
     phone: "09670499562"
   }, 
+  "LGU Mambajao- PH471A" :{
+    driver: "Vanvan Macarayan",
+    phone:"091216077242"  
+  },
 };
 
 const vehicleOptions = [
@@ -319,6 +323,7 @@ const vehicleOptions = [
   "Nissan Premium - KAR 5814",
   "Camiguin Province Van",
   "Nissan Premium - KBB 6185",
+  "LGU Mambajao- PH471A"
 ];
   // ================= EMAIL SENDER (shared helper) =================
   // Centralized so both status changes AND vehicle assignment changes
