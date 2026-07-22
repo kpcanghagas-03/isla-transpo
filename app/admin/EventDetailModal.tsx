@@ -43,6 +43,44 @@ export default function EventDetailModal({
 }: EventDetailModalProps) {
   const [dropOffDraft, setDropOffDraft] = useState(request.drop_off_time || "");
 
+  // -------- Message Requester (direct, dispatcher-initiated email) --------
+  const [showMessageBox, setShowMessageBox] = useState(false);
+  const [messageSubject, setMessageSubject] = useState("");
+  const [messageBody, setMessageBody] = useState("");
+  const [sending, setSending] = useState(false);
+  const [sendResult, setSendResult] = useState<{ ok: boolean; text: string } | null>(null);
+
+  const handleSendMessage = async () => {
+    if (!messageBody.trim() || sending) return;
+    setSending(true);
+    setSendResult(null);
+    try {
+      const res = await fetch("/api/message_requester", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: request.email,
+          name: request.passenger_names || request.requester_name,
+          subject: messageSubject,
+          message: messageBody,
+          request_code: request.request_code,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSendResult({ ok: true, text: "Message sent." });
+        setMessageBody("");
+        setMessageSubject("");
+      } else {
+        setSendResult({ ok: false, text: data.error || "Failed to send." });
+      }
+    } catch (err: any) {
+      setSendResult({ ok: false, text: err?.message || "Failed to send." });
+    } finally {
+      setSending(false);
+    }
+  };
+
   const conflicts = useMemo(() => getConflicts(requests, vehicleMap), [requests, vehicleMap]);
   const myConflicts = conflicts.get(request.id) || [];
 
@@ -162,6 +200,55 @@ export default function EventDetailModal({
             <div className="edmField">
               <span className="edmLabel">Contact</span>
               <span className="edmValue">{request.contact_person}</span>
+            </div>
+          )}
+        </div>
+
+        <div className="edmMessageWrap">
+          <button
+            className="edmMessageToggle"
+            onClick={() => setShowMessageBox((v) => !v)}
+            disabled={!request.email}
+            title={!request.email ? "No email on file for this requester" : undefined}
+          >
+            {showMessageBox ? "Hide" : "Message Requester"}
+          </button>
+
+          {!request.email && (
+            <span className="edmMessageNoEmail">No email on file for this requester.</span>
+          )}
+
+          {showMessageBox && request.email && (
+            <div className="edmMessageBox">
+              <span className="edmMessageTo">To: {request.email}</span>
+              <input
+                className="edmMessageSubject"
+                type="text"
+                placeholder={`Regarding your transport request${request.request_code ? ` (${request.request_code})` : ""}`}
+                value={messageSubject}
+                onChange={(e) => setMessageSubject(e.target.value)}
+              />
+              <textarea
+                className="edmMessageTextarea"
+                placeholder="Type your message or concern to the requester..."
+                rows={4}
+                value={messageBody}
+                onChange={(e) => setMessageBody(e.target.value)}
+              />
+              <div className="edmMessageActions">
+                <button
+                  className="edmSaveBtn"
+                  onClick={handleSendMessage}
+                  disabled={sending || !messageBody.trim()}
+                >
+                  {sending ? "Sending..." : "Send"}
+                </button>
+                {sendResult && (
+                  <span className={sendResult.ok ? "edmMessageSuccess" : "edmMessageError"}>
+                    {sendResult.text}
+                  </span>
+                )}
+              </div>
             </div>
           )}
         </div>
@@ -341,6 +428,96 @@ export default function EventDetailModal({
           .edmGrid {
             grid-template-columns: 1fr;
           }
+        }
+
+        .edmMessageWrap {
+          border-top: 1px solid #f1f5f9;
+          padding-top: 14px;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .edmMessageToggle {
+          align-self: flex-start;
+          background: white;
+          border: 1px solid #1f5aa6;
+          color: #1f5aa6;
+          font-weight: 700;
+          font-size: 12.5px;
+          border-radius: 8px;
+          padding: 7px 12px;
+          cursor: pointer;
+          font-family: inherit;
+        }
+
+        .edmMessageToggle:hover:not(:disabled) {
+          background: #eef2ff;
+        }
+
+        .edmMessageToggle:disabled {
+          border-color: #cbd5e1;
+          color: #94a3b8;
+          cursor: not-allowed;
+        }
+
+        .edmMessageNoEmail {
+          font-size: 11.5px;
+          color: #94a3b8;
+          font-weight: 600;
+        }
+
+        .edmMessageBox {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: 12px;
+          padding: 12px;
+        }
+
+        .edmMessageTo {
+          font-size: 11.5px;
+          font-weight: 700;
+          color: #64748b;
+        }
+
+        .edmMessageSubject {
+          border: 1px solid #cbd5e1;
+          border-radius: 8px;
+          padding: 7px 10px;
+          font-size: 13px;
+          font-family: inherit;
+          color: #111827;
+        }
+
+        .edmMessageTextarea {
+          border: 1px solid #cbd5e1;
+          border-radius: 8px;
+          padding: 8px 10px;
+          font-size: 13px;
+          font-family: inherit;
+          color: #111827;
+          resize: vertical;
+        }
+
+        .edmMessageActions {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .edmMessageSuccess {
+          font-size: 12px;
+          font-weight: 700;
+          color: #16a34a;
+        }
+
+        .edmMessageError {
+          font-size: 12px;
+          font-weight: 700;
+          color: #dc2626;
         }
       `}</style>
     </div>

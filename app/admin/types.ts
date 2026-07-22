@@ -17,6 +17,10 @@ export type ScheduleRequest = {
   id: number;
   request_code: string | null;
   requester_name: string;
+  // Requester-entered email from the public request form (page.tsx saves
+  // this as `email` on submit). Needed so dispatchers can message the
+  // requester directly instead of only relying on automated status emails.
+  email?: string | null;
   // The requester-declared passenger count (same field the Admin Dashboard
   // displays directly). Optional/nullable since it's read from the DB and
   // older rows may not have it set.
