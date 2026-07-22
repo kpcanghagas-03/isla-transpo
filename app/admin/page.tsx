@@ -543,11 +543,38 @@ if (shouldEmail) {
   const sortedRequests = requests
     .filter((r) => {
       if (statusFilter !== "All" && r.status !== statusFilter) return false;
-      const s = searchTerm.toLowerCase();
-      return (
-        (r.requester_name || "").toLowerCase().includes(s) ||
-        (r.pickup_location || "").toLowerCase().includes(s) ||
-        (r.destination || "").toLowerCase().includes(s)
+      const s = searchTerm.trim().toLowerCase();
+      if (!s) return true;
+
+      const searchableFields: (string | null | undefined)[] = [
+        r.request_code,
+        r.requester_name,
+        r.email,
+        r.staff_email,
+        r.committee_unit,
+        r.passengers,
+        r.passenger_names,
+        r.pickup_location,
+        r.destination,
+        r.flight_no,
+        r.flight_arrival_date,
+        r.flight_arrival_time,
+        r.pick_up_date,
+        r.pick_up_time,
+        r.drop_off_time,
+        r.contact_person,
+        r.contact_number,
+        r.alternate_contact_person,
+        r.alternate_contact_number,
+        r.notes_remarks,
+        r.status,
+        r.priority,
+        r.assigned_vehicle,
+        r.driver_number,
+      ];
+
+      return searchableFields.some((field) =>
+        (field || "").toLowerCase().includes(s)
       );
     })
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
