@@ -218,6 +218,22 @@ export default function TripDetailPanel({
             <span className="tdLabel">Contact Person</span>
             <span className="tdValue">{request.contact_person || "N/A"}</span>
           </div>
+          <div className="tdField">
+            <span className="tdLabel">Contact Number</span>
+            <span className="tdValue">{request.contact_number || "N/A"}</span>
+          </div>
+          {(request.alternate_contact_person || request.alternate_contact_number) && (
+            <>
+              <div className="tdField">
+                <span className="tdLabel">Alternate Contact Person</span>
+                <span className="tdValue">{request.alternate_contact_person || "N/A"}</span>
+              </div>
+              <div className="tdField">
+                <span className="tdLabel">Alternate Contact Number</span>
+                <span className="tdValue">{request.alternate_contact_number || "N/A"}</span>
+              </div>
+            </>
+          )}
           <div className="tdField tdFieldWide">
             <span className="tdLabel">Assigned Vehicle & Driver</span>
             {onAssignVehicle ? (

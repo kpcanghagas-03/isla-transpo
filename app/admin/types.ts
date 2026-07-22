@@ -23,6 +23,9 @@ export type ScheduleRequest = {
   passengers?: string | null;
   passenger_names: string | null;
   contact_person: string | null;
+  contact_number?: string | null;
+  alternate_contact_person?: string | null;
+  alternate_contact_number?: string | null;
   flight_no: string | null;
   pickup_location: string | null;
   destination: string | null;
