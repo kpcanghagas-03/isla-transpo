@@ -9,6 +9,7 @@ import {
   splitVehicles,
   lookupDriver,
   getDriverColorMap,
+  getPassengerCount,
 } from "./types";
 import DailySummaryCards from "./DailySummaryCards";
 import VehicleWorkloadPanel from "./VehicleWorkloadPanel";
@@ -145,6 +146,7 @@ export default function SchedulingBoard({
         (r.request_code || "").toLowerCase().includes(s) ||
         (r.requester_name || "").toLowerCase().includes(s) ||
         (r.passenger_names || "").toLowerCase().includes(s) ||
+        String(getPassengerCount(r)).includes(s) ||
         (r.contact_person || "").toLowerCase().includes(s) ||
         (r.flight_no || "").toLowerCase().includes(s) ||
         (r.pickup_location || "").toLowerCase().includes(s) ||
@@ -361,7 +363,7 @@ export default function SchedulingBoard({
               <Search size={16} className="schedSearchIcon" />
               <input
                 type="text"
-                placeholder="Search code, name, contact, flight, location..."
+                placeholder="Search code, name, passengers, contact, flight, location..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="schedSearchInput"
@@ -438,6 +440,8 @@ export default function SchedulingBoard({
                   <col style={{ width: "110px" }} />
                   <col style={{ width: "100px" }} />
                   <col style={{ width: "130px" }} />
+                  <col style={{ width: "150px" }} />
+                  <col style={{ width: "90px" }} />
                   <col style={{ width: "190px" }} />
                   <col style={{ width: "150px" }} />
                   <col style={{ width: "90px" }} />
@@ -456,6 +460,8 @@ export default function SchedulingBoard({
                       <span>Pickup Time {sortIcon("pick_up_time")}</span>
                     </th>
                     <th>Request Code</th>
+                    <th>Requester</th>
+                    <th>Passengers</th>
                     <th>Passenger Name(s)</th>
                     <th>Contact Person</th>
                     <th>Flight No.</th>
@@ -486,6 +492,8 @@ export default function SchedulingBoard({
                         <td>{toPHDate(r.pick_up_date) || "—"}</td>
                         <td>{toPHTime(r.pick_up_time) || "—"}</td>
                         <td className="schedMono">{r.request_code || "—"}</td>
+                        <td className="schedWrap">{r.requester_name || "—"}</td>
+                        <td>{getPassengerCount(r)}</td>
                         <td className="schedWrap">
                           {r.passenger_names || r.requester_name || "—"}
                         </td>
@@ -740,7 +748,7 @@ export default function SchedulingBoard({
           border-collapse: collapse;
           table-layout: fixed;
           width: 100%;
-          min-width: 1620px;
+          min-width: 1860px;
           font-size: 13px;
         }
 
