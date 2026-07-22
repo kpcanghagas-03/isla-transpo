@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { X, AlertTriangle, Truck, User2, RefreshCcw, CheckCircle2, Pencil } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { X, AlertTriangle, RefreshCcw, CheckCircle2, Pencil } from "lucide-react";
 import {
   ScheduleRequest,
   VehicleMap,
@@ -32,12 +32,17 @@ type TripDetailPanelProps = {
   // already used by the vehicle-picker checkboxes / status dropdown on
   // the Dashboard tab) rather than duplicating that logic here.
   onSaveDropOffTime?: (id: number, dropOffTime: string) => void;
-  onAssignVehicle?: (request: ScheduleRequest) => void;
-  onAssignDriver?: (request: ScheduleRequest) => void;
+  // Selecting a vehicle from the dropdown also assigns its driver (vehicleMap
+  // ties each vehicle to exactly one driver), so there's no separate
+  // onAssignDriver -- one dropdown drives both, same as the Dashboard tab's
+  // vehicle picker.
+  onAssignVehicle?: (id: number, vehicleString: string) => void;
   onEditSchedule?: (request: ScheduleRequest) => void;
   onUpdateStatus?: (id: number, status: string) => void;
   onCompleteTrip?: (id: number) => void;
 };
+
+const STATUS_OPTIONS = ["Pending", "Approved", "On the way", "Completed", "Disapproved", "Emergency"];
 
 const STATUS_FLOW = ["Pending", "Approved", "On the way", "Completed"];
 
@@ -53,12 +58,25 @@ export default function TripDetailPanel({
   onClose,
   onSaveDropOffTime,
   onAssignVehicle,
-  onAssignDriver,
   onEditSchedule,
   onUpdateStatus,
   onCompleteTrip,
 }: TripDetailPanelProps) {
   const [dropOffDraft, setDropOffDraft] = useState(request.drop_off_time || "");
+  // Dropdown only supports assigning ONE vehicle at a time. Requests that
+  // already have multiple vehicles joined with " | " (rare -- large-group
+  // trips) keep showing here as their first vehicle; picking a new one
+  // from the dropdown replaces the full list with just that selection.
+  // For multi-vehicle assignment, use the checkboxes on the Dashboard tab.
+  const [vehicleDraft, setVehicleDraft] = useState(splitVehicles(request.assigned_vehicle)[0] || "");
+
+  // Re-sync drafts when the panel switches to a different request (e.g.
+  // clicking another row/card while the panel is already open) so stale
+  // values from the previous request don't linger in these controls.
+  useEffect(() => {
+    setDropOffDraft(request.drop_off_time || "");
+    setVehicleDraft(splitVehicles(request.assigned_vehicle)[0] || "");
+  }, [request.id, request.drop_off_time, request.assigned_vehicle]);
 
   const conflicts = useMemo(() => getConflicts(requests, vehicleMap), [requests, vehicleMap]);
   const myConflicts = conflicts.get(request.id) || [];
@@ -201,43 +219,56 @@ export default function TripDetailPanel({
             <span className="tdValue">{request.destination || "N/A"}</span>
           </div>
           <div className="tdField">
-            <span className="tdLabel">Assigned Vehicle</span>
-            <span className="tdValue">{vehicles.map((v) => v.split(" - ")[0]).join(", ") || "None"}</span>
-          </div>
-          <div className="tdField">
-            <span className="tdLabel">Assigned Driver</span>
-            <span className="tdValue" style={{ color: driverColor, fontWeight: 700 }}>
-              {drivers.join(", ") || "Unassigned"}
-            </span>
+            <span className="tdLabel">Assigned Vehicle & Driver</span>
+            {onAssignVehicle ? (
+              <select
+                className="tdSelect"
+                value={vehicleDraft}
+                onChange={(e) => {
+                  const next = e.target.value;
+                  setVehicleDraft(next);
+                  onAssignVehicle(request.id, next);
+                }}
+              >
+                <option value="">Unassigned</option>
+                {vehicleOptions.map((v) => (
+                  <option key={v} value={v}>
+                    {v.split(" - ")[0]} — {vehicleMap[v]?.driver || "No driver on file"}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <>
+                <span className="tdValue">{vehicles.map((v) => v.split(" - ")[0]).join(", ") || "None"}</span>
+                <span className="tdValue" style={{ color: driverColor, fontWeight: 700 }}>
+                  {drivers.join(", ") || "Unassigned"}
+                </span>
+              </>
+            )}
           </div>
         </div>
 
         <div className="tdActions">
-          {onAssignVehicle && (
-            <button className="tdActionBtn" onClick={() => onAssignVehicle(request)}>
-              <Truck size={14} /> Assign Vehicle
-            </button>
-          )}
-          {onAssignDriver && (
-            <button className="tdActionBtn" onClick={() => onAssignDriver(request)}>
-              <User2 size={14} /> Assign Driver
-            </button>
-          )}
           {onEditSchedule && (
             <button className="tdActionBtn" onClick={() => onEditSchedule(request)}>
               <Pencil size={14} /> Edit Schedule
             </button>
           )}
           {onUpdateStatus && (
-            <button
-              className="tdActionBtn"
-              onClick={() => {
-                const next = STATUS_FLOW[Math.min(statusIndex + 1, STATUS_FLOW.length - 1)];
-                onUpdateStatus(request.id, next || "Approved");
-              }}
-            >
-              <RefreshCcw size={14} /> Update Status
-            </button>
+            <div className="tdStatusSelectWrap">
+              <RefreshCcw size={14} />
+              <select
+                className="tdSelect"
+                value={request.status}
+                onChange={(e) => onUpdateStatus(request.id, e.target.value)}
+              >
+                {STATUS_OPTIONS.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
+            </div>
           )}
           {onCompleteTrip && request.status !== "Completed" && (
             <button className="tdActionBtnPrimary" onClick={() => onCompleteTrip(request.id)}>
@@ -488,6 +519,25 @@ export default function TripDetailPanel({
           font-weight: 700;
           font-size: 12px;
           cursor: pointer;
+        }
+
+        .tdSelect {
+          border: 1px solid #cbd5e1;
+          border-radius: 8px;
+          padding: 7px 8px;
+          font-size: 13px;
+          font-weight: 600;
+          color: #111827;
+          background: white;
+          font-family: inherit;
+          cursor: pointer;
+        }
+
+        .tdStatusSelectWrap {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          color: #334155;
         }
 
         .tdActions {

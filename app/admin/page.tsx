@@ -716,6 +716,8 @@ if (shouldEmail) {
           statusColor={statusColor}
           vehicleStatusMap={vehicleStatusMap}
           onSaveDropOffTime={updateDropOffTime}
+          onUpdateStatus={(id, status) => updateField(id, "status", status)}
+          onAssignVehicle={(id, vehicleString) => updateAssignedVehicle(id, vehicleString)}
         />
       )}
 

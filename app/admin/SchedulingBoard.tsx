@@ -39,6 +39,14 @@ type SchedulingBoardProps = {
   // handler yet. See page.tsx patch notes for how to supply these.
   vehicleStatusMap?: VehicleStatusMap;
   onSaveDropOffTime?: (id: number, dropOffTime: string) => void;
+  // NEW -- power the status dropdown and vehicle/driver dropdown in the
+  // Trip Detail side panel. Same optional pattern as onSaveDropOffTime:
+  // the panel renders read-only until these are supplied. Wire these to
+  // the same updateField("status", ...) / updateAssignedVehicle(...)
+  // functions the Dashboard tab already uses, so both tabs share one
+  // source of truth (and the same email-on-change behavior).
+  onUpdateStatus?: (id: number, status: string) => void;
+  onAssignVehicle?: (id: number, vehicleString: string) => void;
 };
 
 const STATUS_OPTIONS = [
@@ -64,6 +72,8 @@ export default function SchedulingBoard({
   statusColor,
   vehicleStatusMap,
   onSaveDropOffTime,
+  onUpdateStatus,
+  onAssignVehicle,
 }: SchedulingBoardProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [dateFilter, setDateFilter] = useState("All");
@@ -558,12 +568,33 @@ export default function SchedulingBoard({
                 }
               : undefined
           }
-          // onAssignVehicle / onAssignDriver / onEditSchedule / onUpdateStatus / onCompleteTrip
-          // are intentionally left unset here -- wire them to your existing
-          // assignment + status-update functions in page.tsx (the same ones
-          // the Dashboard tab's vehicle-picker checkboxes and status dropdown
-          // already call) and pass them down as props, same pattern as
-          // onSaveDropOffTime above. Each button hides itself until wired.
+          onUpdateStatus={
+            onUpdateStatus
+              ? (id, status) => {
+                  onUpdateStatus(id, status);
+                  setSelectedRequest((prev) => (prev && prev.id === id ? { ...prev, status } : prev));
+                }
+              : undefined
+          }
+          onAssignVehicle={
+            onAssignVehicle
+              ? (id, vehicleString) => {
+                  onAssignVehicle(id, vehicleString);
+                  // Mirrors updateAssignedVehicle()'s own status side-effect in
+                  // page.tsx (assigning -> "Approved", clearing -> "Pending") so
+                  // the panel's status dropdown reflects it immediately instead
+                  // of waiting for the next realtime refresh.
+                  setSelectedRequest((prev) =>
+                    prev && prev.id === id
+                      ? { ...prev, assigned_vehicle: vehicleString, status: vehicleString ? "Approved" : "Pending" }
+                      : prev
+                  );
+                }
+              : undefined
+          }
+          // onEditSchedule / onCompleteTrip are intentionally left unset here --
+          // wire them the same way if/when you build that logic. Each button
+          // hides itself until wired.
         />
       )}
 
