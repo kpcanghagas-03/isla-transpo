@@ -560,14 +560,6 @@ export default function SchedulingBoard({
           toPHDate={toPHDate}
           toPHTime={toPHTime}
           onClose={() => setSelectedRequest(null)}
-          onSaveDropOffTime={
-            onSaveDropOffTime
-              ? (id, val) => {
-                  onSaveDropOffTime(id, val);
-                  setSelectedRequest((prev) => (prev && prev.id === id ? { ...prev, drop_off_time: val } : prev));
-                }
-              : undefined
-          }
           onUpdateStatus={
             onUpdateStatus
               ? (id, status) => {
