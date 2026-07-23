@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { X, AlertTriangle, RefreshCcw, CheckCircle2, Pencil, Mail } from "lucide-react";
+import { X, AlertTriangle, RefreshCcw, CheckCircle2, Pencil, Mail, Copy } from "lucide-react";
 import {
   ScheduleRequest,
   VehicleMap,
@@ -31,7 +31,6 @@ type TripDetailPanelProps = {
   // existing assignment/status logic in page.tsx (the same functions
   // already used by the vehicle-picker checkboxes / status dropdown on
   // the Dashboard tab) rather than duplicating that logic here.
-  onSaveDropOffTime?: (id: number, dropOffTime: string) => void;
   // Selecting a vehicle from the dropdown also assigns its driver (vehicleMap
   // ties each vehicle to exactly one driver), so there's no separate
   // onAssignDriver -- one dropdown drives both, same as the Dashboard tab's
@@ -46,6 +45,28 @@ const STATUS_OPTIONS = ["Pending", "Approved", "On the way", "Completed", "Disap
 
 const STATUS_FLOW = ["Pending", "Approved", "On the way", "Completed"];
 
+const MESSAGE_MAX_LEN = 1000;
+
+// Quick-fill templates for the most common dispatcher outreach reasons --
+// saves retyping the same clarifying questions on every conflict/no-show.
+const MESSAGE_TEMPLATES: { label: string; subject: string; body: string }[] = [
+  {
+    label: "Confirm pickup details",
+    subject: "Please confirm your pickup details",
+    body: "We'd like to confirm a few details about your upcoming trip before we finalize your vehicle assignment. Could you please verify your pickup location, time, and number of passengers?",
+  },
+  {
+    label: "Scheduling conflict",
+    subject: "A scheduling conflict with your request",
+    body: "We've noticed a scheduling conflict with your requested trip. Could you let us know if there's any flexibility on your pickup time, or if the trip details have changed?",
+  },
+  {
+    label: "Unreachable / no response",
+    subject: "We've been unable to reach you",
+    body: "We've tried reaching you regarding your transport request but haven't been able to connect. Please get back to us at your earliest convenience so we can proceed with your booking.",
+  },
+];
+
 export default function TripDetailPanel({
   request,
   requests,
@@ -56,13 +77,11 @@ export default function TripDetailPanel({
   toPHDate,
   toPHTime,
   onClose,
-  onSaveDropOffTime,
   onAssignVehicle,
   onEditSchedule,
   onUpdateStatus,
   onCompleteTrip,
 }: TripDetailPanelProps) {
-  const [dropOffDraft, setDropOffDraft] = useState(request.drop_off_time || "");
   // Dropdown only supports assigning ONE vehicle at a time. Requests that
   // already have multiple vehicles joined with " | " (rare -- large-group
   // trips) keep showing here as their first vehicle; picking a new one
@@ -76,9 +95,31 @@ export default function TripDetailPanel({
   const [messageBody, setMessageBody] = useState("");
   const [sending, setSending] = useState(false);
   const [sendResult, setSendResult] = useState<{ ok: boolean; text: string } | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopySummary = async () => {
+    const lines = [
+      `Trip: ${request.request_code || `#${request.id}`}`,
+      `Passenger: ${request.requester_name || "N/A"}`,
+      `Pickup: ${toPHDate(request.pick_up_date) || "N/A"} ${toPHTime(request.pick_up_time) || ""}`.trim(),
+      `From: ${request.pickup_location || "N/A"}`,
+      `To: ${request.destination || "N/A"}`,
+      `Vehicle: ${vehicles.map((v) => v.split(" - ")[0]).join(", ") || "None"}`,
+      `Driver: ${drivers.join(", ") || "Unassigned"}`,
+      `Contact: ${request.contact_person || "N/A"} (${request.contact_number || "N/A"})`,
+    ];
+    try {
+      await navigator.clipboard.writeText(lines.join("\n"));
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Clipboard API can fail silently on unsupported/insecure contexts;
+      // nothing else to fall back to here.
+    }
+  };
 
   const handleSendMessage = async () => {
-    if (!messageBody.trim() || sending) return;
+    if (!messageBody.trim() || sending || messageBody.length > MESSAGE_MAX_LEN) return;
     setSending(true);
     setSendResult(null);
     try {
@@ -87,7 +128,7 @@ export default function TripDetailPanel({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: request.email,
-          name: request.passenger_names || request.requester_name,
+          name: request.requester_name,
           subject: messageSubject,
           message: messageBody,
           request_code: request.request_code,
@@ -112,9 +153,8 @@ export default function TripDetailPanel({
   // clicking another row/card while the panel is already open) so stale
   // values from the previous request don't linger in these controls.
   useEffect(() => {
-    setDropOffDraft(request.drop_off_time || "");
     setVehicleDraft(splitVehicles(request.assigned_vehicle)[0] || "");
-  }, [request.id, request.drop_off_time, request.assigned_vehicle]);
+  }, [request.id, request.assigned_vehicle]);
 
   const conflicts = useMemo(() => getConflicts(requests, vehicleMap), [requests, vehicleMap]);
   const myConflicts = conflicts.get(request.id) || [];
@@ -146,7 +186,7 @@ export default function TripDetailPanel({
       <div className="tdPanel" onClick={(e) => e.stopPropagation()}>
         <div className="tdHeader" style={{ borderLeftColor: driverColor }}>
           <div>
-            <h3 className="tdTitle">{request.passenger_names || request.requester_name}</h3>
+            <h3 className="tdTitle">{request.requester_name || "Unnamed Requester"}</h3>
             <div className="tdSubRow">
               {request.request_code && <span className="tdCode">{request.request_code}</span>}
               <span className="tdBadge">{getStatusBadge(request.status)} {request.status}</span>
@@ -206,7 +246,7 @@ export default function TripDetailPanel({
               ))}
             </ul>
           ) : (
-            <span className="tdValue">{request.requester_name || "N/A"}</span>
+            <span className="tdValue">Same as requester</span>
           )}
         </div>
 
@@ -220,29 +260,6 @@ export default function TripDetailPanel({
           <div className="tdField">
             <span className="tdLabel">Flight No.</span>
             <span className="tdValue">{request.flight_no || "N/A"}</span>
-          </div>
-          <div className="tdField tdFieldWide">
-            <span className="tdLabel">Drop-off Time</span>
-            {onSaveDropOffTime ? (
-              <div className="tdDropOffEdit">
-                <input
-                  type="time"
-                  value={dropOffDraft || ""}
-                  onChange={(e) => setDropOffDraft(e.target.value)}
-                  className="tdTimeInput"
-                />
-                <button
-                  className="tdSaveBtn"
-                  onClick={() => dropOffDraft && onSaveDropOffTime(request.id, dropOffDraft)}
-                >
-                  Save
-                </button>
-              </div>
-            ) : (
-              <span className="tdValue">
-                {toPHTime(request.drop_off_time || null) || "Not set (defaults to +60 min)"}
-              </span>
-            )}
           </div>
           <div className="tdField">
             <span className="tdLabel">Pickup Location</span>
@@ -258,7 +275,13 @@ export default function TripDetailPanel({
           </div>
           <div className="tdField">
             <span className="tdLabel">Contact Number</span>
-            <span className="tdValue">{request.contact_number || "N/A"}</span>
+            {request.contact_number ? (
+              <a className="tdTelLink" href={`tel:${request.contact_number}`}>
+                {request.contact_number}
+              </a>
+            ) : (
+              <span className="tdValue">N/A</span>
+            )}
           </div>
           {(request.alternate_contact_person || request.alternate_contact_number) && (
             <>
@@ -268,7 +291,13 @@ export default function TripDetailPanel({
               </div>
               <div className="tdField">
                 <span className="tdLabel">Alternate Contact Number</span>
-                <span className="tdValue">{request.alternate_contact_number || "N/A"}</span>
+                {request.alternate_contact_number ? (
+                  <a className="tdTelLink" href={`tel:${request.alternate_contact_number}`}>
+                    {request.alternate_contact_number}
+                  </a>
+                ) : (
+                  <span className="tdValue">N/A</span>
+                )}
               </div>
             </>
           )}
@@ -317,6 +346,24 @@ export default function TripDetailPanel({
           {showMessageBox && request.email && (
             <div className="tdMessageBox">
               <span className="tdMessageTo">To: {request.email}</span>
+              <select
+                className="tdSelect"
+                value=""
+                onChange={(e) => {
+                  const tpl = MESSAGE_TEMPLATES.find((t) => t.label === e.target.value);
+                  if (tpl) {
+                    setMessageSubject(tpl.subject);
+                    setMessageBody(tpl.body);
+                  }
+                }}
+              >
+                <option value="">Use a template...</option>
+                {MESSAGE_TEMPLATES.map((t) => (
+                  <option key={t.label} value={t.label}>
+                    {t.label}
+                  </option>
+                ))}
+              </select>
               <input
                 className="tdMessageSubject"
                 type="text"
@@ -328,9 +375,13 @@ export default function TripDetailPanel({
                 className="tdMessageTextarea"
                 placeholder="Type your message or concern to the requester..."
                 rows={4}
+                maxLength={MESSAGE_MAX_LEN}
                 value={messageBody}
                 onChange={(e) => setMessageBody(e.target.value)}
               />
+              <span className="tdMessageCounter">
+                {messageBody.length}/{MESSAGE_MAX_LEN}
+              </span>
               <div className="tdMessageActions">
                 <button className="tdSaveBtn" onClick={handleSendMessage} disabled={sending || !messageBody.trim()}>
                   {sending ? "Sending..." : "Send"}
@@ -344,6 +395,9 @@ export default function TripDetailPanel({
         </div>
 
         <div className="tdActions">
+          <button className="tdActionBtn" onClick={handleCopySummary}>
+            <Copy size={14} /> {copied ? "Copied!" : "Copy Trip Summary"}
+          </button>
           {onEditSchedule && (
             <button className="tdActionBtn" onClick={() => onEditSchedule(request)}>
               <Pencil size={14} /> Edit Schedule
@@ -595,18 +649,16 @@ export default function TripDetailPanel({
           word-break: break-word;
         }
 
-        .tdDropOffEdit {
-          display: flex;
-          gap: 6px;
-          align-items: center;
+        .tdTelLink {
+          font-size: 13.5px;
+          font-weight: 700;
+          color: #1f5aa6;
+          text-decoration: none;
+          word-break: break-word;
         }
 
-        .tdTimeInput {
-          border: 1px solid #cbd5e1;
-          border-radius: 8px;
-          padding: 6px 8px;
-          font-size: 13px;
-          color: #111827;
+        .tdTelLink:hover {
+          text-decoration: underline;
         }
 
         .tdSaveBtn {
@@ -719,6 +771,14 @@ export default function TripDetailPanel({
           font-size: 11.5px;
           font-weight: 700;
           color: #64748b;
+        }
+
+        .tdMessageCounter {
+          align-self: flex-end;
+          font-size: 10.5px;
+          font-weight: 600;
+          color: #94a3b8;
+          margin-top: -4px;
         }
 
         .tdMessageSubject {
