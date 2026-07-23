@@ -320,7 +320,7 @@ export default function SchedulingBoard({
       {schedView === "scheduler" ? (
         /* ================= DISPATCH CALENDAR (mini calendar + daily list) / BOARD / TIMELINES ================= */
         <div className="schedSchedulerWrap">
-          <DispatchCalendar
+          <DispatchCalendar 
             requests={requests}
             vehicleMap={vehicleMap}
             vehicleOptions={vehicleOptions}
