@@ -10,6 +10,7 @@ import {
   CheckCircle2,
   XCircle,
   AlertTriangle,
+  FileText,
 } from "lucide-react";
 import {
   ResponsiveContainer,
@@ -34,6 +35,7 @@ import {
   getPassengerCount,
   getStatusColor,
 } from "./types";
+import SummaryReportModal from "./SummaryReportModal";
 
 // NOTE: this component uses the `recharts` charting library.
 // If it isn't already in package.json, install it once with:
@@ -97,6 +99,12 @@ function shortDateLabel(iso: string): string {
   return d.toLocaleDateString("en-PH", { month: "short", day: "numeric" });
 }
 
+function fullDateLabel(iso: string): string {
+  const d = new Date(`${iso}T00:00:00`);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString("en-PH", { month: "long", day: "numeric", year: "numeric" });
+}
+
 function average(nums: number[]): number {
   if (nums.length === 0) return 0;
   return nums.reduce((a, b) => a + b, 0) / nums.length;
@@ -104,6 +112,7 @@ function average(nums: number[]): number {
 
 export default function AnalyticsDashboard({ requests, vehicleMap, toPHDate }: AnalyticsDashboardProps) {
   const [rangeDays, setRangeDays] = useState<RangeOption>(30);
+  const [showReport, setShowReport] = useState(false);
 
   const today = todayISO();
 
@@ -211,6 +220,20 @@ export default function AnalyticsDashboard({ requests, vehicleMap, toPHDate }: A
     };
   }, [filtered, vehicleMap]);
 
+  const periodLabel = RANGE_OPTIONS.find((o) => o.value === rangeDays)?.label || "All Time";
+
+  const periodRangeText = useMemo(() => {
+    if (rangeDays === null) {
+      if (stats.dailyTrend.length === 0) return "No dated trips yet";
+      const first = stats.dailyTrend[0].date;
+      const last = stats.dailyTrend[stats.dailyTrend.length - 1].date;
+      return first === last ? fullDateLabel(first) : `${fullDateLabel(first)} – ${fullDateLabel(last)}`;
+    }
+    const cutoff = addDaysStr(today, -(rangeDays - 1));
+    return `${fullDateLabel(cutoff)} – ${fullDateLabel(today)}`;
+  }, [rangeDays, stats.dailyTrend, today]);
+
+
   // -------- Auto-generated insights (rule-based, from the numbers above) --------
   const insights = useMemo(() => {
     const lines: string[] = [];
@@ -278,16 +301,21 @@ export default function AnalyticsDashboard({ requests, vehicleMap, toPHDate }: A
         <span className="anzTitle">
           <BarChart3 size={16} /> Analytics
         </span>
-        <div className="anzRangeSwitch">
-          {RANGE_OPTIONS.map((opt) => (
-            <button
-              key={opt.label}
-              className={`anzRangeBtn ${rangeDays === opt.value ? "anzRangeBtnActive" : ""}`}
-              onClick={() => setRangeDays(opt.value)}
-            >
-              {opt.label}
-            </button>
-          ))}
+        <div className="anzHeaderActions">
+          <div className="anzRangeSwitch">
+            {RANGE_OPTIONS.map((opt) => (
+              <button
+                key={opt.label}
+                className={`anzRangeBtn ${rangeDays === opt.value ? "anzRangeBtnActive" : ""}`}
+                onClick={() => setRangeDays(opt.value)}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+          <button className="anzReportBtn" onClick={() => setShowReport(true)}>
+            <FileText size={14} /> Preview Summary Report
+          </button>
         </div>
       </div>
 
@@ -445,6 +473,35 @@ export default function AnalyticsDashboard({ requests, vehicleMap, toPHDate }: A
         </div>
       )}
 
+      {showReport && (
+        <SummaryReportModal
+          onClose={() => setShowReport(false)}
+          periodLabel={periodLabel}
+          periodRangeText={periodRangeText}
+          generatedAt={new Date().toLocaleString("en-PH", {
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+            hour: "numeric",
+            minute: "2-digit",
+          })}
+          stats={{
+            total: stats.total,
+            statusData: stats.statusData,
+            completionRate: stats.completionRate,
+            cancelRate: stats.cancelRate,
+            avgPassengers: stats.avgPassengers,
+            unassignedCount: stats.unassignedCount,
+            unassignedRate: stats.unassignedRate,
+            vehicleData: stats.vehicleData,
+            driverData: stats.driverData,
+            routeData: stats.routeData,
+            peakHourLabel: stats.peakHour ? stats.peakHour.name : null,
+          }}
+          insights={insights}
+        />
+      )}
+
       <style jsx>{`
         .anzWrap {
           display: flex;
@@ -458,6 +515,32 @@ export default function AnalyticsDashboard({ requests, vehicleMap, toPHDate }: A
           align-items: center;
           flex-wrap: wrap;
           gap: 10px;
+        }
+
+        .anzHeaderActions {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          flex-wrap: wrap;
+        }
+
+        .anzReportBtn {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          border: 1px solid #1f5aa6;
+          background: white;
+          color: #1f5aa6;
+          font-weight: 700;
+          font-size: 12.5px;
+          padding: 8px 14px;
+          border-radius: 10px;
+          cursor: pointer;
+          font-family: inherit;
+        }
+
+        .anzReportBtn:hover {
+          background: #eef2ff;
         }
 
         .anzTitle {
