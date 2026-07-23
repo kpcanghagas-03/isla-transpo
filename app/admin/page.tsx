@@ -300,7 +300,7 @@ export default function AdminPage() {
   }, 
   "LGU Mambajao- PH471A" :{
     driver: "Vanvan Macarayan",
-    phone:"091216077242"  
+    phone:"09366431677"  
   },
 };
 
