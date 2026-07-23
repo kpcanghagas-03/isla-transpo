@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
-import { Search, ArrowUpDown, ArrowUp, ArrowDown, CalendarX2, X, Table2, CalendarClock } from "lucide-react";
+import { Search, ArrowUpDown, ArrowUp, ArrowDown, CalendarX2, X, Table2, CalendarClock, BarChart3 } from "lucide-react";
 import {
   ScheduleRequest,
   VehicleMap,
@@ -21,10 +21,11 @@ import DriverTimeline from "./DriverTimeline";
 import VehicleTimeline from "./VehicleTimeline";
 import DispatchBoard from "./DispatchBoard";
 import TripDetailPanel from "./TripDetailPanel";
+import AnalyticsDashboard from "./AnalyticsDashboard";
 
 type SortField = "pick_up_date" | "pick_up_time";
 type SortDirection = "asc" | "desc";
-type SchedView = "table" | "scheduler";
+type SchedView = "table" | "scheduler" | "analytics";
 
 type SchedulingBoardProps = {
   requests: ScheduleRequest[];
@@ -253,74 +254,86 @@ export default function SchedulingBoard({
           >
             <CalendarClock size={14} /> Scheduler
           </button>
+          <button
+            className={`schedViewBtn ${schedView === "analytics" ? "schedViewBtnActive" : ""}`}
+            onClick={() => setSchedView("analytics")}
+          >
+            <BarChart3 size={14} /> Analytics
+          </button>
         </div>
       </div>
 
-      {/* ================= FEATURE 1: DAILY SUMMARY CARDS ================= */}
-      <DailySummaryCards
-        requests={requests}
-        activeStatus={statusFilter === "All" ? null : statusFilter}
-        onSelectStatus={(status) => {
-          setStatusFilter(status ?? "All");
-          setUnassignedOnly(false);
-          setSchedView("table");
-          scrollToTable();
-        }}
-        unassignedOnly={unassignedOnly}
-        onToggleUnassigned={() => {
-          setUnassignedOnly((prev) => !prev);
-          setStatusFilter("All");
-          setSchedView("table");
-          scrollToTable();
-        }}
-      />
+      {schedView !== "analytics" && (
+        <>
+          {/* ================= FEATURE 1: DAILY SUMMARY CARDS ================= */}
+          <DailySummaryCards
+            requests={requests}
+            activeStatus={statusFilter === "All" ? null : statusFilter}
+            onSelectStatus={(status) => {
+              setStatusFilter(status ?? "All");
+              setUnassignedOnly(false);
+              setSchedView("table");
+              scrollToTable();
+            }}
+            unassignedOnly={unassignedOnly}
+            onToggleUnassigned={() => {
+              setUnassignedOnly((prev) => !prev);
+              setStatusFilter("All");
+              setSchedView("table");
+              scrollToTable();
+            }}
+          />
 
-      {/* ================= FEATURE 4: UNASSIGNED REQUESTS ================= */}
-      <UnassignedRequestsCard
-        requests={requests}
-        toPHDate={toPHDate}
-        toPHTime={toPHTime}
-        onFocusRequest={handleFocusRequest}
-      />
+          {/* ================= FEATURE 4: UNASSIGNED REQUESTS ================= */}
+          <UnassignedRequestsCard
+            requests={requests}
+            toPHDate={toPHDate}
+            toPHTime={toPHTime}
+            onFocusRequest={handleFocusRequest}
+          />
 
-      {/* ================= FEATURES 2, 3, 5: WORKLOAD + DATE PANELS ================= */}
-      <div className="schedPanelsGrid">
-        <VehicleWorkloadPanel
-          requests={requests}
-          vehicleOptions={vehicleOptions}
-          activeVehicle={vehicleFilter === "All" ? null : vehicleFilter}
-          onSelectVehicle={(v) => {
-            setVehicleFilter(v ?? "All");
-            setSchedView("table");
-            scrollToTable();
-          }}
-        />
-        <DriverWorkloadPanel
-          requests={requests}
-          vehicleMap={vehicleMap}
-          activeDriver={driverFilter === "All" ? null : driverFilter}
-          onSelectDriver={(d) => {
-            setDriverFilter(d ?? "All");
-            setSchedView("table");
-            scrollToTable();
-          }}
-        />
-        <RequestsByDateCard
-          requests={requests}
-          activeDate={dateFilter === "All" ? null : dateFilter}
-          onSelectDate={(d) => {
-            setDateFilter(d ?? "All");
-            setSchedView("table");
-            scrollToTable();
-          }}
-          toPHDate={toPHDate}
-        />
-      </div>
+          {/* ================= FEATURES 2, 3, 5: WORKLOAD + DATE PANELS ================= */}
+          <div className="schedPanelsGrid">
+            <VehicleWorkloadPanel
+              requests={requests}
+              vehicleOptions={vehicleOptions}
+              activeVehicle={vehicleFilter === "All" ? null : vehicleFilter}
+              onSelectVehicle={(v) => {
+                setVehicleFilter(v ?? "All");
+                setSchedView("table");
+                scrollToTable();
+              }}
+            />
+            <DriverWorkloadPanel
+              requests={requests}
+              vehicleMap={vehicleMap}
+              activeDriver={driverFilter === "All" ? null : driverFilter}
+              onSelectDriver={(d) => {
+                setDriverFilter(d ?? "All");
+                setSchedView("table");
+                scrollToTable();
+              }}
+            />
+            <RequestsByDateCard
+              requests={requests}
+              activeDate={dateFilter === "All" ? null : dateFilter}
+              onSelectDate={(d) => {
+                setDateFilter(d ?? "All");
+                setSchedView("table");
+                scrollToTable();
+              }}
+              toPHDate={toPHDate}
+            />
+          </div>
+        </>
+      )}
 
-      {schedView === "scheduler" ? (
+      {schedView === "analytics" ? (
+        <AnalyticsDashboard requests={requests} vehicleMap={vehicleMap} toPHDate={toPHDate} />
+      ) : schedView === "scheduler" ? (
         /* ================= DISPATCH CALENDAR (mini calendar + daily list) / BOARD / TIMELINES ================= */
         <div className="schedSchedulerWrap">
-          <DispatchCalendar 
+          <DispatchCalendar
             requests={requests}
             vehicleMap={vehicleMap}
             vehicleOptions={vehicleOptions}
