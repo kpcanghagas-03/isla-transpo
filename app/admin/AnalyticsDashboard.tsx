@@ -58,6 +58,9 @@ const RANGE_OPTIONS: { label: string; value: RangeOption }[] = [
 
 const CANCELLED_STATUSES = new Set(["Cancelled", "Disapproved"]);
 
+const DOW_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const DOW_FULL = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
 // Distinct palette for vehicle/driver/route bars -- separate from the
 // driver-color-coding used elsewhere since those colors are meant to be
 // stable per-driver everywhere, while these charts just need N distinct
@@ -108,6 +111,64 @@ function fullDateLabel(iso: string): string {
 function average(nums: number[]): number {
   if (nums.length === 0) return 0;
   return nums.reduce((a, b) => a + b, 0) / nums.length;
+}
+
+type Delta = { direction: "up" | "down" | "flat"; text: string };
+
+// For count-based metrics (e.g. total trips) -- percent change.
+function deltaPercent(current: number, previous: number): Delta {
+  if (previous === 0) {
+    if (current === 0) return { direction: "flat", text: "No change" };
+    return { direction: "up", text: "New this period" };
+  }
+  const change = ((current - previous) / previous) * 100;
+  if (Math.abs(change) < 1) return { direction: "flat", text: "Flat vs last period" };
+  return {
+    direction: change > 0 ? "up" : "down",
+    text: `${change > 0 ? "+" : ""}${change.toFixed(0)}% vs last period`,
+  };
+}
+
+// For percentage-based metrics (e.g. completion rate) -- percentage-point
+// difference reads more naturally than a "percent change of a percentage."
+function deltaPoints(current: number, previous: number): Delta {
+  const diff = current - previous;
+  if (Math.abs(diff) < 0.5) return { direction: "flat", text: "Flat vs last period" };
+  return {
+    direction: diff > 0 ? "up" : "down",
+    text: `${diff > 0 ? "+" : ""}${diff.toFixed(1)} pts vs last period`,
+  };
+}
+
+// For small absolute averages (e.g. avg passengers/trip).
+function deltaAbsolute(current: number, previous: number, decimals = 1): Delta {
+  const diff = current - previous;
+  if (Math.abs(diff) < 0.05) return { direction: "flat", text: "Flat vs last period" };
+  return {
+    direction: diff > 0 ? "up" : "down",
+    text: `${diff > 0 ? "+" : ""}${diff.toFixed(decimals)} vs last period`,
+  };
+}
+
+// goodDirection tells the badge which direction of change should read as
+// positive (green) vs negative (red) for that particular metric -- e.g.
+// "up" is good for completion rate but bad for cancellation rate.
+function DeltaBadge({ delta, goodDirection }: { delta: Delta; goodDirection: "up" | "down" | "neutral" }) {
+  if (delta.direction === "flat") {
+    return (
+      <span className="anzDelta anzDeltaFlat">
+        <Minus size={11} /> {delta.text}
+      </span>
+    );
+  }
+  const isGood = goodDirection === "neutral" ? null : delta.direction === goodDirection;
+  const colorClass = isGood === null ? "anzDeltaNeutral" : isGood ? "anzDeltaGood" : "anzDeltaBad";
+  const Icon = delta.direction === "up" ? TrendingUp : TrendingDown;
+  return (
+    <span className={`anzDelta ${colorClass}`}>
+      <Icon size={11} /> {delta.text}
+    </span>
+  );
 }
 
 export default function AnalyticsDashboard({ requests, vehicleMap, toPHDate }: AnalyticsDashboardProps) {
@@ -194,6 +255,16 @@ export default function AnalyticsDashboard({ requests, vehicleMap, toPHDate }: A
       .sort((a, b) => b.value - a.value)
       .slice(0, 5);
 
+    // -------- Day of week pattern --------
+    const dowCounts = new Array(7).fill(0);
+    filtered.forEach((r) => {
+      if (!r.pick_up_date) return;
+      const d = new Date(`${r.pick_up_date}T00:00:00`);
+      if (!Number.isNaN(d.getTime())) dowCounts[d.getDay()]++;
+    });
+    const dowData = DOW_SHORT.map((name, i) => ({ name, value: dowCounts[i], dow: i }));
+    const busiestDow = dowData.reduce((max, cur) => (cur.value > max.value ? cur : max), dowData[0]);
+
     // -------- Daily trend --------
     const dayCounts = new Map<string, number>();
     filtered.forEach((r) => {
@@ -215,6 +286,8 @@ export default function AnalyticsDashboard({ requests, vehicleMap, toPHDate }: A
       driverData,
       hourData,
       peakHour,
+      dowData,
+      busiestDow,
       routeData,
       dailyTrend,
     };
@@ -232,6 +305,38 @@ export default function AnalyticsDashboard({ requests, vehicleMap, toPHDate }: A
     const cutoff = addDaysStr(today, -(rangeDays - 1));
     return `${fullDateLabel(cutoff)} – ${fullDateLabel(today)}`;
   }, [rangeDays, stats.dailyTrend, today]);
+
+  // -------- Previous period (same length window immediately before the
+  // current one) -- powers the "vs last period" comparison badges. Not
+  // meaningful for "All Time", so this stays empty when rangeDays is null.
+  const previousFiltered = useMemo(() => {
+    if (rangeDays === null) return [];
+    const currentStart = addDaysStr(today, -(rangeDays - 1));
+    const prevEnd = addDaysStr(currentStart, -1);
+    const prevStart = addDaysStr(prevEnd, -(rangeDays - 1));
+    return requests.filter((r) => r.pick_up_date && r.pick_up_date >= prevStart && r.pick_up_date <= prevEnd);
+  }, [requests, rangeDays, today]);
+
+  const prevStats = useMemo(() => {
+    const total = previousFiltered.length;
+    let completed = 0;
+    let cancelled = 0;
+    let unassigned = 0;
+    previousFiltered.forEach((r) => {
+      if (r.status === "Completed") completed++;
+      if (CANCELLED_STATUSES.has(r.status)) cancelled++;
+      if (!r.assigned_vehicle) unassigned++;
+    });
+    return {
+      total,
+      completionRate: total > 0 ? (completed / total) * 100 : 0,
+      cancelRate: total > 0 ? (cancelled / total) * 100 : 0,
+      unassignedRate: total > 0 ? (unassigned / total) * 100 : 0,
+      avgPassengers: total > 0 ? average(previousFiltered.map(getPassengerCount)) : 0,
+    };
+  }, [previousFiltered]);
+
+  const hasComparison = rangeDays !== null && prevStats.total > 0;
 
 
   // -------- Auto-generated insights (rule-based, from the numbers above) --------
@@ -262,6 +367,10 @@ export default function AnalyticsDashboard({ requests, vehicleMap, toPHDate }: A
       lines.push(`Pickups peak around ${stats.peakHour.name} — plan driver availability around that window.`);
     }
 
+    if (stats.busiestDow && stats.busiestDow.value > 0) {
+      lines.push(`${DOW_FULL[stats.busiestDow.dow]}s see the most requests (${stats.busiestDow.value} trips this period).`);
+    }
+
     if (stats.cancelRate > 15) {
       lines.push(
         `Cancellation rate is high at ${stats.cancelRate.toFixed(1)}% — worth reviewing scheduling conflicts or driver no-shows.`
@@ -278,7 +387,16 @@ export default function AnalyticsDashboard({ requests, vehicleMap, toPHDate }: A
       );
     }
 
-    if (stats.dailyTrend.length >= 4) {
+    if (hasComparison) {
+      const change = prevStats.total > 0 ? ((stats.total - prevStats.total) / prevStats.total) * 100 : 0;
+      if (Math.abs(change) >= 5) {
+        lines.push(
+          `Trip volume is ${change > 0 ? "up" : "down"} ${Math.abs(Math.round(change))}% vs the previous ${rangeDays}-day period (${prevStats.total} → ${stats.total} trips).`
+        );
+      } else {
+        lines.push(`Trip volume is steady compared to the previous ${rangeDays}-day period.`);
+      }
+    } else if (stats.dailyTrend.length >= 4) {
       const half = Math.floor(stats.dailyTrend.length / 2);
       const firstHalf = average(stats.dailyTrend.slice(0, half).map((d) => d.value));
       const secondHalf = average(stats.dailyTrend.slice(half).map((d) => d.value));
@@ -293,7 +411,7 @@ export default function AnalyticsDashboard({ requests, vehicleMap, toPHDate }: A
     }
 
     return lines;
-  }, [stats]);
+  }, [stats, hasComparison, prevStats, rangeDays]);
 
   return (
     <div className="anzWrap">
@@ -327,6 +445,7 @@ export default function AnalyticsDashboard({ requests, vehicleMap, toPHDate }: A
           </div>
           <div className="anzKpiValue">{stats.total}</div>
           <div className="anzKpiLabel">Total Trips</div>
+          {hasComparison && <DeltaBadge delta={deltaPercent(stats.total, prevStats.total)} goodDirection="up" />}
         </div>
         <div className="anzKpiCard">
           <div className="anzKpiIcon" style={{ color: "#22c55e" }}>
@@ -334,6 +453,9 @@ export default function AnalyticsDashboard({ requests, vehicleMap, toPHDate }: A
           </div>
           <div className="anzKpiValue">{stats.completionRate.toFixed(1)}%</div>
           <div className="anzKpiLabel">Completion Rate</div>
+          {hasComparison && (
+            <DeltaBadge delta={deltaPoints(stats.completionRate, prevStats.completionRate)} goodDirection="up" />
+          )}
         </div>
         <div className="anzKpiCard">
           <div className="anzKpiIcon" style={{ color: "#ef4444" }}>
@@ -341,6 +463,9 @@ export default function AnalyticsDashboard({ requests, vehicleMap, toPHDate }: A
           </div>
           <div className="anzKpiValue">{stats.cancelRate.toFixed(1)}%</div>
           <div className="anzKpiLabel">Cancellation Rate</div>
+          {hasComparison && (
+            <DeltaBadge delta={deltaPoints(stats.cancelRate, prevStats.cancelRate)} goodDirection="down" />
+          )}
         </div>
         <div className="anzKpiCard">
           <div className="anzKpiIcon" style={{ color: "#f59e0b" }}>
@@ -348,6 +473,9 @@ export default function AnalyticsDashboard({ requests, vehicleMap, toPHDate }: A
           </div>
           <div className="anzKpiValue">{stats.unassignedRate.toFixed(1)}%</div>
           <div className="anzKpiLabel">Unassigned</div>
+          {hasComparison && (
+            <DeltaBadge delta={deltaPoints(stats.unassignedRate, prevStats.unassignedRate)} goodDirection="down" />
+          )}
         </div>
         <div className="anzKpiCard">
           <div className="anzKpiIcon" style={{ color: "#7c3aed" }}>
@@ -355,6 +483,9 @@ export default function AnalyticsDashboard({ requests, vehicleMap, toPHDate }: A
           </div>
           <div className="anzKpiValue">{stats.avgPassengers.toFixed(1)}</div>
           <div className="anzKpiLabel">Avg. Passengers/Trip</div>
+          {hasComparison && (
+            <DeltaBadge delta={deltaAbsolute(stats.avgPassengers, prevStats.avgPassengers)} goodDirection="neutral" />
+          )}
         </div>
       </div>
 
@@ -443,6 +574,19 @@ export default function AnalyticsDashboard({ requests, vehicleMap, toPHDate }: A
             </ResponsiveContainer>
           </div>
 
+          <div className="anzChartCard">
+            <span className="anzChartTitle">Requests by Day of Week</span>
+            <ResponsiveContainer width="100%" height={220}>
+              <BarChart data={stats.dowData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#eef2f7" />
+                <XAxis dataKey="name" tick={{ fontSize: 11 }} />
+                <YAxis allowDecimals={false} tick={{ fontSize: 11 }} width={28} />
+                <Tooltip />
+                <Bar dataKey="value" fill="#7c3aed" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
           <div className="anzChartCard anzChartWide">
             <span className="anzChartTitle">Peak Pickup Hours</span>
             <ResponsiveContainer width="100%" height={220}>
@@ -499,6 +643,17 @@ export default function AnalyticsDashboard({ requests, vehicleMap, toPHDate }: A
             peakHourLabel: stats.peakHour ? stats.peakHour.name : null,
           }}
           insights={insights}
+          deltas={
+            hasComparison
+              ? {
+                  total: deltaPercent(stats.total, prevStats.total).text,
+                  completionRate: deltaPoints(stats.completionRate, prevStats.completionRate).text,
+                  cancelRate: deltaPoints(stats.cancelRate, prevStats.cancelRate).text,
+                  unassignedRate: deltaPoints(stats.unassignedRate, prevStats.unassignedRate).text,
+                  avgPassengers: deltaAbsolute(stats.avgPassengers, prevStats.avgPassengers).text,
+                }
+              : undefined
+          }
         />
       )}
 
@@ -610,6 +765,32 @@ export default function AnalyticsDashboard({ requests, vehicleMap, toPHDate }: A
           font-size: 12px;
           font-weight: 600;
           color: #64748b;
+        }
+
+        .anzDelta {
+          display: inline-flex;
+          align-items: center;
+          gap: 3px;
+          font-size: 10.5px;
+          font-weight: 700;
+          margin-top: 2px;
+          width: fit-content;
+        }
+
+        .anzDeltaGood {
+          color: #16a34a;
+        }
+
+        .anzDeltaBad {
+          color: #dc2626;
+        }
+
+        .anzDeltaNeutral {
+          color: #64748b;
+        }
+
+        .anzDeltaFlat {
+          color: #94a3b8;
         }
 
         .anzInsightsBox {

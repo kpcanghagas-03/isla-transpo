@@ -27,6 +27,15 @@ type SummaryReportModalProps = {
   generatedAt: string; // e.g. "July 23, 2026, 2:14 PM"
   stats: SummaryReportData;
   insights: string[];
+  // Optional "vs previous period" text per KPI, already formatted (e.g.
+  // "+12% vs last period"). Omit any (or the whole object) to hide.
+  deltas?: {
+    total?: string;
+    completionRate?: string;
+    cancelRate?: string;
+    unassignedRate?: string;
+    avgPassengers?: string;
+  };
 };
 
 function pct(part: number, total: number): string {
@@ -41,6 +50,7 @@ export default function SummaryReportModal({
   generatedAt,
   stats,
   insights,
+  deltas,
 }: SummaryReportModalProps) {
   return (
     <div className="srmOverlay" onClick={onClose}>
@@ -97,22 +107,27 @@ export default function SummaryReportModal({
               <div className="srmKpiBox">
                 <span className="srmKpiValue">{stats.total}</span>
                 <span className="srmKpiLabel">Total Trips</span>
+                {deltas?.total && <span className="srmKpiDelta">{deltas.total}</span>}
               </div>
               <div className="srmKpiBox">
                 <span className="srmKpiValue">{stats.completionRate.toFixed(1)}%</span>
                 <span className="srmKpiLabel">Completion Rate</span>
+                {deltas?.completionRate && <span className="srmKpiDelta">{deltas.completionRate}</span>}
               </div>
               <div className="srmKpiBox">
                 <span className="srmKpiValue">{stats.cancelRate.toFixed(1)}%</span>
                 <span className="srmKpiLabel">Cancellation Rate</span>
+                {deltas?.cancelRate && <span className="srmKpiDelta">{deltas.cancelRate}</span>}
               </div>
               <div className="srmKpiBox">
                 <span className="srmKpiValue">{stats.unassignedRate.toFixed(1)}%</span>
                 <span className="srmKpiLabel">Unassigned</span>
+                {deltas?.unassignedRate && <span className="srmKpiDelta">{deltas.unassignedRate}</span>}
               </div>
               <div className="srmKpiBox">
                 <span className="srmKpiValue">{stats.avgPassengers.toFixed(1)}</span>
                 <span className="srmKpiLabel">Avg. Passengers/Trip</span>
+                {deltas?.avgPassengers && <span className="srmKpiDelta">{deltas.avgPassengers}</span>}
               </div>
             </div>
           </div>
@@ -472,6 +487,12 @@ export default function SummaryReportModal({
           font-size: 10px;
           font-weight: 700;
           color: #64748b;
+        }
+
+        .srmKpiDelta {
+          font-size: 9.5px;
+          font-weight: 700;
+          color: #475569;
         }
 
         .srmInsightsList {
