@@ -1,7 +1,19 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { ChevronLeft, ChevronRight, CalendarDays, Search, AlertTriangle } from "lucide-react";
+import { useMemo, useRef, useState } from "react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronDown,
+  CalendarDays,
+  Search,
+  AlertTriangle,
+  Phone,
+  Copy,
+  Check,
+  ExternalLink,
+  Plane,
+} from "lucide-react";
 import {
   ScheduleRequest,
   VehicleMap,
@@ -30,6 +42,9 @@ type DispatchCalendarProps = {
   onSelectRequest: (request: ScheduleRequest) => void;
 };
 
+const STATUS_OPTIONS = ["Pending", "Approved", "On the way", "Completed", "Cancelled", "Emergency"];
+
+// -------------------------------------------------------------- date utils
 function toISODate(d: Date): string {
   return d.toISOString().slice(0, 10);
 }
@@ -77,6 +92,9 @@ export default function DispatchCalendar({
   const [statusFilter, setStatusFilter] = useState("All");
   const [driverFilter, setDriverFilter] = useState("All");
   const [vehicleFilter, setVehicleFilter] = useState("All");
+  const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [copiedId, setCopiedId] = useState<number | null>(null);
+  const jumpInputRef = useRef<HTMLInputElement>(null);
 
   const todayIso = toISODate(new Date());
   const conflicts = useMemo(() => getConflicts(requests, vehicleMap), [requests, vehicleMap]);
@@ -86,7 +104,7 @@ export default function DispatchCalendar({
     [vehicleMap]
   );
 
-  // ================= FILTERED REQUESTS (search + status + driver + vehicle) =================
+  // -------------------------------------------------- filtered requests
   const filtered = useMemo(() => {
     const s = search.trim().toLowerCase();
     return requests.filter((r) => {
@@ -108,7 +126,7 @@ export default function DispatchCalendar({
     });
   }, [requests, search, statusFilter, driverFilter, vehicleFilter, vehicleMap]);
 
-  // ================= TRIP COUNTS PER DAY (for the mini calendar dots) =================
+  // -------------------------------------------------- trip counts per day
   const countsByDate = useMemo(() => {
     const map = new Map<string, number>();
     filtered.forEach((r) => {
@@ -118,7 +136,7 @@ export default function DispatchCalendar({
     return map;
   }, [filtered]);
 
-  // ================= MINI MONTH CALENDAR =================
+  // -------------------------------------------------- mini month calendar
   const monthLabel = new Date(`${monthAnchor}T00:00:00`).toLocaleDateString("en-PH", {
     month: "long",
     year: "numeric",
@@ -126,136 +144,42 @@ export default function DispatchCalendar({
   const gridStart = startOfCalendarGrid(monthAnchor);
   const monthCells = useMemo(() => Array.from({ length: 42 }, (_, i) => addDays(gridStart, i)), [gridStart]);
 
-  const goToToday = () => {
-    setMonthAnchor(startOfMonth(todayIso));
-    onDateChange(todayIso);
+  const goToDate = (iso: string) => {
+    onDateChange(iso);
+    setMonthAnchor(startOfMonth(iso));
   };
+  const goToToday = () => goToDate(todayIso);
 
   const renderMiniCalendar = () => (
     <div className="dcMiniCal">
-      <div className="dcJumpDate">
-
-  <label className="dcJumpLabel">
-    Jump to Date
-  </label>
-
-  <button
-    className="dcJumpButton"
-    onClick={() => {
-      (document.getElementById("jump-date-picker") as HTMLInputElement)?.showPicker?.();
-    }}
-  >
-    <CalendarDays size={16} />
-
-    <span>
-      {fullDateLabel(activeDate)}
-    </span>
-
-    <ChevronRight
-      size={16}
-      style={{
-        transform: "rotate(90deg)"
-      }}
-    />
-  </button>
-
-  <input
-    id="jump-date-picker"
-    type="date"
-    className="dcHiddenDate"
-
-    value={activeDate}
-
-    onChange={(e) => {
-
-      onDateChange(e.target.value);
-
-      setMonthAnchor(
-        startOfMonth(e.target.value)
-      );
-
-    }}
-
-  />
-
-</div>
-<div className="dcQuickNav">
-
-    <button
-        onClick={() => {
-
-            const d = new Date(activeDate);
-
-            d.setDate(d.getDate() - 1);
-
-            const iso = d.toISOString().slice(0,10);
-
-            onDateChange(iso);
-
-            setMonthAnchor(startOfMonth(iso));
-
-        }}
-    >
-        ← Previous
-    </button>
-
-    <button
-        onClick={goToToday}
-    >
-        Today
-    </button>
-
-    <button
-        onClick={() => {
-
-            const d = new Date(activeDate);
-
-            d.setDate(d.getDate() + 1);
-
-            const iso = d.toISOString().slice(0,10);
-
-            onDateChange(iso);
-
-            setMonthAnchor(startOfMonth(iso));
-
-        }}
-    >
-        Next →
-    </button>
-
-</div>
       <div className="dcMiniHeader">
-        <button
-          className="dcMiniNavBtn"
-          onClick={() => setMonthAnchor((m) => shiftMonth(m, -1))}
-          aria-label="Previous month"
-        >
+        <button className="dcMiniNavBtn" onClick={() => setMonthAnchor((m) => shiftMonth(m, -1))} aria-label="Previous month">
           <ChevronLeft size={15} />
         </button>
-        <span className="dcMiniMonthLabel" style={{ color: "#111827" }}>
-          {monthLabel}
-        </span>
-        <button
-          className="dcMiniNavBtn"
-          onClick={() => setMonthAnchor((m) => shiftMonth(m, 1))}
-          aria-label="Next month"
-        >
+        <span className="dcMiniMonthLabel">{monthLabel}</span>
+        <button className="dcMiniNavBtn" onClick={() => setMonthAnchor((m) => shiftMonth(m, 1))} aria-label="Next month">
           <ChevronRight size={15} />
         </button>
-      </div>
-
-      <div className="dcMiniSubRow">
-        <span className="dcMiniHint">{activeDate === todayIso ? "Today selected" : "Tap a date"}</span>
-        {activeDate !== todayIso && (
-          <button className="dcTodayLink" onClick={goToToday}>
-            Today
-          </button>
-        )}
+        <button
+          className="dcJumpIconBtn"
+          onClick={() => jumpInputRef.current?.showPicker?.()}
+          aria-label="Jump to a specific date"
+          title="Jump to date"
+        >
+          <CalendarDays size={14} />
+        </button>
+        <input
+          ref={jumpInputRef}
+          type="date"
+          className="dcHiddenDate"
+          value={activeDate}
+          onChange={(e) => e.target.value && goToDate(e.target.value)}
+        />
       </div>
 
       <div className="dcMiniDowRow">
         {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
-          <span key={i} className="dcMiniDow" style={{ color: "#6b7280" }}>
+          <span key={i} className="dcMiniDow">
             {d}
           </span>
         ))}
@@ -279,17 +203,27 @@ export default function DispatchCalendar({
               title={count > 0 ? `${count} trip${count === 1 ? "" : "s"}` : undefined}
             >
               <span className="dcMiniDate">{Number(iso.slice(8, 10))}</span>
-              {count > 0 && (
-                <span className="dcMiniDot" style={{ background: isSelected ? "white" : "#1f5aa6" }} />
-              )}
+              {count > 0 && <span className="dcMiniDot" style={{ background: isSelected ? "white" : "#1f5aa6" }} />}
             </button>
           );
         })}
       </div>
+
+      <div className="dcQuickNav">
+        <button onClick={() => goToDate(addDays(activeDate, -1))}>
+          <ChevronLeft size={13} /> Prev Day
+        </button>
+        <button className={activeDate === todayIso ? "dcQuickNavActive" : ""} onClick={goToToday}>
+          Today
+        </button>
+        <button onClick={() => goToDate(addDays(activeDate, 1))}>
+          Next Day <ChevronRight size={13} />
+        </button>
+      </div>
     </div>
   );
 
-  // ================= DAILY DISPATCH LIST =================
+  // -------------------------------------------------- daily trip list
   const dayTrips = useMemo(
     () =>
       filtered
@@ -299,16 +233,26 @@ export default function DispatchCalendar({
     [filtered, activeDate]
   );
 
+  const copyCode = (r: ScheduleRequest) => {
+    if (!r.request_code) return;
+    navigator.clipboard?.writeText(r.request_code).then(() => {
+      setCopiedId(r.id);
+      setTimeout(() => setCopiedId((cur) => (cur === r.id ? null : cur)), 1500);
+    });
+  };
+
   const renderTripCard = (
     { r, win }: { r: ScheduleRequest; win: { start: number; end: number } | null },
     idx: number,
     arr: { r: ScheduleRequest; win: { start: number; end: number } | null }[]
   ) => {
     const vehicles = splitVehicles(r.assigned_vehicle);
-    const driver = vehicles.map((v) => lookupDriver(v, vehicleMap)?.driver).find(Boolean) || null;
+    const driverInfo = vehicles.map((v) => lookupDriver(v, vehicleMap)).find(Boolean) || null;
+    const driver = driverInfo?.driver || null;
     const color = getDriverColor(driver, driverColorMap);
     const hasConflict = conflicts.has(r.id);
     const isActive = activeRequestId === r.id;
+    const isExpanded = expandedId === r.id;
     const pax = getPassengerCount(r);
     const isLast = idx === arr.length - 1;
 
@@ -319,34 +263,95 @@ export default function DispatchCalendar({
           {!isLast && <span className="dcTimelineLine" />}
         </div>
 
-        <button
-          className={`dcTripCard ${isActive ? "dcTripCardActive" : ""}`}
-          style={{ borderLeftColor: color }}
-          onClick={() => onSelectRequest(r)}
-        >
-          <div className="dcTripCardTop">
-            <span className="dcTripTime">
-              {win ? minutesToTime12h(win.start) : toPHTime(r.pick_up_time) || "No time set"}
-            </span>
-            {hasConflict && (
-              <span className="dcTripWarn" title="Scheduling conflict">
-                <AlertTriangle size={13} />
+        <div className={`dcTripCard ${isActive ? "dcTripCardActive" : ""}`} style={{ borderLeftColor: color }}>
+          <button className="dcTripCardMain" onClick={() => setExpandedId(isExpanded ? null : r.id)}>
+            <div className="dcTripCardTop">
+              <span className="dcTripTime">
+                {win ? minutesToTime12h(win.start) : toPHTime(r.pick_up_time) || "No time set"}
               </span>
-            )}
-            <span className="dcStatusPill" style={{ background: getStatusColor(r.status) }}>
-              {r.status}
-            </span>
-          </div>
-          <div className="dcTripCardBottom">
-            <span className="dcTripDriver" style={{ color }} title={driver || "Unassigned"}>
-              👤 {driver || "Unassigned"}
-            </span>
-            <span className="dcTripSep">•</span>
-            <span className="dcTripPax">
-              👥 {pax} pax
-            </span>
-          </div>
-        </button>
+              {hasConflict && (
+                <span className="dcTripWarn" title="Scheduling conflict">
+                  <AlertTriangle size={13} />
+                </span>
+              )}
+              <span className="dcStatusPill" style={{ background: getStatusColor(r.status) }}>
+                {r.status}
+              </span>
+              <ChevronDown size={15} className={`dcExpandChevron ${isExpanded ? "dcExpandChevronOpen" : ""}`} />
+            </div>
+            <div className="dcTripCardBottom">
+              <span className="dcTripDriver" style={{ color }} title={driver || "Unassigned"}>
+                👤 {driver || "Unassigned"}
+              </span>
+              <span className="dcTripSep">•</span>
+              <span className="dcTripPax">👥 {pax} pax</span>
+              {r.flight_no && (
+                <>
+                  <span className="dcTripSep">•</span>
+                  <span className="dcTripFlight">
+                    <Plane size={11} /> {r.flight_no}
+                  </span>
+                </>
+              )}
+            </div>
+          </button>
+
+          {isExpanded && (
+            <div className="dcTripExpand">
+              <div className="dcTripExpandRoute">
+                <span>{r.pickup_location || "Pickup TBD"}</span>
+                <span className="dcTripExpandArrow">→</span>
+                <span>{r.destination || "Destination TBD"}</span>
+              </div>
+
+              {(r.contact_person || r.contact_number) && (
+                <div className="dcTripExpandLine">
+                  <strong>Contact:</strong> {r.contact_person || "—"}
+                  {r.contact_number ? ` · ${r.contact_number}` : ""}
+                </div>
+              )}
+
+              {r.request_code && (
+                <div className="dcTripExpandLine">
+                  <strong>Code:</strong> {r.request_code}
+                </div>
+              )}
+
+              <div className="dcTripActions">
+                <button
+                  className="dcActionBtn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onSelectRequest(r);
+                  }}
+                >
+                  <ExternalLink size={13} /> Full Details
+                </button>
+                {driverInfo?.phone && (
+                  <a
+                    className="dcActionBtn"
+                    href={`tel:${driverInfo.phone}`}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <Phone size={13} /> Call Driver
+                  </a>
+                )}
+                {r.request_code && (
+                  <button
+                    className="dcActionBtn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      copyCode(r);
+                    }}
+                  >
+                    {copiedId === r.id ? <Check size={13} /> : <Copy size={13} />}
+                    {copiedId === r.id ? "Copied" : "Copy Code"}
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     );
   };
@@ -359,27 +364,19 @@ export default function DispatchCalendar({
             <CalendarDays size={20} />
           </div>
           <div>
-            <div className="dcTitle" style={{ color: "#111827" }}>
-              Dispatch Calendar
-            </div>
-            <div className="dcSubtitle" style={{ color: "#374151" }}>
-              View and manage all scheduled trips
-            </div>
+            <div className="dcTitle">Dispatch Calendar</div>
+            <div className="dcSubtitle">View and manage all scheduled trips</div>
           </div>
         </div>
       </div>
 
       <div className="dcSplit">
-        {/* ================= LEFT: MINI CALENDAR ================= */}
         <div className="dcLeftCol">{renderMiniCalendar()}</div>
 
-        {/* ================= RIGHT: DAILY DISPATCH DASHBOARD ================= */}
         <div className="dcRightCol">
           <div className="dcDayHeader">
-            <span className="dcDayHeaderDate" style={{ color: "#111827" }}>
-              {fullDateLabel(activeDate)}
-            </span>
-            <span className="dcDayHeaderCount" style={{ color: "#374151" }}>
+            <span className="dcDayHeaderDate">{fullDateLabel(activeDate)}</span>
+            <span className="dcDayHeaderCount">
               {dayTrips.length} Trip{dayTrips.length === 1 ? "" : "s"} Scheduled
             </span>
           </div>
@@ -389,31 +386,20 @@ export default function DispatchCalendar({
               <Search size={14} className="dcSearchIcon" />
               <input
                 className="dcSearchInput"
-                style={{ color: "#111827" }}
                 placeholder="Search trip, passenger, flight..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
-            <select
-              className="dcSelect"
-              style={{ color: "#111827" }}
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-            >
+            <select className="dcSelect" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
               <option value="All">All Status</option>
-              {["Pending", "Approved", "On the way", "Completed", "Cancelled", "Emergency"].map((s) => (
+              {STATUS_OPTIONS.map((s) => (
                 <option key={s} value={s}>
                   {s}
                 </option>
               ))}
             </select>
-            <select
-              className="dcSelect"
-              style={{ color: "#111827" }}
-              value={driverFilter}
-              onChange={(e) => setDriverFilter(e.target.value)}
-            >
+            <select className="dcSelect" value={driverFilter} onChange={(e) => setDriverFilter(e.target.value)}>
               <option value="All">All Drivers</option>
               {driverOptions.map((d) => (
                 <option key={d} value={d}>
@@ -421,12 +407,7 @@ export default function DispatchCalendar({
                 </option>
               ))}
             </select>
-            <select
-              className="dcSelect"
-              style={{ color: "#111827" }}
-              value={vehicleFilter}
-              onChange={(e) => setVehicleFilter(e.target.value)}
-            >
+            <select className="dcSelect" value={vehicleFilter} onChange={(e) => setVehicleFilter(e.target.value)}>
               <option value="All">All Vehicles</option>
               {vehicleOptions.map((v) => (
                 <option key={v} value={v}>
@@ -510,7 +491,7 @@ export default function DispatchCalendar({
           align-items: start;
         }
 
-        /* ================= MINI CALENDAR ================= */
+        /* ============ MINI CALENDAR (left) ============ */
         .dcLeftCol {
           position: sticky;
           top: 12px;
@@ -522,185 +503,26 @@ export default function DispatchCalendar({
           padding: 14px;
           display: flex;
           flex-direction: column;
-          gap: 12px;
+          gap: 10px;
           background: white;
         }
-       .dcJumpDate{
-
-display:flex;
-
-flex-direction:column;
-
-gap:8px;
-
-margin-bottom:16px;
-
-}
-
-.dcJumpLabel{
-
-font-size:12px;
-
-font-weight:700;
-
-color:#64748b;
-
-text-transform:uppercase;
-
-letter-spacing:.05em;
-
-}
-
-.dcJumpButton{
-
-width:100%;
-
-display:flex;
-
-align-items:center;
-
-justify-content:space-between;
-
-padding:12px 14px;
-
-background:white;
-
-border:1px solid #dbe3ef;
-
-border-radius:12px;
-
-cursor:pointer;
-
-font-size:14px;
-
-font-weight:700;
-
-color:#1F2937;
-
-transition:.25s;
-
-font-family:inherit;
-
-}
-
-.dcJumpInput {
-  width: 100%;
-  padding: 10px 12px;
-  border-radius: 10px;
-  border: 1px solid #dbe3ef;
-  font-size: 14px;
-  color: #111827;
-  background: white;
-  font-family: inherit;
-  transition: all .2s ease;
-}
-
-.dcJumpButton:hover{
-
-border-color:#1F5AA6;
-
-background:#EFF6FF;
-
-transform:translateY(-1px);
-
-box-shadow:0 8px 18px rgba(31,90,166,.12);
-
-}
-.dcHiddenDate{
-
-position:absolute;
-
-opacity:0;
-
-pointer-events:none;
-
-width:0;
-
-height:0;
-
-}
-.dcQuickNav{
-
-display:flex;
-
-justify-content:space-between;
-
-gap:8px;
-
-margin-bottom:18px;
-
-}
-.dcQuickNav button{
-
-flex:1;
-
-padding:8px 10px;
-
-border:none;
-
-border-radius:10px;
-
-background:#F1F5F9;
-
-font-weight:700;
-
-cursor:pointer;
-
-color:#475569;
-
-transition:.2s;
-
-}
-.dcQuickNav button:hover{
-
-background:#1F5AA6;
-
-color:white;
-
-}
-
-.dcJumpInput {
-  width: 100%;
-  padding: 10px 12px;
-  border-radius: 10px;
-  border: 1px solid #dbe3ef;
-  font-size: 14px;
-  font-family: inherit;
-
-  background: #ffffff;
-  color: #111827;
-
-  appearance: none;
-  -webkit-appearance: none;
-
-  transition: all .2s ease;
-}
-  .dcJumpInput::-webkit-calendar-picker-indicator {
-  cursor: pointer;
-  opacity: 0.9;
-}
-
-.dcJumpInput::-webkit-datetime-edit {
-  color: #111827;
-}
-
-.dcJumpInput::-webkit-datetime-edit-text {
-  color: #64748b;
-}
-
-.dcJumpInput::-webkit-datetime-edit-month-field,
-.dcJumpInput::-webkit-datetime-edit-day-field,
-.dcJumpInput::-webkit-datetime-edit-year-field {
-  color: #111827;
-}
 
         .dcMiniHeader {
           display: flex;
           align-items: center;
-          justify-content: space-between;
+          gap: 4px;
         }
 
-        .dcMiniNavBtn {
+        .dcMiniMonthLabel {
+          flex: 1;
+          text-align: center;
+          font-size: 14.5px;
+          font-weight: 800;
+          color: #111827;
+        }
+
+        .dcMiniNavBtn,
+        .dcJumpIconBtn {
           border: none;
           background: transparent;
           color: #64748b;
@@ -711,45 +533,22 @@ color:white;
           display: flex;
           align-items: center;
           justify-content: center;
-          transition: background 0.15s ease;
+          flex-shrink: 0;
+          transition: background 0.15s ease, color 0.15s ease;
         }
 
-        .dcMiniNavBtn:hover {
+        .dcMiniNavBtn:hover,
+        .dcJumpIconBtn:hover {
           background: #f1f5f9;
           color: #1f5aa6;
         }
 
-        .dcMiniMonthLabel {
-          font-size: 14.5px;
-          font-weight: 800;
-        }
-
-        .dcMiniSubRow {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-top: -6px;
-        }
-
-        .dcMiniHint {
-          font-size: 11px;
-          font-weight: 600;
-          color: #94a3b8;
-        }
-
-        .dcTodayLink {
-          border: none;
-          background: transparent;
-          color: #1f5aa6;
-          font-size: 11.5px;
-          font-weight: 800;
-          cursor: pointer;
-          padding: 2px 0;
-          font-family: inherit;
-        }
-
-        .dcTodayLink:hover {
-          text-decoration: underline;
+        .dcHiddenDate {
+          position: absolute;
+          opacity: 0;
+          pointer-events: none;
+          width: 0;
+          height: 0;
         }
 
         .dcMiniDowRow {
@@ -820,7 +619,43 @@ color:white;
           border-radius: 999px;
         }
 
-        /* ================= RIGHT: DAILY DISPATCH DASHBOARD ================= */
+        .dcQuickNav {
+          display: flex;
+          gap: 6px;
+          margin-top: 4px;
+          padding-top: 10px;
+          border-top: 1px solid #f1f5f9;
+        }
+
+        .dcQuickNav button {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 3px;
+          padding: 7px 6px;
+          border: none;
+          border-radius: 9px;
+          background: #f1f5f9;
+          font-weight: 700;
+          font-size: 11px;
+          cursor: pointer;
+          color: #475569;
+          font-family: inherit;
+          transition: background 0.15s ease, color 0.15s ease;
+        }
+
+        .dcQuickNav button:hover {
+          background: #1f5aa6;
+          color: white;
+        }
+
+        .dcQuickNavActive {
+          background: #1f5aa6 !important;
+          color: white !important;
+        }
+
+        /* ============ DAILY DISPATCH DASHBOARD (right) ============ */
         .dcRightCol {
           display: flex;
           flex-direction: column;
@@ -974,18 +809,11 @@ color:white;
         .dcTripCard {
           flex: 1;
           min-width: 0;
-          text-align: left;
           background: white;
           border: 1px solid #e2e8f0;
           border-left: 3px solid #94a3b8;
           border-radius: 10px;
-          padding: 9px 12px;
           margin-bottom: 8px;
-          cursor: pointer;
-          font-family: inherit;
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
           box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
           transition: box-shadow 0.15s ease;
         }
@@ -996,6 +824,19 @@ color:white;
 
         .dcTripCardActive {
           box-shadow: 0 0 0 2px #1f5aa6;
+        }
+
+        .dcTripCardMain {
+          width: 100%;
+          text-align: left;
+          background: transparent;
+          border: none;
+          padding: 9px 12px;
+          cursor: pointer;
+          font-family: inherit;
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
         }
 
         .dcTripCardTop {
@@ -1026,6 +867,17 @@ color:white;
           flex-shrink: 0;
         }
 
+        .dcExpandChevron {
+          color: #9ca3af;
+          flex-shrink: 0;
+          transition: transform 0.15s ease;
+        }
+
+        .dcExpandChevronOpen {
+          transform: rotate(180deg);
+          color: #1f5aa6;
+        }
+
         .dcTripCardBottom {
           display: flex;
           align-items: center;
@@ -1049,6 +901,78 @@ color:white;
         .dcTripPax {
           color: #374151;
           white-space: nowrap;
+        }
+
+        .dcTripFlight {
+          display: inline-flex;
+          align-items: center;
+          gap: 3px;
+          color: #374151;
+          white-space: nowrap;
+        }
+
+        /* ============ EXPANDED TRIP DETAILS ============ */
+        .dcTripExpand {
+          padding: 0 12px 12px;
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+          border-top: 1px dashed #e2e8f0;
+          margin-top: 2px;
+          padding-top: 10px;
+        }
+
+        .dcTripExpandRoute {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 13px;
+          font-weight: 700;
+          color: #111827;
+        }
+
+        .dcTripExpandArrow {
+          color: #94a3b8;
+          font-weight: 400;
+        }
+
+        .dcTripExpandLine {
+          font-size: 12.5px;
+          color: #475569;
+        }
+
+        .dcTripExpandLine strong {
+          color: #111827;
+          font-weight: 700;
+        }
+
+        .dcTripActions {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 6px;
+          margin-top: 4px;
+        }
+
+        .dcActionBtn {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          padding: 6px 10px;
+          border-radius: 8px;
+          border: 1px solid #cbd5e1;
+          background: #f8fafc;
+          color: #1f5aa6;
+          font-size: 12px;
+          font-weight: 700;
+          font-family: inherit;
+          cursor: pointer;
+          text-decoration: none;
+          transition: background 0.15s ease, border-color 0.15s ease;
+        }
+
+        .dcActionBtn:hover {
+          background: #eaf1fb;
+          border-color: #1f5aa6;
         }
 
         @media (max-width: 900px) {
