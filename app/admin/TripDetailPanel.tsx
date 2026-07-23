@@ -41,7 +41,7 @@ type TripDetailPanelProps = {
   onCompleteTrip?: (id: number) => void;
 };
 
-const STATUS_OPTIONS = ["Pending", "Approved", "On the way", "Completed", "Disapproved", "Emergency"];
+const STATUS_OPTIONS = ["Pending", "Approved", "On the way", "Completed", "Cancelled", "Emergency"];
 
 const STATUS_FLOW = ["Pending", "Approved", "On the way", "Completed"];
 

@@ -215,7 +215,9 @@ function getStatusMessage(status, name, vehicles = [], requestDetails = {}) {
         `,
       };
 
-    // ❌ Disapproved
+    // ❌ Cancelled (still handles the legacy "Disapproved" status value on
+    // older rows so those requests keep getting a matching email template)
+    case "Cancelled":
     case "Disapproved":
       return {
         subject: "Request update",
@@ -223,14 +225,14 @@ function getStatusMessage(status, name, vehicles = [], requestDetails = {}) {
           ${header}
           ${greeting}
 
-          ${statusBox("#ef4444", "STATUS: NOT APPROVED")}
+          ${statusBox("#ef4444", "STATUS: CANCELLED")}
 
           <p style="font-family:Arial;">
             Thank you for your request and for giving us the opportunity to assist you.
           </p>
 
           <p style="font-family:Arial;">
-            Unfortunately, we’re unable to approve this trip due to current scheduling or operational limitations.
+            Unfortunately, this trip has been cancelled due to current scheduling or operational limitations.
           </p>
 
           <p style="font-family:Arial;">

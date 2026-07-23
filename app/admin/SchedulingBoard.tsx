@@ -54,7 +54,7 @@ const STATUS_OPTIONS = [
   "Approved",
   "On the way",
   "Completed",
-  "Disapproved",
+  "Cancelled",
   "Emergency",
 ];
 

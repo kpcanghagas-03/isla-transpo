@@ -141,7 +141,7 @@ function samePickupDay(a: ScheduleRequest, b: ScheduleRequest): boolean {
   return !!a.pick_up_date && a.pick_up_date === b.pick_up_date;
 }
 
-const NON_BLOCKING_STATUSES = new Set(["Completed", "Disapproved"]);
+const NON_BLOCKING_STATUSES = new Set(["Completed", "Cancelled", "Disapproved"]);
 
 // -------- Conflict detection --------
 // Returns, for every request id, the list of OTHER requests that overlap
@@ -307,6 +307,10 @@ export const STATUS_BADGE: Record<string, string> = {
   Approved: "🟢",
   "On the way": "🔵",
   Completed: "⚫",
+  Cancelled: "🔴",
+  // Legacy alias -- older rows may still have "Disapproved" saved as their
+  // status. Kept so they keep showing the right badge instead of falling
+  // back to the unknown-status default.
   Disapproved: "🔴",
   Emergency: "🟣",
 };
@@ -323,6 +327,8 @@ export const STATUS_COLOR: Record<string, string> = {
   Approved: "#22c55e",
   "On the way": "#3b82f6",
   Completed: "#64748b",
+  Cancelled: "#ef4444",
+  // Legacy alias, see STATUS_BADGE comment above.
   Disapproved: "#ef4444",
   Emergency: "#a855f7",
 };
